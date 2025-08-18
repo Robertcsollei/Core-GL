@@ -1,0 +1,29 @@
+#pragma once
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <glm/glm.hpp>
+
+class Shader {
+public:
+    Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
+    ~Shader();
+
+    void Bind() const;
+    void Unbind() const;
+
+    void SetUniform4f(std::string_view name, float v0, float v1, float v2, float v3);
+    void SetUniform1f(std::string_view name, float value);
+    void SetUniform1i(std::string_view name, int value);
+    void SetUniformMat4f(std::string_view name, glm::mat4& matrix);
+
+    unsigned int GetRendererID() const { return m_RendererID; }
+
+private:
+    unsigned int m_RendererID = 0;
+    mutable std::unordered_map<std::string, int> m_UniformLocationCache;
+
+    unsigned int CreateShader(const std::string& vertexSrc, const std::string& fragmentSrc);
+    unsigned int CompileShader(unsigned int type, const std::string& source);
+    int GetUniformLocation(std::string_view name) const;
+};
