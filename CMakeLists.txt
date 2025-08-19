@@ -8,17 +8,20 @@ find_package(glad REQUIRED)
 file(GLOB_RECURSE OPENGL_TEST_SOURCES
      CONFIGURE_DEPENDS
      "${CMAKE_SOURCE_DIR}/src/*.c"
-     "${CMAKE_SOURCE_DIR}/src/*.cpp")
+     "${CMAKE_SOURCE_DIR}/src/*.cpp"
+    )
 file(GLOB_RECURSE OPENGL_TEST_HEADERS
      CONFIGURE_DEPENDS
      "${CMAKE_SOURCE_DIR}/src/*.h"
-     "${CMAKE_SOURCE_DIR}/src/*.hpp")
+     "${CMAKE_SOURCE_DIR}/src/*.hpp"
+)
 
 list(FILTER OPENGL_TEST_SOURCES EXCLUDE REGEX ".*/imgui/main\\.cpp$")
 
 add_executable(OpenGL_test
   ${OPENGL_TEST_SOURCES}
   ${OPENGL_TEST_HEADERS}   # headers are optional, but nice for IDEs
+  src/tests/TestMenu.cpp 
 )
 
 target_include_directories(
@@ -26,6 +29,7 @@ target_include_directories(
     PRIVATE 
     "${CMAKE_SOURCE_DIR}/src"
     "${CMAKE_SOURCE_DIR}/src/vendor"
+    "${CMAKE_SOURCE_DIR}/src/tests"
     "${CMAKE_SOURCE_DIR}/src/stb_image"
     "${CMAKE_SOURCE_DIR}/src/imgui"
 )
@@ -43,3 +47,8 @@ add_custom_command(TARGET OpenGL_test POST_BUILD
           "$<TARGET_FILE_DIR:OpenGL_test>/res"
   COMMENT "Copying assets to runtime dir"
 )
+
+if (MSVC)
+  add_compile_options("$<$<CONFIG:Debug>:/Zi>")
+  add_link_options("$<$<CONFIG:Debug>:/DEBUG:FULL>")
+endif()

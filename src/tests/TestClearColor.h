@@ -10,16 +10,15 @@ public:
 	TestClearColor();
 	~TestClearColor();
 
-	void OnUpdate(float deltaTime) override {}
-	void OnRender() override;
+public:
+	void OnUpdate(float deltaTime) override;
+	void OnRender(Renderer* renderer) override;
 	void OnImGuiRender() override;
 
+	const std::string& GetName() const override { return "Clear Color"; }
 
 private:
 	float m_ClearColor[4];
-	float m_ClearColor2[4];
-	float m_ClearColor3[4];
-	float m_ClearColor4[4];
 
 };
 
