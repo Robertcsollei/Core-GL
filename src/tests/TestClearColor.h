@@ -15,7 +15,7 @@ public:
 	void OnRender(Renderer* renderer) override;
 	void OnImGuiRender() override;
 
-	const std::string& GetName() const override { return "Clear Color"; }
+	std::string GetName() const override { return "Clear Color"; }
 
 private:
 	float m_ClearColor[4];

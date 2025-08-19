@@ -4,9 +4,6 @@
 #include <glad/glad.h>
 #include <SDL.h>
 
-#include <fstream>
-#include <sstream>
-#include <string>
 #include "Renderer.h"
 
 #include <imgui/imgui.h>
@@ -14,10 +11,6 @@
 #include <imgui/imgui_impl_opengl3.h>
 
 #include "tests/TestMenu.h"
-
-
-
-
 
 
 int main(int argc, char* argv[])

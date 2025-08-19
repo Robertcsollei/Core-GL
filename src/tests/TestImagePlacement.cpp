@@ -19,45 +19,45 @@ namespace test {
 			 -50.f,  50.f, 0.0f, 1.0f  // 3
 		  },
 		  m_Indices{0, 1, 2, 2, 3, 0},
-		  m_Shader(Shaders::vertex, Shaders::fragment),
-		  m_Texture("res/textures/test.png"),
-		  m_VAO(),
-		  m_VBO(m_Positions, 4 * 4 * sizeof(float)),
-		  m_VBOLayout(),
-		  m_IBO(m_Indices, 6),
 		  m_Proj(glm::ortho(0.0f, 1240.f, 0.0f, 860.f, -1.0f, 1.0f)),
 		  m_View(glm::mat4(1.0f)),
 		  m_TranslationA(200, 200, 0),
 		  m_TranslationB(400, 200, 0)
 	{
+		m_Shader = std::make_unique<Shader>(Shaders::vertex, Shaders::fragment); 
+		m_Texture = std::make_unique<Texture>("res/textures/test.png");
+		m_VAO = std::make_unique<VertexArray>();
+		m_VBO = std::make_unique<VertexBuffer>(m_Positions, 4 * 4 * sizeof(float));
+		m_VBOLayout = std::make_unique<VertexBufferLayout>();
+		m_IBO = std::make_unique<IndexBuffer>(m_Indices, 6);
 
-		m_VBOLayout.Push<float>(2);
-		m_VBOLayout.Push<float>(2);
+		m_VBOLayout->Push<float>(2);
+		m_VBOLayout->Push<float>(2);
 
-		m_VAO.addVertexBuffer(m_VBO, m_VBOLayout);
+		m_VAO->addVertexBuffer(*m_VBO, *m_VBOLayout);
 
 
-		m_Shader.Bind();
+		m_Shader->Bind();
 
 		unsigned int textureSlot = 0;
-		m_Texture.Bind(textureSlot);
-		m_Shader.SetUniform1i("u_Texture", textureSlot);
+		m_Texture->Bind(textureSlot);
+		m_Shader->SetUniform1i("u_Texture", textureSlot);
 
-		m_VBO.Unbind();
-		m_VAO.Unbind();
-		m_IBO.Unbind();
-		m_Shader.Unbind();
+		m_VBO->Unbind();
+		m_VAO->Unbind();
+		m_IBO->Unbind();
+		m_Shader->Unbind();
 
 		
 	}
 
 	TestImagePlacement::~TestImagePlacement()
 	{
-		m_Shader.Unbind();
-		m_VAO.Unbind();
-		m_IBO.Unbind();
-		m_Texture.Unbind();
-		m_VBO.Unbind();
+		m_Shader->Unbind();
+		m_VAO->Unbind();
+		m_IBO->Unbind();
+		m_Texture->Unbind();
+		m_VBO->Unbind();
 	}
 
 	void TestImagePlacement::OnUpdate(float deltaTime)
@@ -66,19 +66,19 @@ namespace test {
 
 	void TestImagePlacement::OnRender(Renderer* renderer)
 	{
-		m_Shader.Bind();
+		m_Shader->Bind();
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), m_TranslationA);
 			glm::mat4 mvp = m_Proj * m_View * model;
-			m_Shader.SetUniformMat4f("u_MVP", mvp);
-			renderer->Draw(m_VAO, m_IBO, m_Shader);
+			m_Shader->SetUniformMat4f("u_MVP", mvp);
+			renderer->Draw(*m_VAO, *m_IBO, *m_Shader);
 		}
 
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), m_TranslationB);
 			glm::mat4 mvp = m_Proj * m_View * model;
-			m_Shader.SetUniformMat4f("u_MVP", mvp);
-			renderer->Draw(m_VAO, m_IBO, m_Shader);
+			m_Shader->SetUniformMat4f("u_MVP", mvp);
+			renderer->Draw(*m_VAO, *m_IBO, *m_Shader);
 		}
 		
 	}

@@ -14,6 +14,6 @@ namespace test {
 		virtual void OnRender(Renderer* renderer) = 0;
 		virtual void OnImGuiRender() = 0;
 
-		virtual const std::string& GetName() const { return "Test";  }
+		virtual std::string GetName() const { return "Test";  }
 	};
 }

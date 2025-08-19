@@ -2,6 +2,8 @@
 #include "Test.h"
 #include <vector>
 #include <memory>
+#include <string>
+#include <functional>
 
 
 namespace test
@@ -18,11 +20,17 @@ namespace test
 		void OnRender(Renderer* renderer) override;
 		void OnImGuiRender() override;
 
-		const std::string& GetName() const override { return "Test Menu"; }
+		std::string GetName() const override { return "Test Menu"; }
+		
+		template<typename T>
+		void RegisterTest(const std::string& name) 
+		{
+			m_Tests.push_back(std::make_pair(name, []() { return new T(); }));
+		}
 
 	private:
 		test::Test* m_CurrentTest;
-		std::string m_CurrentTestName;
+		std::vector<std::pair<std::string, std::function<Test* ()>>> m_Tests;
 	
 	private:
 		void changeTest(test::Test* test);
