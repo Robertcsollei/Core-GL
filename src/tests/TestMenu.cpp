@@ -4,6 +4,9 @@
 
 #include "TestClearColor.h"
 #include "TestImagePlacement.h"
+#include "TestColorQuad.h"
+#include "TestBatchRenderingColor.h"
+#include "TestImageShading.h"
 
 namespace test 
 {
@@ -14,6 +17,9 @@ namespace test
 	{
 		RegisterTest<TestClearColor>("Clear Color");
 		RegisterTest<TestImagePlacement>("Image Placement");
+		RegisterTest<TestColorQuad>("Color Quad"); 
+		RegisterTest<TestBatchRenderingColor>("Batch Rendering Color"); 
+		RegisterTest<TestImageShading>("Image Shading");
 	}
 
 	TestMenu::~TestMenu()
@@ -62,6 +68,7 @@ namespace test
 		{
 			m_CurrentTest->OnImGuiRender();
 		}
+
 		ImGui::End();
 		
 

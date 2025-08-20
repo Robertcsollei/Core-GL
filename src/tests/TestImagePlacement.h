@@ -27,6 +27,7 @@ namespace test {
 	private:
 			const float m_Positions[16];
 			const unsigned int m_Indices[6];
+
 			std::unique_ptr<Shader> m_Shader;
 			std::unique_ptr<Texture> m_Texture;
 			std::unique_ptr<VertexArray> m_VAO;

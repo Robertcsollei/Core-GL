@@ -19,4 +19,6 @@ class Renderer {
 public:
 	void Clear() const;
 	void Draw(VertexArray& va, IndexBuffer& ib, Shader& shader) const;
+	void DrawPoint(Shader& shader) const;
+	void SetWireframeMode(bool enabled) const;
 };

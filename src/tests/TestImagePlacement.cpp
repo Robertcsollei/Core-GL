@@ -2,9 +2,6 @@
 #include <imgui/imgui.h>
 
 #include "../data/basic.shader.h"
-#include "../VertexBuffer.h"
-#include "../VertexBufferLayout.h"
-#include "../Texture.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -24,7 +21,11 @@ namespace test {
 		  m_TranslationA(200, 200, 0),
 		  m_TranslationB(400, 200, 0)
 	{
-		m_Shader = std::make_unique<Shader>(Shaders::vertex, Shaders::fragment); 
+
+
+
+
+		m_Shader = std::make_unique<Shader>(Shaders::BasicShader::vertex, Shaders::BasicShader::fragment); 
 		m_Texture = std::make_unique<Texture>("res/textures/test.png");
 		m_VAO = std::make_unique<VertexArray>();
 		m_VBO = std::make_unique<VertexBuffer>(m_Positions, 4 * 4 * sizeof(float));

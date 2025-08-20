@@ -95,6 +95,7 @@ int main(int argc, char* argv[])
     GLCall(glBindVertexArray(vao));
 
     Renderer renderer;
+    renderer.SetWireframeMode(false);
 
     bool running = true;
     SDL_Event e;
