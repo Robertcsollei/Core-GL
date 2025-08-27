@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <imgui/imgui.h>
 
+#include <iostream>
+
 void
 CameraControls::Update(const SDL_Event& e)
 {
@@ -13,12 +15,12 @@ CameraControls::Update(const SDL_Event& e)
 
   switch (e.type) {
     case SDL_MOUSEBUTTONDOWN:
-      if (e.button.button == SDL_BUTTON_RIGHT) {
+      if (e.button.button == SDL_BUTTON_LEFT) {
         m_Rotating = true;
         m_LastX = e.button.x;
         m_LastY = e.button.y;
       } else if (e.button.button == SDL_BUTTON_MIDDLE ||
-                 (e.button.button == SDL_BUTTON_LEFT &&
+                 (e.button.button == SDL_BUTTON_RIGHT &&
                   (SDL_GetModState() & KMOD_SHIFT))) {
         m_Panning = true;
         m_LastX = e.button.x;
@@ -27,10 +29,10 @@ CameraControls::Update(const SDL_Event& e)
       break;
 
     case SDL_MOUSEBUTTONUP:
-      if (e.button.button == SDL_BUTTON_RIGHT)
+      if (e.button.button == SDL_BUTTON_LEFT)
         m_Rotating = false;
       if (e.button.button == SDL_BUTTON_MIDDLE ||
-          (e.button.button == SDL_BUTTON_LEFT &&
+          (e.button.button == SDL_BUTTON_RIGHT &&
            (SDL_GetModState() & KMOD_SHIFT)))
         m_Panning = false;
       break;
@@ -45,17 +47,18 @@ CameraControls::Update(const SDL_Event& e)
       m_LastY = e.motion.y;
 
       if (m_Rotating) {
-        m_Camera.addOrbitDelta(dx * rotateDegPerPixel, -dy * rotateDegPerPixel);
+        m_Camera->addOrbitDelta(dx * -rotateDegPerPixel,
+                                dy * rotateDegPerPixel);
       }
       if (m_Panning) {
-        float dist = m_Camera.distance();
+        float dist = m_Camera->distance();
         float fovDeg = 45.0f;
         float worldPerPixel = 2.0f * dist *
                               std::tan(glm::radians(fovDeg * 0.5f)) /
                               float(std::max(1, m_VPH));
 
-        glm::vec3 eye = m_Camera.position();
-        glm::vec3 tgt = m_Camera.target();
+        glm::vec3 eye = m_Camera->position();
+        glm::vec3 tgt = m_Camera->target();
         glm::vec3 up = glm::vec3(0, 1, 0);
         glm::vec3 fwd = glm::normalize(tgt - eye);
         glm::vec3 right = glm::normalize(glm::cross(fwd, up));
@@ -63,15 +66,32 @@ CameraControls::Update(const SDL_Event& e)
 
         glm::vec3 delta =
           (-right * float(dx) + camUp * float(dy)) * worldPerPixel * panScale;
-        m_Camera.setLookAtTarget(tgt + delta);
+        m_Camera->setLookAtTarget(tgt + delta);
       }
       break;
     }
 
     case SDL_MOUSEWHEEL: {
       float step = (e.wheel.y > 0) ? zoomStep : (1.0f / zoomStep);
-      float newDist = std::clamp(m_Camera.distance() * step, 0.1f, 100000.0f);
-      m_Camera.setOrbit(newDist, m_Camera.yawDeg(), m_Camera.pitchDeg());
+      float newDist = std::clamp(m_Camera->distance() * step, 0.1f, 100000.0f);
+
+      if (m_Camera->mode() == Camera::Lens::Perspective &&
+          newDist < kModeSwapTreshold) {
+        std::cout << "Switching to ortho" << std::endl;
+        m_Camera->setMode(Camera::Lens::Ortho);
+      } else if (m_Camera->mode() == Camera::Lens::Ortho &&
+                 newDist > kModeSwapTreshold) {
+        std::cout << "Switching to pers" << std::endl;
+        m_Camera->setMode(Camera::Lens::Perspective);
+      }
+
+      if (m_Camera->mode() == Camera::Lens::Perspective) {
+        m_Camera->setOrbit(m_Camera->distance() * step,
+                           m_Camera->yawDeg(),
+                           m_Camera->pitchDeg());
+      } else {
+        m_Camera->setOrthoHeight(m_Camera->orthoHeight() * step);
+      }
       break;
     }
 

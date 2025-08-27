@@ -76,24 +76,24 @@ void
 TestSphere::OnImGuiRender(Camera& camera)
 {
 
-  static glm::vec3 tgt(0.f, 0.f, -800.f);
-  static float dist = camera.distance();
-  static float yaw = camera.yawDeg();
-  static float pitch = camera.pitchDeg();
+  // static glm::vec3 tgt(0.f, 0.f, -800.f);
+  // static float dist = camera.distance();
+  // static float yaw = camera.yawDeg();
+  // static float pitch = camera.pitchDeg();
 
-  ImGui::SliderFloat3("Camera target", &tgt.x, -3000.f, 3000.f);
-  ImGui::SliderFloat("Distance", &dist, 100.003f, 800.f);
+  // ImGui::SliderFloat3("Camera target", &tgt.x, -3000.f, 3000.f);
+  // ImGui::SliderFloat("Distance", &dist, 100.003f, 800.f);
 
-  ImGui::SliderFloat("Yaw (deg)", &yaw, -180.f, 180.f);
-  ImGui::SliderFloat("Pitch (deg)", &pitch, -89.f, 89.f);
+  // ImGui::SliderFloat("Yaw (deg)", &yaw, -180.f, 180.f);
+  // ImGui::SliderFloat("Pitch (deg)", &pitch, -89.f, 89.f);
 
-  ImGui::Separator();
-  ImGui::SliderFloat3(
-    "Translate", &m_Sphere.transform.m_Translation.x, -500.f, 500.f);
-  ImGui::SliderFloat3("Scale", &m_Sphere.transform.m_Scale.x, 0.1f, 5.f);
+  // ImGui::Separator();
+  // ImGui::SliderFloat3(
+  //   "Translate", &m_Sphere.transform.m_Translation.x, -500.f, 500.f);
+  // ImGui::SliderFloat3("Scale", &m_Sphere.transform.m_Scale.x, 0.1f, 5.f);
 
-  camera.setLookAtTarget(tgt);
-  camera.setOrbit(dist, yaw, pitch);
+  // camera.setLookAtTarget(tgt);
+  // camera.setOrbit(dist, yaw, pitch);
 }
 
 }

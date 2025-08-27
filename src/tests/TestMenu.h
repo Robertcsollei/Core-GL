@@ -8,16 +8,16 @@
 
 namespace test {
 
-class TestMenu : public test::Test
+class TestMenu
 {
 public:
-  TestMenu();
+  TestMenu(Renderer* renderer, Camera& camera);
   ~TestMenu();
 
 public:
-  void OnUpdate(float deltaTime) override;
-  void OnRender(Renderer* renderer) override;
-  void OnImGuiRender(Camera& camera) override;
+  void OnUpdate(float deltaTime);
+  void OnRender();
+  void OnImGuiRender();
 
   template<typename T>
   void RegisterTest(const std::string& name)
@@ -28,6 +28,8 @@ public:
 private:
   test::Test* m_CurrentTest;
   std::vector<std::pair<std::string, std::function<Test*()>>> m_Tests;
+  Renderer* m_Renderer;
+  Camera& m_Camera;
 
 private:
   void changeTest(test::Test* test);

@@ -101,10 +101,10 @@ main(int argc, char* argv[])
   SDL_Event e;
 
   Camera camera(45.f, 1240.f, 860.f, 0.1f, 10000.f);
-  camera.setLookAt({ 0, 0, 300 }, { 0, 0, 0 }, { 0, 1, 0 });
-  CameraControls camCtl(camera);
+  camera.setLookAt({ 0, 0, 300 }, { 0.f, 0.f, -800.f }, { 0, 1, 0 });
+  CameraControls camCtl(&camera);
 
-  test::TestMenu testMenu;
+  test::TestMenu testMenu(&renderer, camera);
 
   while (running) {
     while (SDL_PollEvent(&e)) {
@@ -121,18 +121,19 @@ main(int argc, char* argv[])
         GLCall(glViewport(0, 0, fbW, fbH));
         camera.onResize((float)fbW, (float)fbH);
       }
+      camCtl.Update(e);
     }
 
     renderer.BeginFrame(camera);
 
     testMenu.OnUpdate(0.0f);
-    testMenu.OnRender(&renderer);
+    testMenu.OnRender();
 
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
-    testMenu.OnImGuiRender(camera);
+    testMenu.OnImGuiRender();
     ImGui::Render();
 
     renderer.EndFrame();

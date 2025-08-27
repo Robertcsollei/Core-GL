@@ -4,7 +4,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 Camera::Camera(float fovDeg, float width, float height, float nearZ, float farZ)
-  : m_Fov(fovDeg)
+
+  : m_Mode(Lens::Perspective)
+  , m_Fov(fovDeg)
   , m_Aspect(width / height)
   , m_Near(nearZ)
   , m_Far(farZ)
@@ -55,6 +57,14 @@ Camera::addOrbitDelta(float dYawDeg, float dPitchDeg)
 }
 
 void
+Camera::setOrthoHeight(float h)
+{
+  m_OrthoHeight = h;
+  if (m_Mode == Lens::Ortho)
+    rebuildProj();
+}
+
+void
 Camera::setFov(float fovDeg)
 {
   m_Fov = fovDeg;
@@ -69,6 +79,43 @@ Camera::onResize(float width, float height)
 }
 
 void
+Camera::setPerspective(float fovDeg, float aspect, float nearZ, float farZ)
+{
+  m_Mode = Lens::Perspective;
+  m_Fov = fovDeg;
+  m_Aspect = aspect;
+  m_Near = nearZ;
+  m_Far = farZ;
+  rebuildProj();
+}
+
+void
+Camera::setOrthographic(float height, float aspect, float nearZ, float farZ)
+{
+  m_Mode = Lens::Ortho;
+  m_OrthoHeight = height;
+  m_Aspect = aspect;
+  m_Near = nearZ;
+  m_Far = farZ;
+  rebuildProj();
+}
+
+void
+Camera::setMode(Lens mode)
+{
+  if (mode == m_Mode)
+    return;
+  if (mode == Lens::Ortho) {
+    m_OrthoHeight = 2.0f * m_Dist * std::tan(glm::radians(m_Fov * 0.5f));
+  } else {
+    m_Dist = std::max(
+      0.01f, m_OrthoHeight / (2.0f * std::tan(glm::radians(m_Fov * 0.5f))));
+  }
+  m_Mode = mode;
+  rebuildProj();
+}
+
+void
 Camera::setAspect(float width, float height)
 {
   m_Aspect = width / height;
@@ -78,7 +125,14 @@ Camera::setAspect(float width, float height)
 void
 Camera::rebuildProj()
 {
-  m_Proj = glm::perspective(glm::radians(m_Fov), m_Aspect, m_Near, m_Far);
+  if (m_Mode == Lens::Perspective) {
+    m_Proj = glm::perspective(glm::radians(m_Fov), m_Aspect, m_Near, m_Far);
+  } else {
+    float h = m_OrthoHeight;
+    float w = h * m_Aspect;
+    m_Proj =
+      glm::ortho(-0.5f * w, 0.5f * w, -0.5f * h, 0.5f * h, m_Near, m_Far);
+  }
 }
 
 void

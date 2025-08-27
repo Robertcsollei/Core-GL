@@ -33,8 +33,12 @@ public:
   void Submit(const Renderable& r);
   void Draw(VertexArray& va, IndexBuffer& ib, Shader& shader) const;
   void DrawPoint(Shader& shader) const;
-  void SetWireframeMode(bool enabled) const;
+  void SetWireframeMode(bool enabled) { m_WireframeMode = enabled; };
 
 private:
   GLuint m_CameraUBO = 0;
+  bool m_WireframeMode = false;
+
+private:
+  void SetPolygoneMode() const;
 };

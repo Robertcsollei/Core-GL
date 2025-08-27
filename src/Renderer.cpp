@@ -59,6 +59,7 @@ Renderer::BeginFrame(const Camera& cam)
   GLCall(glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Camera::UBO), &u));
   GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 
+  SetPolygoneMode();
   GLCall(glEnable(GL_DEPTH_TEST));
   GLCall(glEnable(GL_BLEND));
   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
@@ -76,7 +77,7 @@ Renderer::EndFrame() const
   GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
   GLCall(glActiveTexture(GL_TEXTURE0));
   GLCall(glBindTexture(GL_TEXTURE_2D, 0));
-  GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+  SetPolygoneMode();
   GLCall(glDisable(GL_BLEND));
   GLCall(glEnable(GL_DEPTH_TEST));
   GLCall(glDepthMask(GL_TRUE));
@@ -130,9 +131,9 @@ Renderer::DrawPoint(Shader& shader) const
 }
 
 void
-Renderer::SetWireframeMode(bool enabled) const
+Renderer::SetPolygoneMode() const
 {
-  if (enabled) {
+  if (m_WireframeMode) {
     GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
   } else {
     GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));

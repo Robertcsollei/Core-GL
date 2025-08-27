@@ -6,9 +6,11 @@
 
 namespace test {
 
-TestMenu::TestMenu()
+TestMenu::TestMenu(Renderer* renderer, Camera& camera)
   : m_CurrentTest(nullptr)
   , m_Tests()
+  , m_Renderer(renderer)
+  , m_Camera(camera)
 {
   RegisterTest<TestSphere>("Sphere");
 }
@@ -26,16 +28,16 @@ TestMenu::OnUpdate(float deltaTime)
 }
 
 void
-TestMenu::OnRender(Renderer* renderer)
+TestMenu::OnRender()
 {
   if (m_CurrentTest)
-    m_CurrentTest->OnRender(renderer);
+    m_CurrentTest->OnRender(m_Renderer);
   else
-    renderer->Clear();
+    m_Renderer->Clear();
 }
 
 void
-TestMenu::OnImGuiRender(Camera& camera)
+TestMenu::OnImGuiRender()
 {
 
   ImGui::Begin("Test Menu");
@@ -52,7 +54,12 @@ TestMenu::OnImGuiRender(Camera& camera)
   }
 
   if (m_CurrentTest) {
-    m_CurrentTest->OnImGuiRender(camera);
+    m_CurrentTest->OnImGuiRender(m_Camera);
+  }
+
+  static bool wireframeMode = false;
+  if (ImGui::Checkbox("Wireframe mode: ", &wireframeMode)) {
+    m_Renderer->SetWireframeMode(wireframeMode);
   }
 
   ImGui::End();
