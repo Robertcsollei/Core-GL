@@ -179,4 +179,73 @@ AppendSphere(std::vector<Vertex>& outVertices,
     }
   }
 }
+
+static inline void
+AppendEllipsoid(std::vector<Vertex>& outVertices,
+                std::vector<uint32_t>& outIndices,
+                const glm::vec3& center,
+                float radius,
+                int stacks,
+                int slices,
+                const glm::vec4& color)
+{
+  const int rows = stacks + 1; // include both poles
+  const int cols = slices + 1; // duplicate seam (u=0 and u=1)
+  const float c = 0.95f;
+
+  outVertices.reserve(outVertices.size() + rows * cols);
+  outIndices.reserve(outIndices.size() + stacks * slices * 6);
+
+  for (int i = 0; i < rows; ++i) {
+    // v in [0,1], v=0 at north pole
+    float v = static_cast<float>(i) / stacks;
+    float lat = (0.5f - v) * glm::pi<float>(); // [-pi/2, +pi/2]
+
+    float sinLat = std::sin(lat);
+    float cosLat = std::cos(lat);
+
+    for (int j = 0; j < cols; ++j) {
+      // u in [0,1], u=0 at -pi, u=1 at +pi (duplicate seam)
+      float u = static_cast<float>(j) / slices;
+      float lon = (u - 0.5f) * 2.0f * glm::pi<float>(); // [-pi, +pi]
+
+      float sinLon = std::sin(lon);
+      float cosLon = std::cos(lon);
+
+      // Unit sphere direction (x right, y up, z forward)
+      glm::vec3 dir = glm::vec3(cosLat * cosLon, c * sinLat, cosLat * sinLon);
+
+      glm::vec3 pos = center + radius * dir;
+
+      // Equirectangular UVs (v=0 at north, v=1 at south)
+      glm::vec2 uv(1.0f - u, v);
+
+      outVertices.push_back(Vertex{ pos, color, uv });
+    }
+  }
+
+  // Indices (two tris per quad), CCW
+  auto idx = [cols](int r, int c) -> uint32_t {
+    return static_cast<uint32_t>(r * cols + c);
+  };
+
+  for (int i = 0; i < stacks; ++i) {
+    for (int j = 0; j < slices; ++j) {
+      uint32_t i0 = idx(i, j);
+      uint32_t i1 = idx(i, j + 1);
+      uint32_t i2 = idx(i + 1, j + 1);
+      uint32_t i3 = idx(i + 1, j);
+
+      // Tri 1
+      outIndices.push_back(i0);
+      outIndices.push_back(i1);
+      outIndices.push_back(i2);
+      // Tri 2
+      outIndices.push_back(i2);
+      outIndices.push_back(i3);
+      outIndices.push_back(i0);
+    }
+  }
+};
+
 }

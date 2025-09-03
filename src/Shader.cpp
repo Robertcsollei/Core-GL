@@ -153,9 +153,9 @@ Shader::CreateShader(const std::string& vsSrc, const std::string& fsSrc)
   for (auto& uniformBlock : m_UniformBlockCache) {
     const std::string& name = uniformBlock.first;
     unsigned binding = uniformBlock.second;
-    GLuint blockIndex = glGetUniformBlockIndex(m_RendererID, name.c_str());
+    GLuint blockIndex = glGetUniformBlockIndex(program, name.c_str());
     if (blockIndex != GL_INVALID_INDEX) {
-      glUniformBlockBinding(m_RendererID, blockIndex, binding);
+      glUniformBlockBinding(program, blockIndex, binding);
     }
   }
   GLCall(glValidateProgram(program));

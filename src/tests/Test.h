@@ -1,6 +1,6 @@
 #pragma once
-#include "../Renderer.h"
-#include "../entities/Camera.h"
+#include "Renderer.h"
+#include "core/entities/camera/Camera.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <vector>

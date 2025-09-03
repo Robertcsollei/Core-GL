@@ -75,23 +75,8 @@ CameraControls::Update(const SDL_Event& e)
       float step = (e.wheel.y > 0) ? zoomStep : (1.0f / zoomStep);
       float newDist = std::clamp(m_Camera->distance() * step, 0.1f, 100000.0f);
 
-      if (m_Camera->mode() == Camera::Lens::Perspective &&
-          newDist < kModeSwapTreshold) {
-        std::cout << "Switching to ortho" << std::endl;
-        m_Camera->setMode(Camera::Lens::Ortho);
-      } else if (m_Camera->mode() == Camera::Lens::Ortho &&
-                 newDist > kModeSwapTreshold) {
-        std::cout << "Switching to pers" << std::endl;
-        m_Camera->setMode(Camera::Lens::Perspective);
-      }
-
-      if (m_Camera->mode() == Camera::Lens::Perspective) {
-        m_Camera->setOrbit(m_Camera->distance() * step,
-                           m_Camera->yawDeg(),
-                           m_Camera->pitchDeg());
-      } else {
-        m_Camera->setOrthoHeight(m_Camera->orthoHeight() * step);
-      }
+      m_Camera->setOrbit(
+        m_Camera->distance() * step, m_Camera->yawDeg(), m_Camera->pitchDeg());
       break;
     }
 

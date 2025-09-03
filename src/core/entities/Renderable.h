@@ -1,7 +1,7 @@
 #pragma once
-#include "Material.h"
 #include "Mesh.h"
 #include "Transform.h"
+#include "core/materials/Material.h"
 
 struct Renderable
 {

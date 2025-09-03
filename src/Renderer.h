@@ -1,6 +1,4 @@
 #pragma once
-#include "./entities/Camera.h"
-#include "./entities/Renderable.h"
 #include "IndexBuffer.h"
 #include "Shader.h"
 #include "VertexArray.h"
@@ -20,6 +18,9 @@ void
 GLCheckError();
 bool
 GLLogCall(const char* function, const char* file, int line);
+
+class Camera;
+class Renderable;
 
 class Renderer
 {

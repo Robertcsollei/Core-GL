@@ -1,4 +1,6 @@
 #include "Renderer.h"
+#include "core/entities/Renderable.h"
+#include "core/entities/camera/Camera.h"
 #include <iostream>
 
 void

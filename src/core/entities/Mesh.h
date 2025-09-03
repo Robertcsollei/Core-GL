@@ -49,6 +49,7 @@ struct Mesh
     : vao()
     , vbo(vertices.data(), vertices.size() * sizeof(Vertex))
     , ibo(indices.data(), indices.size())
+    , layout()
   {
     Mesh::Vertex::AppendLayout(&layout);
     vao.addVertexBuffer(vbo, layout);

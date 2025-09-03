@@ -1,5 +1,5 @@
 #pragma once
-#include "Camera.h"
+#include "core/entities/camera/Camera.h"
 #include <SDL.h>
 
 class CameraControls

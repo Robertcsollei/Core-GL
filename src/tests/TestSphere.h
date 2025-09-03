@@ -2,9 +2,9 @@
 #include "Shader.h"
 #include "Test.h"
 #include "Texture.h"
-#include "entities/Material.h"
-#include "entities/Mesh.h"
-#include "entities/Renderable.h"
+#include "core/entities/Mesh.h"
+#include "core/entities/Renderable.h"
+#include "core/materials/Material.h"
 
 namespace test {
 

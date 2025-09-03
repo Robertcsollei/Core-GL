@@ -5,6 +5,7 @@
 VertexArray::VertexArray()
 {
   GLCall(glGenVertexArrays(1, &m_RendererID));
+  GLCall(glBindVertexArray(m_RendererID));
 }
 
 VertexArray::~VertexArray()
@@ -38,6 +39,7 @@ VertexArray::addVertexBuffer(const VertexBuffer& vb,
 {
   Bind();
   vb.Bind();
+
   const auto& elements = layout.GetElements();
   unsigned int offset = 0;
   for (unsigned int i = 0; i < elements.size(); i++) {
@@ -56,5 +58,7 @@ VertexArray::addVertexBuffer(const VertexBuffer& vb,
     offset +=
       element.count * VertexBufferLayoutElement::GetSizeOfType(element.type);
   }
+
+  m_NextAttribIndex = 0;
   // This bind index 0 of VAO to currenlty selected BUFFER!
 }

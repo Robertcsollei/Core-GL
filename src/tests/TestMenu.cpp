@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include <imgui/imgui.h>
 
+#include "TestEllipsoid.h"
 #include "TestSphere.h"
 
 namespace test {
@@ -13,6 +14,7 @@ TestMenu::TestMenu(Renderer* renderer, Camera& camera)
   , m_Camera(camera)
 {
   RegisterTest<TestSphere>("Sphere");
+  RegisterTest<TestEllipsoid>("Ellipsoid");
 }
 
 TestMenu::~TestMenu()
