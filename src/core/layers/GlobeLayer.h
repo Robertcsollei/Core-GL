@@ -1,25 +1,30 @@
 #pragma once
 #include "core/entities/Renderable.h"
 #include "core/layers/Layer.h"
+#include <core/entities/objects/Globe.h>
 #include <memory>
 
 namespace layers {
 class GlobeLayer final : public ILayer
 {
 public:
-  explicit GlobeLayer(std::unique_ptr<Renderable> globe)
-    : m_Globe(std::move(globe))
+  explicit GlobeLayer(AppContext& ctx)
+    : m_Globe(ctx)
   {
+  }
+  ~GlobeLayer() = default;
+
+  void OnAttach(SceneState&, AppContext&) override {}
+
+  void Render(Renderer& renderer, const SceneState&) override
+  {
+    renderer.Submit(m_Globe.RenderTask());
   }
 
-  void render(Renderer& renderer, const FrameCtx&) override
-  {
-    if (m_Globe) {
-      renderer.Submit(*m_Globe);
-    }
-  }
+public:
+  Globe& globe() { return m_Globe; }
 
 private:
-  std::unique_ptr<Renderable> m_Globe;
+  Globe m_Globe;
 };
 }

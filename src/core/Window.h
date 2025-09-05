@@ -17,25 +17,25 @@ public:
   Window(const Window&) = delete;
   Window& operator=(const Window&) = delete;
 
-  bool pollEvent(SDL_Event& e);
-  void swap();
+  bool PollEvent(SDL_Event& e);
+  void Swap();
 
-  void beginImGuiFrame();
-  void endImGuiFrame();
+  void BeginImGuiFrame();
+  void EndImGuiFrame();
 
-  SDL_Window* sdl() const { return m_Window; }
-  void drawableSize(int& fbW, int& fbH) const;
+  SDL_Window* Sdl() const { return m_Window; }
+  void DrawableSize(int& fbW, int& fbH) const;
 
-  void setVSync(bool enabled);
+  void SetVSync(bool enabled);
 
 private:
-  void initSDL(const std::string& title, int width, int height);
-  void initGL();
-  void initImGui();
+  void InitSDL(const std::string& title, int width, int height);
+  void InitGL();
+  void InitImGui();
 
-  void shutdownImGui();
-  void shutdownGL();
-  void shutdownSDL();
+  void ShutdownImGui();
+  void ShutdownGL();
+  void ShutdownSDL();
 
 private:
   SDL_Window* m_Window = nullptr;

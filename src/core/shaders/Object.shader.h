@@ -1,12 +1,10 @@
 #pragma once
 
-
-
 namespace Shaders {
 
-	namespace Camera {
+namespace Object3d {
 
-		static const char* vertex = R"(
+static const char* vertex = R"(
 #version 330 core
 layout(std140) uniform Camera {
     mat4 u_View;
@@ -36,7 +34,7 @@ void main() {
 
 )";
 
-		static const char* fragment = R"(
+static const char* fragment = R"(
 #version 330 core
 
 in vec3 v_WorldNormal;
@@ -61,5 +59,5 @@ void main() {
 
 )";
 
-	}
+}
 }

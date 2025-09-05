@@ -1,17 +1,16 @@
 #pragma once
 #include "Renderer.h"
-#include "core/Scene.h"
+#include <core/AppContext.h>
+#include <core/Scene.h>
+#include <core/SceneState.h>
 
 namespace layers {
-struct FrameCtx
-{
-  const SceneState& state;
-  const Camera& camera;
-};
 
 struct ILayer
 {
   virtual ~ILayer() = default;
-  virtual void render(Renderer& R, const FrameCtx& ctx) = 0;
+  virtual void OnAttach(SceneState& state, AppContext& ctx) = 0;
+  virtual void Render(Renderer& R, const SceneState& state) = 0;
+  virtual void Update(double dt){};
 };
 }

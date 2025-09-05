@@ -1,10 +1,12 @@
-#include "core/App.h"
+#include <core/App.h>
 
-#include "Renderer.h"
-#include "core/Window.h"
-#include "core/controllers/CameraControls.h"
-#include "core/entities/camera/Camera.h"
-#include "tests/TestMenu.h"
+#include <Renderer.h>
+#include <core/Scene.h>
+#include <core/Window.h>
+#include <core/controllers/CameraControls.h>
+#include <core/entities/camera/Camera.h>
+#include <core/entities/objects/Globe.h>
+#include <core/layers/GlobeLayer.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
@@ -14,56 +16,49 @@
 #include <glad/glad.h>
 
 Application::Application(int width, int height)
+  : m_Ctx(float(width), float(height))
 {
-  m_Window = std::make_unique<Window>("OpenGL Renderer", width, height);
-  m_Renderer = std::make_unique<Renderer>();
-
-  // You can query drawable size right after Window init
+  m_Window = std::make_unique<Window>(m_Ctx.title, width, height);
   int fbW = width, fbH = height;
-  m_Window->drawableSize(fbW, fbH);
-
-  m_Camera =
-    std::make_unique<Camera>(45.f, (float)fbW, (float)fbH, 0.1f, 10000.f);
-  m_Camera->setLookAt({ 0, 0, 300 }, { 0, 0, -800 }, { 0, 1, 0 });
-  m_CamCtl = std::make_unique<CameraControls>(m_Camera.get());
-
-  m_TestMenu = std::make_unique<test::TestMenu>(m_Renderer.get(), *m_Camera);
-
-  glClearColor(0.1f, 0.1f, 0.12f, 1.0f);
+  m_Window->DrawableSize(fbW, fbH);
+  m_Renderer = std::make_unique<Renderer>();
+  m_Scene = std::make_unique<Scene>(m_Ctx);
 }
 
 Application::~Application() = default;
 
 int
-Application::run()
+Application::Run()
 {
   SDL_Event e;
+  uint64_t last = SDL_GetPerformanceCounter();
+
   while (m_Running) {
-    while (m_Window->pollEvent(e)) {
+    while (m_Window->PollEvent(e)) {
       ImGui_ImplSDL2_ProcessEvent(&e);
-      handleEvent(e);
+      HandleEvent(e);
     }
+    uint64_t now = SDL_GetPerformanceCounter();
+    double dt = double(now - last) / SDL_GetPerformanceFrequency();
+    last = now;
 
-    m_Renderer->BeginFrame(*m_Camera);
+    m_Scene->Update(dt);
 
-    // Update & render your scene/tests
-    m_TestMenu->OnUpdate(0.0f);
-    m_TestMenu->OnRender();
+    m_Renderer->BeginFrame(m_Scene->state().camera);
+    m_Scene->Render(*m_Renderer);
 
-    // ImGui
-    m_Window->beginImGuiFrame();
-    m_TestMenu->OnImGuiRender();
-    m_Window->endImGuiFrame();
+    m_Window->BeginImGuiFrame();
+    m_Scene->RenderUI(m_Ctx);
+    m_Window->EndImGuiFrame();
 
     m_Renderer->EndFrame();
-
-    m_Window->swap();
+    m_Window->Swap();
   }
   return 0;
 }
 
 void
-Application::handleEvent(const SDL_Event& e)
+Application::HandleEvent(const SDL_Event& e)
 {
   switch (e.type) {
     case SDL_QUIT:
@@ -72,14 +67,14 @@ Application::handleEvent(const SDL_Event& e)
     case SDL_WINDOWEVENT:
       if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
         int fbW, fbH;
-        m_Window->drawableSize(fbW, fbH);
+        m_Window->DrawableSize(fbW, fbH);
         glViewport(0, 0, fbW, fbH);
-        m_Camera->onResize((float)fbW, (float)fbH);
+        m_Scene->OnResize();
       }
       break;
     default:
       break;
   }
   // Always pass input to camera controls
-  m_CamCtl->Update(e);
+  m_Scene->HandleEvent(e);
 }

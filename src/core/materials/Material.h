@@ -1,6 +1,6 @@
 #pragma once
-#include "../Shader.h"
-#include "../Texture.h"
+#include "Shader.h"
+#include "Texture.h"
 #include <glad/glad.h>
 #include <memory>
 #include <string>
@@ -32,10 +32,17 @@ public:
   Material::State state{};
 
 public:
-  explicit Material(std::shared_ptr<Shader> s)
-    : shader(std::move(s))
+  explicit Material(const std::string& id,
+                    const std::string& n,
+                    std::shared_ptr<Shader> s)
+    : uuid(std::move(id))
+    , name(std::move(n))
+    , shader(std::move(s))
   {
   }
+
+  std::string name;
+  const std::string uuid;
 
 public:
   void addTexture(int unit,

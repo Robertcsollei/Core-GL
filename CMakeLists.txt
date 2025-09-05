@@ -20,8 +20,7 @@ list(FILTER OPENGL_TEST_SOURCES EXCLUDE REGEX ".*/imgui/main\\.cpp$")
 
 add_executable(OpenGL_test
   ${OPENGL_TEST_SOURCES}
-  ${OPENGL_TEST_HEADERS}   # headers are optional, but nice for IDEs
-  src/tests/TestMenu.cpp 
+  ${OPENGL_TEST_HEADERS}  
 )
 
 target_include_directories(
@@ -29,7 +28,6 @@ target_include_directories(
     PRIVATE 
     "${CMAKE_SOURCE_DIR}/src"
     "${CMAKE_SOURCE_DIR}/src/vendor"
-    "${CMAKE_SOURCE_DIR}/src/tests"
     "${CMAKE_SOURCE_DIR}/src/stb_image"
     "${CMAKE_SOURCE_DIR}/src/imgui"
 )
@@ -49,6 +47,9 @@ add_custom_command(TARGET OpenGL_test POST_BUILD
 )
 
 if (MSVC)
-  add_compile_options("$<$<CONFIG:Debug>:/Zi>")
+  add_compile_options(
+    "$<$<CONFIG:Debug>:/Zi>"
+    /diagnostics:caret
+  )
   add_link_options("$<$<CONFIG:Debug>:/DEBUG:FULL>")
 endif()

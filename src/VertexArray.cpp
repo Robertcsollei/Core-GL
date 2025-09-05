@@ -59,6 +59,6 @@ VertexArray::addVertexBuffer(const VertexBuffer& vb,
       element.count * VertexBufferLayoutElement::GetSizeOfType(element.type);
   }
 
-  m_NextAttribIndex = 0;
+  // m_NextAttribIndex = 0;
   // This bind index 0 of VAO to currenlty selected BUFFER!
 }

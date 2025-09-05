@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-
+#include <memory>
 class Camera
 {
 public:
@@ -20,6 +20,8 @@ public:
 public:
   Camera(float fovDeg, float width, float height, float nearZ, float farZ);
   ~Camera() = default;
+
+  static std::unique_ptr<Camera> CreateDefaultCamera(float fbW, float fbH);
 
 public:
   void setLookAt(const glm::vec3& eye,

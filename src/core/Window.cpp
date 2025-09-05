@@ -19,20 +19,20 @@ sdlCheck(bool ok, const char* what)
 
 Window::Window(const std::string& title, int width, int height)
 {
-  initSDL(title, width, height);
-  initGL();
-  initImGui();
+  InitSDL(title, width, height);
+  InitGL();
+  InitImGui();
 }
 
 Window::~Window()
 {
-  shutdownImGui();
-  shutdownGL();
-  shutdownSDL();
+  ShutdownImGui();
+  ShutdownGL();
+  ShutdownSDL();
 }
 
 void
-Window::initSDL(const std::string& title, int width, int height)
+Window::InitSDL(const std::string& title, int width, int height)
 {
   sdlCheck(SDL_Init(SDL_INIT_VIDEO) == 0, "SDL_Init");
 
@@ -57,23 +57,23 @@ Window::initSDL(const std::string& title, int width, int height)
 }
 
 void
-Window::initGL()
+Window::InitGL()
 {
   // Load GL functions via GLAD using SDL loader
   if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
     throw std::runtime_error("Failed to initialize GLAD");
   }
-  setVSync(true);
+  SetVSync(true);
 
   int fbW, fbH;
-  drawableSize(fbW, fbH);
+  DrawableSize(fbW, fbH);
   glViewport(0, 0, fbW, fbH);
 
   std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 }
 
 void
-Window::initImGui()
+Window::InitImGui()
 {
   IMGUI_CHECKVERSION();
   m_ImGuiCtx = ImGui::CreateContext();
@@ -90,7 +90,7 @@ Window::initImGui()
 }
 
 void
-Window::shutdownImGui()
+Window::ShutdownImGui()
 {
   if (m_ImGuiCtx) {
     ImGui_ImplOpenGL3_Shutdown();
@@ -101,7 +101,7 @@ Window::shutdownImGui()
 }
 
 void
-Window::shutdownGL()
+Window::ShutdownGL()
 {
   if (m_GLContext) {
     SDL_GL_DeleteContext(m_GLContext);
@@ -110,7 +110,7 @@ Window::shutdownGL()
 }
 
 void
-Window::shutdownSDL()
+Window::ShutdownSDL()
 {
   if (m_Window) {
     SDL_DestroyWindow(m_Window);
@@ -120,19 +120,19 @@ Window::shutdownSDL()
 }
 
 bool
-Window::pollEvent(SDL_Event& e)
+Window::PollEvent(SDL_Event& e)
 {
   return SDL_PollEvent(&e);
 }
 
 void
-Window::swap()
+Window::Swap()
 {
   SDL_GL_SwapWindow(m_Window);
 }
 
 void
-Window::beginImGuiFrame()
+Window::BeginImGuiFrame()
 {
   ImGui_ImplOpenGL3_NewFrame();
   ImGui_ImplSDL2_NewFrame();
@@ -140,20 +140,20 @@ Window::beginImGuiFrame()
 }
 
 void
-Window::endImGuiFrame()
+Window::EndImGuiFrame()
 {
   ImGui::Render();
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void
-Window::drawableSize(int& fbW, int& fbH) const
+Window::DrawableSize(int& fbW, int& fbH) const
 {
   SDL_GL_GetDrawableSize(m_Window, &fbW, &fbH);
 }
 
 void
-Window::setVSync(bool enabled)
+Window::SetVSync(bool enabled)
 {
   SDL_GL_SetSwapInterval(enabled ? 1 : 0);
 }

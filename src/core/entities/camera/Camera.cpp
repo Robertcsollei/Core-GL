@@ -15,6 +15,14 @@ Camera::Camera(float fovDeg, float width, float height, float nearZ, float farZ)
   rebuildProj();
 }
 
+std::unique_ptr<Camera>
+Camera::CreateDefaultCamera(float fbW, float fbH)
+{
+  auto camera = std::make_unique<Camera>(45.f, fbW, fbH, 0.1f, 10000.f);
+  camera->setLookAt({ 0, 0, 300 }, { 0, 0, -800 }, { 0, 1, 0 });
+  return camera;
+}
+
 void
 Camera::setLookAt(const glm::vec3& eye,
                   const glm::vec3& target,

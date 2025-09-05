@@ -1,6 +1,11 @@
 #include "VertexBuffer.h"
 #include "Renderer.h"
 
+VertexBuffer::VertexBuffer()
+  : VertexBuffer(nullptr, 0, GL_STATIC_DRAW)
+{
+}
+
 VertexBuffer::VertexBuffer(const void* data, unsigned int size)
   : VertexBuffer(data, size, GL_STATIC_DRAW)
 {

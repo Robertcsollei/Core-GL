@@ -16,6 +16,14 @@ Shader::Shader(
   m_RendererID = CreateShader(vertexSrc, fragmentSrc);
 }
 
+Shader::Shader(const std::string& vertexSrc,
+               const std::string& fragmentSrc,
+               std::vector<std::pair<std::string, unsigned int>>& uniformBlocks)
+  : m_UniformBlockCache(uniformBlocks)
+{
+  m_RendererID = CreateShader(vertexSrc, fragmentSrc);
+}
+
 Shader::~Shader()
 {
   GLCall(glDeleteProgram(m_RendererID));

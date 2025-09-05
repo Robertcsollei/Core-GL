@@ -1,10 +1,11 @@
 #pragma once
 #include <SDL.h>
+#include <core/AppContext.h>
 #include <memory>
 
 class Window;
 class Renderer;
-class Camera;
+class Scene;
 class CameraControls;
 
 namespace test {
@@ -17,17 +18,18 @@ public:
   Application(int width, int height);
   ~Application();
 
-  int run();
+  int Run();
+  const AppContext& Context() const { return m_Ctx; }
 
 private:
-  void handleEvent(const SDL_Event& e);
+  void HandleEvent(const SDL_Event& e);
 
 private:
-  std::unique_ptr<Window> m_Window;
   std::unique_ptr<Renderer> m_Renderer;
-  std::unique_ptr<Camera> m_Camera;
-  std::unique_ptr<CameraControls> m_CamCtl;
-  std::unique_ptr<test::TestMenu> m_TestMenu;
+  std::unique_ptr<Scene> m_Scene;
+  std::unique_ptr<Window> m_Window;
+
+  AppContext m_Ctx;
 
   bool m_Running = true;
 };

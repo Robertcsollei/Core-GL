@@ -8,9 +8,10 @@
 #include <iostream>
 
 void
-CameraControls::Update(const SDL_Event& e)
+CameraControls::HandleEvent(const SDL_Event& e)
 {
-  if (ImGui::GetIO().WantCaptureMouse)
+  const auto& io = ImGui::GetIO();
+  if (io.WantCaptureMouse || io.WantCaptureKeyboard)
     return;
 
   switch (e.type) {
@@ -47,18 +48,16 @@ CameraControls::Update(const SDL_Event& e)
       m_LastY = e.motion.y;
 
       if (m_Rotating) {
-        m_Camera->addOrbitDelta(dx * -rotateDegPerPixel,
-                                dy * rotateDegPerPixel);
+        m_Camera.addOrbitDelta(dx * -rotateDegPerPixel, dy * rotateDegPerPixel);
       }
       if (m_Panning) {
-        float dist = m_Camera->distance();
-        float fovDeg = 45.0f;
-        float worldPerPixel = 2.0f * dist *
-                              std::tan(glm::radians(fovDeg * 0.5f)) /
-                              float(std::max(1, m_VPH));
+        float dist = m_Camera.distance();
+        float fovDeg = m_Camera.fovDeg();
+        float worldPerPixel =
+          2.0f * dist * std::tan(glm::radians(fovDeg * 0.5f)) / m_Ctx.height;
 
-        glm::vec3 eye = m_Camera->position();
-        glm::vec3 tgt = m_Camera->target();
+        glm::vec3 eye = m_Camera.position();
+        glm::vec3 tgt = m_Camera.target();
         glm::vec3 up = glm::vec3(0, 1, 0);
         glm::vec3 fwd = glm::normalize(tgt - eye);
         glm::vec3 right = glm::normalize(glm::cross(fwd, up));
@@ -66,17 +65,16 @@ CameraControls::Update(const SDL_Event& e)
 
         glm::vec3 delta =
           (-right * float(dx) + camUp * float(dy)) * worldPerPixel * panScale;
-        m_Camera->setLookAtTarget(tgt + delta);
+        m_Camera.setLookAtTarget(tgt + delta);
       }
       break;
     }
 
     case SDL_MOUSEWHEEL: {
       float step = (e.wheel.y > 0) ? zoomStep : (1.0f / zoomStep);
-      float newDist = std::clamp(m_Camera->distance() * step, 0.1f, 100000.0f);
+      float newDist = std::clamp(m_Camera.distance() * step, 0.1f, 100000.0f);
 
-      m_Camera->setOrbit(
-        m_Camera->distance() * step, m_Camera->yawDeg(), m_Camera->pitchDeg());
+      m_Camera.setOrbit(newDist, m_Camera.yawDeg(), m_Camera.pitchDeg());
       break;
     }
 

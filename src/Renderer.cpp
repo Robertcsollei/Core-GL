@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "core/entities/Renderable.h"
 #include "core/entities/camera/Camera.h"
+#include <core/entities/Mesh.h>
 #include <iostream>
 
 void
@@ -86,50 +87,59 @@ Renderer::EndFrame() const
 }
 
 void
-Renderer::Submit(const Renderable& r)
+Renderer::Submit(Renderable* r)
 {
-  if (!r.mesh || !r.material || !r.material->shader)
+  if (!r->mesh || !r->material || !r->material->shader)
     return;
 
   // 1) Program
-  auto* shader = r.material->shader.get();
+  auto* shader = r->material->shader.get();
   shader->Bind();
 
   // 2) Per-object uniforms
   static const glm::vec3 lightDirection(0.5f, 1.0f, 0.2f);
-  const glm::mat4 model = r.transform.world();
+  const glm::mat4 model = r->transform.world();
   shader->SetUniformMat4f("u_Model", model); // View/Proj come from Camera UBO
   shader->SetUniform3f("u_LightDir", lightDirection);
 
   // 3) Material state + textures
-  r.material->applyState();
-  r.material->bindTextures(); // no-op for your current shader
+  r->material->applyState();
+  r->material->bindTextures(); // no-op for your current shader
 
   // 4) Geometry
-  r.mesh->vao.Bind();
+  r->mesh->vao.Bind();
   glDrawElements(
-    GL_TRIANGLES, r.mesh->ibo.GetCount(), GL_UNSIGNED_INT, nullptr);
+    GL_TRIANGLES, r->mesh->ibo.GetCount(), GL_UNSIGNED_INT, nullptr);
 }
 
 void
-Renderer::Draw(VertexArray& va, IndexBuffer& ib, Shader& shader) const
+Renderer::SubmitPoint(Renderable* r)
 {
-  shader.Bind();
-  va.Bind();
-  ib.Bind();
-  GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
-}
+  if (!r->mesh || !r->material || !r->material->shader)
+    return;
+  auto* shader = r->material->shader.get();
+  shader->Bind();
 
-void
-Renderer::DrawPoint(Shader& shader) const
-{
-  shader.Bind();
+  shader->SetUniformMat4f("u_Model", r->transform.world());
 
-  GLint prevFunc;
-  glGetIntegerv(GL_DEPTH_FUNC, &prevFunc);
-  glDepthFunc(GL_ALWAYS);
+  r->material->applyState();
+  r->mesh->vao.Bind();
   glDrawArrays(GL_POINTS, 0, 1);
-  glDepthFunc(prevFunc);
+}
+
+void
+Renderer::SubmitPointsInstanced(Mesh* mesh,
+                                Shader* shader,
+                                const std::vector<glm::vec3>& positions)
+{
+  shader->Bind();
+  mesh->vao.Bind();
+
+  glBindBuffer(GL_ARRAY_BUFFER, mesh->instanceVbo.GetRendererID());
+  glBufferSubData(
+    GL_ARRAY_BUFFER, 0, positions.size() * sizeof(glm::vec3), positions.data());
+
+  glDrawArraysInstanced(GL_POINTS, 0, 1, positions.size());
 }
 
 void

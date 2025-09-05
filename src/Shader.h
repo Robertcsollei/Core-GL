@@ -11,6 +11,9 @@ public:
   Shader(const std::string& vertexSrc,
          const std::string& fragmentSrc,
          std::vector<std::pair<std::string, unsigned int>>&& uniformBlocks);
+  Shader(const std::string& vertexSrc,
+         const std::string& fragmentSrc,
+         std::vector<std::pair<std::string, unsigned int>>& uniformBlocks);
   ~Shader();
 
   void Bind() const;

@@ -16,6 +16,14 @@ struct Renderable
     , transform(std::move(xform))
   {
     if (mesh)
-      transform.m_Pivot = mesh->center;
+      transform.pivot = mesh->center;
+  }
+  Renderable(std::unique_ptr<Renderable> renderable)
+    : mesh(renderable->mesh)
+    , material(renderable->material)
+    , transform(std::move(renderable->transform))
+  {
+    if (mesh)
+      transform.pivot = mesh->center;
   }
 };
