@@ -7,10 +7,10 @@
 std::unique_ptr<Renderable>
 ObjectFactory::CreateGlobe(const GlobeConfig& cfg, AppContext& ctx)
 {
-  auto mesh = ctx.meshes.Add(
-    "ellipsoid:globe",
-    MeshFactory::CreateEllipsoid(
-      cfg.radius, cfg.slices, cfg.stacks, glm::vec3(0.f), *cfg.ellipsoid));
+  auto mesh =
+    ctx.meshes.Add("ellipsoid:globe",
+                   MeshFactory::CreateEllipsoid(
+                     cfg.slices, cfg.stacks, glm::vec3(0.f), *cfg.ellipsoid));
 
   auto material = ctx.materials.Add(
     MaterialFactory::CreatePong(cfg.texturePath, ctx.shaders, ctx.textures));
@@ -37,7 +37,7 @@ ObjectFactory::CreateSatellite(const glm::vec3 pos, AppContext& ctx)
                      MeshFactory::CreatePoint(glm::vec3(0.f), glm::vec4(1.f)));
 
     mesh->AddInstanceBuffer(nullptr,
-                            25000 * sizeof(glm::vec3),
+                            25000 * sizeof(Mesh::PointVertex),
                             2); // location=2 in shader
   }
 

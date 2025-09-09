@@ -68,6 +68,8 @@ Application::HandleEvent(const SDL_Event& e)
       if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
         int fbW, fbH;
         m_Window->DrawableSize(fbW, fbH);
+        m_Ctx.width = (float)fbW;
+        m_Ctx.height = (float)fbH;
         glViewport(0, 0, fbW, fbH);
         m_Scene->OnResize();
       }

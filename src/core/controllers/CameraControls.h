@@ -14,7 +14,7 @@ public:
   ~CameraControls() = default;
 
   inline void Attach(Camera& camera) { m_Camera = camera; }
-  void HandleEvent(const SDL_Event& event);
+  void HandleEvent(const SDL_Event& event, AppContext& ctx);
 
   Camera& camera() { return m_Camera; }
 

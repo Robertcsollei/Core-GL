@@ -24,20 +24,23 @@ public:
   static std::unique_ptr<Camera> CreateDefaultCamera(float fbW, float fbH);
 
 public:
-  void setLookAt(const glm::vec3& eye,
+  void SetLookAt(const glm::vec3& eye,
                  const glm::vec3& target,
                  const glm::vec3& up);
-  void setLookAtTarget(const glm::vec3& target);
-  void setOrbit(float distance, float yawDeg, float pitchDeg); // absolute
-  void addOrbitDelta(float dYawDeg, float dPitchDeg);          // relative
-  void setOrthoHeight(float h);
-  void setFov(float fovDeg);
-  void setAspect(float width, float height);
-  void onResize(float width, float height);
+  void SetLookAtTarget(const glm::vec3& target);
+  void SetOrbit(float distance, float yawDeg, float pitchDeg); // absolute
+  void AddOrbitDelta(float dYawDeg, float dPitchDeg);          // relative
+  void SetOrthoHeight(float h);
+  void SetFov(float fovDeg);
+  void SetAspect(float width, float height);
+  void OnResize(float width, float height);
 
-  void setPerspective(float fovDeg, float aspect, float nearZ, float farZ);
-  void setOrthographic(float height, float aspect, float nearZ, float farZ);
-  void setMode(Lens mode);
+  void SetPerspective(float fovDeg, float aspect, float nearZ, float farZ);
+  void SetOrthographic(float height, float aspect, float nearZ, float farZ);
+  void SetMode(Lens mode);
+
+  glm::dvec3 CastRay(double ndcX, double ndcY);
+  glm::ivec2 WorldToScreen(const glm::dvec3& pos, float screenW, float screenH);
 
   const glm::mat4& view() const { return m_View; }
   const glm::mat4& proj() const { return m_Proj; }
@@ -49,6 +52,8 @@ public:
   float pitchDeg() const { return m_PitchDeg; }
   float fovDeg() const { return m_Fov; }
   float orthoHeight() const { return m_OrthoHeight; }
+  float near() const { return m_Near; }
+  float far() const { return m_Far; }
 
   Lens mode() const { return m_Mode; }
 
@@ -67,6 +72,6 @@ private:
   float m_OrthoHeight = 300.f;
 
 private:
-  void rebuildProj();
-  void updateViewFromOrbit();
+  void RebuildProj();
+  void UpdateViewFromOrbit();
 };

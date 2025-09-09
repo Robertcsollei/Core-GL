@@ -14,7 +14,7 @@ public:
   }
   ~GlobeLayer() = default;
 
-  void OnAttach(SceneState&, AppContext&) override {}
+  void OnAttach(SceneState&, AppContext&) override { m_Attached = true; }
 
   void Render(Renderer& renderer, const SceneState&) override
   {

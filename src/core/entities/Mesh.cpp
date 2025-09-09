@@ -33,15 +33,21 @@ Mesh::Mesh(const PointVertex& pointVtx, const std::vector<uint32_t>& indices)
 }
 
 void
-Mesh::AddInstanceBuffer(const void* data, size_t size, int attribIndex)
+Mesh::AddInstanceBuffer(const PointVertex* pointVtx,
+                        size_t size,
+                        int attribIndex)
 {
-  instanceVbo = VertexBuffer(data, size, GL_DYNAMIC_DRAW);
+  for (int i = 0; i < 2; i++) {
+    instanceVbos[i] = VertexBuffer(pointVtx, size, GL_DYNAMIC_DRAW);
 
-  VertexBufferLayout instLayout;
-  instLayout.Push<float>(3);
-  vao.addVertexBuffer(instanceVbo, instLayout);
+    VertexBufferLayout instLayout;
+    PointVertex::AppendLayout(&instLayout);
+    vao.addVertexBuffer(instanceVbos[i], instLayout);
 
-  glVertexAttribDivisor(attribIndex, 1);
+    // One divisor per attribute in PointVertex
+    glVertexAttribDivisor(attribIndex, 1);
+    glVertexAttribDivisor(attribIndex + 1, 1);
+  }
 
-  instanceLayout = std::move(instLayout);
+  currentInstanceVbo = 0;
 }

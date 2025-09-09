@@ -8,8 +8,7 @@ class Ellipsoid;
 
 namespace MeshFactory {
 std::unique_ptr<Mesh>
-CreateEllipsoid(float radius,
-                int slices,
+CreateEllipsoid(int slices,
                 int stacks,
                 const glm::vec3& center,
                 Ellipsoid& ellipsoid);

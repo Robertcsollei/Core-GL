@@ -2,6 +2,7 @@
 #include "IndexBuffer.h"
 #include "Shader.h"
 #include "VertexArray.h"
+#include <core/entities/Mesh.h>
 #include <glad/glad.h>
 
 #define ASSERT(x)                                                              \
@@ -21,7 +22,6 @@ GLLogCall(const char* function, const char* file, int line);
 
 class Camera;
 class Renderable;
-class Mesh;
 
 class Renderer
 {
@@ -36,7 +36,7 @@ public:
   void SubmitPoint(Renderable* r);
   void SubmitPointsInstanced(Mesh* mesh,
                              Shader* shader,
-                             const std::vector<glm::vec3>& positions);
+                             const std::vector<Mesh::PointVertex>& positions);
   void SetWireframeMode(bool enabled) { m_WireframeMode = enabled; };
 
 private:

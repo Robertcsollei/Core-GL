@@ -8,7 +8,7 @@
 #include <iostream>
 
 void
-CameraControls::HandleEvent(const SDL_Event& e)
+CameraControls::HandleEvent(const SDL_Event& e, AppContext& ctx)
 {
   const auto& io = ImGui::GetIO();
   if (io.WantCaptureMouse || io.WantCaptureKeyboard)
@@ -20,26 +20,32 @@ CameraControls::HandleEvent(const SDL_Event& e)
         m_Rotating = true;
         m_LastX = e.button.x;
         m_LastY = e.button.y;
+        ctx.pointerLock = true;
       } else if (e.button.button == SDL_BUTTON_MIDDLE ||
                  (e.button.button == SDL_BUTTON_RIGHT &&
                   (SDL_GetModState() & KMOD_SHIFT))) {
         m_Panning = true;
         m_LastX = e.button.x;
         m_LastY = e.button.y;
+        ctx.pointerLock = true;
       }
       break;
 
     case SDL_MOUSEBUTTONUP:
-      if (e.button.button == SDL_BUTTON_LEFT)
+      if (e.button.button == SDL_BUTTON_LEFT) {
         m_Rotating = false;
+        ctx.pointerLock = false;
+      }
       if (e.button.button == SDL_BUTTON_MIDDLE ||
           (e.button.button == SDL_BUTTON_RIGHT &&
-           (SDL_GetModState() & KMOD_SHIFT)))
+           (SDL_GetModState() & KMOD_SHIFT))) {
         m_Panning = false;
+        ctx.pointerLock = false;
+      }
       break;
 
     case SDL_MOUSEMOTION: {
-      if (!m_Rotating && !m_Panning)
+      if (!ctx.pointerLock)
         break;
 
       int dx = e.motion.x - m_LastX;
@@ -48,7 +54,7 @@ CameraControls::HandleEvent(const SDL_Event& e)
       m_LastY = e.motion.y;
 
       if (m_Rotating) {
-        m_Camera.addOrbitDelta(dx * -rotateDegPerPixel, dy * rotateDegPerPixel);
+        m_Camera.AddOrbitDelta(dx * -rotateDegPerPixel, dy * rotateDegPerPixel);
       }
       if (m_Panning) {
         float dist = m_Camera.distance();
@@ -65,16 +71,17 @@ CameraControls::HandleEvent(const SDL_Event& e)
 
         glm::vec3 delta =
           (-right * float(dx) + camUp * float(dy)) * worldPerPixel * panScale;
-        m_Camera.setLookAtTarget(tgt + delta);
+        m_Camera.SetLookAtTarget(tgt + delta);
       }
       break;
     }
 
     case SDL_MOUSEWHEEL: {
+
       float step = (e.wheel.y > 0) ? zoomStep : (1.0f / zoomStep);
       float newDist = std::clamp(m_Camera.distance() * step, 0.1f, 100000.0f);
 
-      m_Camera.setOrbit(newDist, m_Camera.yawDeg(), m_Camera.pitchDeg());
+      m_Camera.SetOrbit(newDist, m_Camera.yawDeg(), m_Camera.pitchDeg());
       break;
     }
 

@@ -28,12 +28,15 @@ rotateZ(const glm::dvec3& v, double a)
 }
 
 Satellite::Satellite(AppContext& ctx,
+                     const std::string uuid,
                      const Orbit& orbit,
                      double epochTime,
                      Globe& globe)
-  : m_Orbit(orbit)
+  : m_Uuid(uuid)
+  , m_Orbit(orbit)
   , m_Epoch(epochTime)
   , m_Position(0.0, 0.0, -800.0)
+  , m_Color(1.f)
   , m_Renderable(ObjectFactory::CreateSatellite(glm::vec3(m_Position), ctx))
   , m_Globe(globe)
 {
@@ -44,6 +47,8 @@ Satellite::Update(double timeSinceEpoch)
 {
   m_Position = m_Orbit.positionECI((m_Epoch + timeSinceEpoch), m_Globe) +
                glm::dvec3(m_Globe.RenderTask()->transform.translation);
+  m_RenderPos = glm::vec3(m_Position);
+
   m_Renderable.transform.translation = m_Position;
   m_Renderable.transform.scale = glm::vec3({ 1.0f, 1.0f, 1.0f });
 }
@@ -97,8 +102,7 @@ Satellite::Orbit::positionECI(double t, Globe& globe) const
   const glm::dvec3 rECI_m = R * rPQW;
 
   // 6) Scale meters -> your world units using your globe's equatorial radius
-  const double R_world =
-    globe.Geometry().Radii().x + 100.0; // in your engine units
+  const double R_world = globe.Geometry().Radii().x; // in your engine units
   const double metersToWorld = R_world / WGS84_A;
   return rECI_m * metersToWorld; // ECI in world units
 }

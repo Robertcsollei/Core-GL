@@ -1,6 +1,7 @@
 #pragma once
 #include "core/entities/Renderable.h"
 #include "core/layers/Layer.h"
+#include <core/entities/Mesh.h>
 #include <core/entities/objects/Globe.h>
 #include <core/entities/objects/Satellite.h>
 #include <memory>
@@ -15,31 +16,43 @@ public:
   }
   ~SatelliteLayer() = default;
 
-  void OnAttach(SceneState&, AppContext&) override {}
+  void OnAttach(SceneState&, AppContext&) override
+  {
+    m_Instances.resize(m_Satellites.size());
+    m_Attached = true;
+  }
 
   void Add(std::unique_ptr<Satellite> satellite)
   {
     m_Satellites.push_back(std::move(satellite));
+    if (m_Attached) {
+      m_Instances.emplace_back(); // grow the parallel buffer
+    }
   };
 
   void Render(Renderer& renderer, const SceneState&) override
   {
-    std::vector<glm::vec3> positions;
-    positions.reserve(m_Satellites.size());
-    for (auto& sat : m_Satellites) {
-      positions.push_back(glm::vec3(sat->position()));
+    const size_t N = m_Satellites.size();
+    for (size_t i = 0; i < N; ++i) {
+      auto& s = *m_Satellites[i];
+      m_Instances[i].Position = s.renderPos();
+      m_Instances[i].Color = s.color();
     }
     auto& sharedPointMesh = m_Satellites.front()->RenderTask()->mesh;
     auto& pointShader = m_Satellites.front()->RenderTask()->material->shader;
     renderer.SubmitPointsInstanced(
-      sharedPointMesh, pointShader.get(), positions);
+      sharedPointMesh, pointShader.get(), m_Instances);
   }
 
   void Update(double dt) override
   {
+    static bool once = false;
     for (auto& sat : m_Satellites) {
-      sat->Update(dt);
+      if (!once)
+        sat->Update(dt);
     }
+
+    once = true;
   }
 
 public:
@@ -50,5 +63,6 @@ public:
 
 private:
   std::vector<std::unique_ptr<Satellite>> m_Satellites;
+  std::vector<Mesh::PointVertex> m_Instances;
 };
 }

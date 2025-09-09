@@ -54,6 +54,12 @@ Window::InitSDL(const std::string& title, int width, int height)
   sdlCheck(m_GLContext != nullptr, "SDL_GL_CreateContext");
 
   SDL_SetWindowResizable(m_Window, SDL_TRUE);
+
+  SDL_Surface* icon = SDL_LoadBMP("res/images/favicon.ico");
+  if (icon) {
+    SDL_SetWindowIcon(m_Window, icon);
+    SDL_FreeSurface(icon);
+  }
 }
 
 void
@@ -63,7 +69,7 @@ Window::InitGL()
   if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
     throw std::runtime_error("Failed to initialize GLAD");
   }
-  SetVSync(true);
+  SetVSync(false);
 
   int fbW, fbH;
   DrawableSize(fbW, fbH);

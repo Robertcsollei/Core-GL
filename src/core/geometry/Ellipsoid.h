@@ -11,7 +11,7 @@ public:
   Ellipsoid(glm::dvec3 radii);
   ~Ellipsoid() = default;
 
-  glm::dvec3 Radii() { return m_Radii; }
+  const glm::dvec3& Radii() const noexcept { return m_Radii; }
   glm::dvec3 GeodeticSurfaceNormal(const glm::dvec3& p);
   glm::dvec3 GeodeticSurfaceNormal(const Geodetic3D& geodetic);
   glm::dvec3 ToVec3D(const Geodetic3D& geodetic);

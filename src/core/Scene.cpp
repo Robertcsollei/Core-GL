@@ -1,5 +1,6 @@
-#include "core/Scene.h"
 #include "Renderer.h"
+#include <core/Scene.h>
+#include <core/controllers/SelectionControls.h>
 #include <core/entities/objects/Satellite.h>
 #include <core/layers/GlobeLayer.h>
 #include <core/layers/SatelliteLayer.h>
@@ -14,7 +15,11 @@ Scene::Scene(AppContext& ctx)
 {
   UpdateCameraDefault();
   InitLayers();
+  m_SelectionCtl = std::make_unique<SelectionControls>(
+    m_SatLayer, m_GlobeLayer->globe(), m_Ctx, m_State);
 }
+
+Scene::~Scene() = default;
 
 void
 Scene::AddLayer(LayerPtr layer)
@@ -26,9 +31,16 @@ Scene::AddLayer(LayerPtr layer)
 void
 Scene::Update(double dt)
 {
+  static bool once = false;
   m_SimTime += dt;
   for (auto& layer : m_Layers) {
     layer->Update(m_SimTime);
+  }
+
+  m_HoverTimer += dt;
+  if (m_HoverTimer >= 0.15) {
+    // m_SelectionCtl->HandleHoverState();
+    m_HoverTimer = 0.0;
   }
 }
 
@@ -45,34 +57,52 @@ Scene::RenderUI(AppContext& ctx)
 {
   ImGui::Begin("Test Popup");
   ImGui::Text("Hello World...");
-  // for (auto& layer : m_Layers) {
-  //   if (auto* satLayer = dynamic_cast<layers::SatelliteLayer*>(layer.get()))
-  //   {
-  //     for (auto& sat : satLayer->satellites()) {
-  //       ImGui::DragScalar("Epoch", ImGuiDataType_Double, sat->epoch(), 1.0);
-  //     }
-  //   }
-  // }
+
   ImGuiIO& io = ImGui::GetIO();
   ImGui::Text("FPS: %.1f", io.Framerate);
   ImGui::Text("Frame Time: %.3f ms", 1000.0f / io.Framerate);
   ImGui::End();
+
+  if (auto sel = m_SelectionCtl->selection()) {
+    ImGui::SetNextWindowPos(
+      ImVec2((float)sel->screenPos.x, (float)sel->screenPos.y),
+      ImGuiCond_Always,
+      ImVec2(0.0f, 1.2f));
+    ImGui::Begin(
+      ("SatelliteTooltip##" + sel->uuid).c_str(),
+      nullptr,
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize |
+        ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
+
+    ImGui::TextUnformatted(sel->uuid.c_str());
+    ImGui::End();
+  }
 }
 
 void
 Scene::HandleEvent(const SDL_Event& e)
 {
-  m_CamCtl.HandleEvent(e);
+  m_CamCtl.HandleEvent(e, m_Ctx);
+  m_SelectionCtl->HandleEvent(e);
+}
+
+void
+Scene::OnResize()
+{
+  m_State.camera.OnResize(m_Ctx.width, m_Ctx.height);
+  m_SelectionCtl->OnResize();
 }
 
 void
 Scene::InitLayers()
 {
   auto globeLayer = std::make_unique<layers::GlobeLayer>(m_Ctx);
-  auto& globe = globeLayer->globe();
+  m_GlobeLayer = globeLayer.get();
   AddLayer(std::move(globeLayer));
 
   auto satelliteLayer = std::make_unique<layers::SatelliteLayer>(m_Ctx);
+  m_SatLayer = satelliteLayer.get();
 
   // Random number generators
   std::mt19937 rng{ std::random_device{}() };
@@ -97,7 +127,11 @@ Scene::InitLayers()
     orbit.meanAnomalyAtEpoch = distM0(rng);
     orbit.epoch = 0.0;
 
-    auto sat = std::make_unique<Satellite>(m_Ctx, orbit, 0.0, globe);
+    auto sat = std::make_unique<Satellite>(m_Ctx,
+                                           "satellite_" + std::to_string(i),
+                                           orbit,
+                                           0.0,
+                                           m_GlobeLayer->globe());
     satelliteLayer->Add(std::move(sat));
   }
 
@@ -107,7 +141,7 @@ Scene::InitLayers()
 void
 Scene::UpdateCameraDefault()
 {
-  m_State.camera.setPerspective(
+  m_State.camera.SetPerspective(
     45.f, m_Ctx.width / m_Ctx.height, 0.1f, 10000.f);
-  m_State.camera.setLookAt({ 0, 0, 300 }, { 0, 0, -800 }, { 0, 1, 0 });
+  m_State.camera.SetLookAt({ 0, 0, 300 }, { 0, 0, -800 }, { 0, 1, 0 });
 }

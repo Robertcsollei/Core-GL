@@ -130,16 +130,19 @@ Renderer::SubmitPoint(Renderable* r)
 void
 Renderer::SubmitPointsInstanced(Mesh* mesh,
                                 Shader* shader,
-                                const std::vector<glm::vec3>& positions)
+                                const std::vector<Mesh::PointVertex>& vertecies)
 {
   shader->Bind();
   mesh->vao.Bind();
 
-  glBindBuffer(GL_ARRAY_BUFFER, mesh->instanceVbo.GetRendererID());
-  glBufferSubData(
-    GL_ARRAY_BUFFER, 0, positions.size() * sizeof(glm::vec3), positions.data());
+  mesh->currentInstanceVbo = (mesh->currentInstanceVbo + 1) % 2;
+  auto& vbo = mesh->instanceVbos[mesh->currentInstanceVbo];
+  const GLsizeiptr bytes = vertecies.size() * sizeof(Mesh::PointVertex);
 
-  glDrawArraysInstanced(GL_POINTS, 0, 1, positions.size());
+  glBindBuffer(GL_ARRAY_BUFFER, vbo.GetRendererID());
+  glBufferSubData(GL_ARRAY_BUFFER, 0, bytes, vertecies.data());
+
+  glDrawArraysInstanced(GL_POINTS, 0, 1, vertecies.size());
 }
 
 void

@@ -10,7 +10,7 @@ public:
   Globe(AppContext& ctx);
   ~Globe() = default;
 
-  Ellipsoid& Geometry() { return m_Ellipsoid; }
+  const Ellipsoid& Geometry() const noexcept { return m_Ellipsoid; }
   Renderable* RenderTask() { return &m_Renderable; }
 
 private:

@@ -6,7 +6,6 @@ static inline void
 BuildEllipsoid(std::vector<Mesh::Vertex>& outVerts,
                std::vector<uint32_t>& outIdx,
                const glm::vec3& center,
-               float radius,
                int stacks,
                int slices,
                Ellipsoid& ellipsoid)
@@ -30,7 +29,7 @@ BuildEllipsoid(std::vector<Mesh::Vertex>& outVerts,
       glm::dvec3 p_local(
         radii.x * cLat * cLon, radii.y * sLat, radii.z * cLat * sLon);
 
-      glm::vec3 pos = glm::vec3(p_local * static_cast<double>(radius)) + center;
+      glm::vec3 pos = glm::vec3(p_local) + center;
 
       glm::dvec3 n_geo = ellipsoid.GeodeticSurfaceNormal(p_local);
       glm::vec3 n = glm::normalize(glm::vec3(n_geo));
@@ -70,8 +69,7 @@ BuildPoint(std::vector<uint32_t>& outIdx,
 }
 
 std::unique_ptr<Mesh>
-MeshFactory::CreateEllipsoid(float radius,
-                             int slices,
+MeshFactory::CreateEllipsoid(int slices,
                              int stacks,
                              const glm::vec3& center,
                              Ellipsoid& ellipsoid)
@@ -79,7 +77,7 @@ MeshFactory::CreateEllipsoid(float radius,
   std::vector<Mesh::Vertex> verts;
   std::vector<uint32_t> indices;
 
-  BuildEllipsoid(verts, indices, center, radius, stacks, slices, ellipsoid);
+  BuildEllipsoid(verts, indices, center, stacks, slices, ellipsoid);
   return std::make_unique<Mesh>(verts, indices);
 }
 

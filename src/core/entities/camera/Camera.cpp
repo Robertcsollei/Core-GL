@@ -11,20 +11,20 @@ Camera::Camera(float fovDeg, float width, float height, float nearZ, float farZ)
   , m_Near(nearZ)
   , m_Far(farZ)
 {
-  setLookAt({ 0, 0, 3 }, { 0, 0, 0 }, { 0, 1, 0 });
-  rebuildProj();
+  SetLookAt({ 0, 0, 3 }, { 0, 0, 0 }, { 0, 1, 0 });
+  RebuildProj();
 }
 
 std::unique_ptr<Camera>
 Camera::CreateDefaultCamera(float fbW, float fbH)
 {
   auto camera = std::make_unique<Camera>(45.f, fbW, fbH, 0.1f, 10000.f);
-  camera->setLookAt({ 0, 0, 300 }, { 0, 0, -800 }, { 0, 1, 0 });
+  camera->SetLookAt({ 0, 0, 300 }, { 0, 0, -800 }, { 0, 1, 0 });
   return camera;
 }
 
 void
-Camera::setLookAt(const glm::vec3& eye,
+Camera::SetLookAt(const glm::vec3& eye,
                   const glm::vec3& target,
                   const glm::vec3& up)
 {
@@ -36,16 +36,16 @@ Camera::setLookAt(const glm::vec3& eye,
 }
 
 void
-Camera::setLookAtTarget(const glm::vec3& target)
+Camera::SetLookAtTarget(const glm::vec3& target)
 {
   if (target == m_Target)
     return;
   m_Target = target;
-  updateViewFromOrbit();
+  UpdateViewFromOrbit();
 }
 
 void
-Camera::setOrbit(float distance, float yawDeg, float pitchDeg)
+Camera::SetOrbit(float distance, float yawDeg, float pitchDeg)
 {
   if (distance == m_Dist && yawDeg == m_YawDeg && pitchDeg == m_PitchDeg)
     return;
@@ -53,63 +53,63 @@ Camera::setOrbit(float distance, float yawDeg, float pitchDeg)
   m_Dist = distance;
   m_YawDeg = yawDeg;
   m_PitchDeg = pitchDeg;
-  updateViewFromOrbit();
+  UpdateViewFromOrbit();
 }
 
 void
-Camera::addOrbitDelta(float dYawDeg, float dPitchDeg)
+Camera::AddOrbitDelta(float dYawDeg, float dPitchDeg)
 {
   m_YawDeg += dYawDeg;
   m_PitchDeg += dPitchDeg;
-  updateViewFromOrbit();
+  UpdateViewFromOrbit();
 }
 
 void
-Camera::setOrthoHeight(float h)
+Camera::SetOrthoHeight(float h)
 {
   m_OrthoHeight = h;
   if (m_Mode == Lens::Ortho)
-    rebuildProj();
+    RebuildProj();
 }
 
 void
-Camera::setFov(float fovDeg)
+Camera::SetFov(float fovDeg)
 {
   m_Fov = fovDeg;
-  rebuildProj();
+  RebuildProj();
 }
 
 void
-Camera::onResize(float width, float height)
+Camera::OnResize(float width, float height)
 {
   m_Aspect = width / height;
-  rebuildProj();
+  RebuildProj();
 }
 
 void
-Camera::setPerspective(float fovDeg, float aspect, float nearZ, float farZ)
+Camera::SetPerspective(float fovDeg, float aspect, float nearZ, float farZ)
 {
   m_Mode = Lens::Perspective;
   m_Fov = fovDeg;
   m_Aspect = aspect;
   m_Near = nearZ;
   m_Far = farZ;
-  rebuildProj();
+  RebuildProj();
 }
 
 void
-Camera::setOrthographic(float height, float aspect, float nearZ, float farZ)
+Camera::SetOrthographic(float height, float aspect, float nearZ, float farZ)
 {
   m_Mode = Lens::Ortho;
   m_OrthoHeight = height;
   m_Aspect = aspect;
   m_Near = nearZ;
   m_Far = farZ;
-  rebuildProj();
+  RebuildProj();
 }
 
 void
-Camera::setMode(Lens mode)
+Camera::SetMode(Lens mode)
 {
   if (mode == m_Mode)
     return;
@@ -120,18 +120,45 @@ Camera::setMode(Lens mode)
       0.01f, m_OrthoHeight / (2.0f * std::tan(glm::radians(m_Fov * 0.5f))));
   }
   m_Mode = mode;
-  rebuildProj();
+  RebuildProj();
+}
+
+glm::dvec3
+Camera::CastRay(double ndcX, double ndcY)
+{
+
+  glm::dvec4 clipRay = glm::dvec4(ndcX, ndcY, -1.0, 1.0);
+
+  glm::dvec4 eyeRay = glm::inverse(m_Proj) * clipRay;
+  eyeRay = glm::dvec4(eyeRay.x, eyeRay.y, -1.0, 0.0);
+
+  glm::dvec3 worldRay =
+    glm::normalize(glm::dvec3(glm::inverse(m_View) * eyeRay));
+
+  return worldRay;
+}
+
+glm::ivec2
+Camera::WorldToScreen(const glm::dvec3& pos, float screenW, float screenH)
+{
+  glm::dvec4 clip = m_Proj * m_View * glm::dvec4(pos, 1.0);
+  glm::dvec3 ndc = glm::dvec3(clip) / clip.w;
+
+  int screenX = int((ndc.x * 0.5 + 0.5) * screenW);
+  int screenY = int((1.0 - (ndc.y * 0.5 + 0.5)) * screenH);
+
+  return glm::ivec2(screenX, screenY);
 }
 
 void
-Camera::setAspect(float width, float height)
+Camera::SetAspect(float width, float height)
 {
   m_Aspect = width / height;
-  rebuildProj();
+  RebuildProj();
 }
 
 void
-Camera::rebuildProj()
+Camera::RebuildProj()
 {
   if (m_Mode == Lens::Perspective) {
     m_Proj = glm::perspective(glm::radians(m_Fov), m_Aspect, m_Near, m_Far);
@@ -144,7 +171,7 @@ Camera::rebuildProj()
 }
 
 void
-Camera::updateViewFromOrbit()
+Camera::UpdateViewFromOrbit()
 {
   // Clamp pitch to avoid gimbal flip, clamp distance
   m_PitchDeg = std::clamp(m_PitchDeg, -89.0f, 89.0f);

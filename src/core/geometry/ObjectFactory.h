@@ -9,7 +9,6 @@
 
 struct GlobeConfig
 {
-  float radius = 100.f;
   int slices = 64;
   int stacks = 32;
   glm::vec3 center{ 0.f, 0.f, -800.f };

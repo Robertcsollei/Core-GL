@@ -39,6 +39,12 @@ struct Mesh
     glm::vec3 Position;
     glm::vec4 Color;
 
+    PointVertex()
+      : Position(0.f)
+      , Color(1.f)
+    {
+    }
+
     PointVertex(const glm::vec3& position, const glm::vec4& color)
       : Position(position)
       , Color(color)
@@ -55,7 +61,7 @@ struct Mesh
   VertexArray vao;
   VertexBuffer vbo;
   VertexBufferLayout layout;
-  VertexBuffer instanceVbo;
+  VertexBuffer instanceVbos[2];
   VertexBufferLayout instanceLayout;
   IndexBuffer ibo;
 
@@ -63,11 +69,15 @@ struct Mesh
   glm::vec3 aabbMax{ -FLT_MAX };
   glm::vec3 center{ 0.0f };
 
+  int currentInstanceVbo = 0;
+
   Mesh(const std::vector<Vertex>& vertices,
        const std::vector<uint32_t>& indices);
 
-  Mesh(const PointVertex& vtx, const std::vector<uint32_t>& indices);
+  Mesh(const PointVertex& pointVtx, const std::vector<uint32_t>& indices);
 
-  void AddInstanceBuffer(const void* data, size_t size, int attribIndex);
+  void AddInstanceBuffer(const PointVertex* pointVtx,
+                         size_t size,
+                         int attribIndex);
   // TODO: cache vertices and indices in CPU memory for raycasting
 };

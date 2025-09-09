@@ -12,6 +12,8 @@ struct AppContext
   float width;
   float height;
 
+  bool pointerLock = false;
+
   ShaderLibrary shaders;
   TextureLibrary textures;
   MeshLibrary meshes;
