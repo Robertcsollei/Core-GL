@@ -1,9 +1,10 @@
+<img src="https://github.com/Robertcsollei/TerraKit/blob/main/src/res/images/TerraKit.jpg" alt="TerraKit" style="width: 43px; height: 43px;">
 # TerraKit: Real-time Satellite Visualization Engine
 
 A high-performance 3D satellite tracking and visualization system built with modern C++/OpenGL, demonstrating advanced graphics programming and geospatial mathematics.
 
 ## 🚀 Demo Video
-[![Watch Demo Video](https://vumbnail.com/1117971664.jpg)](https://player.vimeo.com/video/1117971664?h=8118259a26)
+[![Watch Demo Video](https://github.com/Robertcsollei/TerraKit/blob/main/src/res/images/thumbnail.png)](https://player.vimeo.com/video/1117971664?h=8118259a26)
 
 ## Key Features
 - **Real-time satellite tracking** - 14,000+ space objects at 60 FPS
@@ -72,6 +73,9 @@ Built as a learning exercise to bridge 3D application development with low-level
 
 ---
 **License:** Apache-2.0 | **Status:** Active Development
+
+
+
 
 
 
