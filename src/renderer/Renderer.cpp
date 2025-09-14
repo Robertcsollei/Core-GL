@@ -1,8 +1,8 @@
-#include "Renderer.h"
-#include "core/entities/Renderable.h"
-#include "core/entities/camera/Camera.h"
 #include <core/entities/Mesh.h>
+#include <core/entities/Renderable.h>
+#include <core/entities/camera/Camera.h>
 #include <iostream>
+#include <renderer/Renderer.h>
 
 void
 GLClearError()
@@ -128,6 +128,21 @@ Renderer::SubmitPoint(Renderable* r)
 }
 
 void
+Renderer::SubmitLine(Renderable* r)
+{
+  if (!r->mesh || !r->material || !r->material->shader)
+    return;
+  auto* shader = r->material->shader.get();
+  shader->Bind();
+
+  shader->SetUniformMat4f("u_Model", r->transform.world());
+
+  r->material->applyState();
+  r->mesh->vao.Bind();
+  glDrawArrays(GL_LINE_STRIP, 0, r->mesh->vbo.Size());
+}
+
+void
 Renderer::SubmitPointsInstanced(Mesh* mesh,
                                 Shader* shader,
                                 const std::vector<Mesh::PointVertex>& vertecies)
@@ -135,14 +150,14 @@ Renderer::SubmitPointsInstanced(Mesh* mesh,
   shader->Bind();
   mesh->vao.Bind();
 
-  mesh->currentInstanceVbo = (mesh->currentInstanceVbo + 1) % 2;
-  auto& vbo = mesh->instanceVbos[mesh->currentInstanceVbo];
+  auto& vbo = mesh->instanceVbo;
   const GLsizeiptr bytes = vertecies.size() * sizeof(Mesh::PointVertex);
 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo.GetRendererID());
-  glBufferSubData(GL_ARRAY_BUFFER, 0, bytes, vertecies.data());
+  vbo.Bind();
 
-  glDrawArraysInstanced(GL_POINTS, 0, 1, vertecies.size());
+  GLCall(glBufferData(GL_ARRAY_BUFFER, bytes, nullptr, GL_STREAM_DRAW));
+  GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, bytes, vertecies.data()));
+  GLCall(glDrawArraysInstanced(GL_POINTS, 0, 1, (GLsizei)vertecies.size()));
 }
 
 void

@@ -1,6 +1,6 @@
 #pragma once
-#include "core/Geodetic2D.h"
-#include "core/Geodetic3D.h"
+#include <core/Geodetic2D.h>
+#include <core/Geodetic3D.h>
 #include <glm/glm.hpp>
 #include <vector>
 

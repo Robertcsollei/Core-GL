@@ -25,6 +25,28 @@ rotateZ(const glm::dvec3& v, double a)
   const double c = std::cos(a), s = std::sin(a);
   return { c * v.x - s * v.y, s * v.x + c * v.y, v.z };
 }
+
+static glm::dmat3
+rotZ(double a)
+{
+  double s = std::sin(a), c = std::cos(a);
+  return glm::dmat3(c, -s, 0, s, c, 0, 0, 0, 1);
+}
+static glm::dmat3
+rotX(double a)
+{
+  double s = std::sin(a), c = std::cos(a);
+  return glm::dmat3(1, 0, 0, 0, c, -s, 0, s, c);
+}
+
+// Optional: ECI -> engine basis if you want Y-up, Z-forward
+inline glm::dvec3
+EciToEngine(const glm::dvec3& eci)
+{
+  // Example: keep X, swap Y/Z, flip Z to match your camera
+  // Adjust this to your world; the key is to be consistent.
+  return { eci.x, eci.z, -eci.y };
+}
 }
 
 Satellite::Satellite(AppContext& ctx,
@@ -37,20 +59,94 @@ Satellite::Satellite(AppContext& ctx,
   , m_Epoch(epochTime)
   , m_Position(0.0, 0.0, -800.0)
   , m_Color(1.f)
+  , m_RenderPos(0.f)
+  , m_PrecomputedOrbit()
   , m_Renderable(ObjectFactory::CreateSatellite(glm::vec3(m_Position), ctx))
   , m_Globe(globe)
 {
+  PrecomputeOrbit();
+}
+
+uint32_t
+Satellite::color() const
+{
+  if (!state.hovered && !state.active)
+    return Satellite::DefaultColor;
+
+  if (state.hovered)
+    return Satellite::HoverColor;
+
+  if (state.active)
+    return Satellite::SelectColor;
 }
 
 void
-Satellite::Update(double timeSinceEpoch)
+Satellite::Update(double timeSinceEpoch, const SceneState& sceneState)
 {
-  m_Position = m_Orbit.positionECI((m_Epoch + timeSinceEpoch), m_Globe) +
-               glm::dvec3(m_Globe.RenderTask()->transform.translation);
+  if (!state.active) {
+    m_Position = GetPrecomputedPos(
+      m_Epoch + timeSinceEpoch * sceneState.satelliteSpeedMultiplier);
+  } else {
+    m_Position = m_Orbit.positionECI((m_Epoch + timeSinceEpoch) *
+                                       sceneState.satelliteSpeedMultiplier,
+                                     m_Globe);
+  }
   m_RenderPos = glm::vec3(m_Position);
 
   m_Renderable.transform.translation = m_Position;
   m_Renderable.transform.scale = glm::vec3({ 1.0f, 1.0f, 1.0f });
+}
+
+glm::dvec3
+Satellite::GetPrecomputedPos(double t)
+{
+  // Use (t - epoch) to match the slow path
+  double M = m_PrecomputedOrbit.M0 +
+             m_PrecomputedOrbit.n * (t - m_PrecomputedOrbit.epoch);
+  M = wrapTwoPi(M);
+
+  // Kepler solver
+  double E = M;
+  for (int i = 0; i < 2; ++i) {
+    double f = E - m_PrecomputedOrbit.e * std::sin(E) - M;
+    double fp = 1.0 - m_PrecomputedOrbit.e * std::cos(E);
+    E -= f / fp;
+  }
+
+  double cE = std::cos(E), sE = std::sin(E);
+  double nu = std::atan2(
+    std::sqrt(1.0 - m_PrecomputedOrbit.e * m_PrecomputedOrbit.e) * sE,
+    cE - m_PrecomputedOrbit.e);
+  double r = m_PrecomputedOrbit.a * (1.0 - m_PrecomputedOrbit.e * cE);
+
+  glm::dvec3 r_pf(r * std::cos(nu), r * std::sin(nu), 0.0);
+
+  glm::dvec3 r_eci = m_PrecomputedOrbit.R_pf2eci * r_pf;
+  glm::dvec3 rEngine_m = EciToEngine(r_eci);
+  double R_world = m_Globe.Geometry().Radii().x;
+  double metersToWorld = R_world / WGS84_A;
+  return rEngine_m * metersToWorld +
+         glm::dvec3(m_Globe.RenderTask()->transform.translation);
+}
+
+void
+Satellite::PrecomputeOrbit()
+{
+  m_PrecomputedOrbit.a = m_Orbit.semiMajorAxis;
+  m_PrecomputedOrbit.e = m_Orbit.eccentricity;
+  m_PrecomputedOrbit.M0 = m_Orbit.meanAnomalyAtEpoch;
+  m_PrecomputedOrbit.n =
+    std::sqrt(GM_EARTH / std::pow(m_PrecomputedOrbit.a, 3));
+  m_PrecomputedOrbit.epoch = m_Orbit.epoch;
+
+  double cO = std::cos(m_Orbit.raan), sO = std::sin(m_Orbit.raan);
+  double ci = std::cos(m_Orbit.inclination), si = std::sin(m_Orbit.inclination);
+  double cw = std::cos(m_Orbit.argPerigee), sw = std::sin(m_Orbit.argPerigee);
+
+  m_PrecomputedOrbit.R_pf2eci = glm::dmat3(
+    glm::dvec3(cO * cw - sO * sw * ci, sO * cw + cO * sw * ci, sw * si),
+    glm::dvec3(-cO * sw - sO * cw * ci, -sO * sw + cO * cw * ci, cw * si),
+    glm::dvec3(sO * si, -cO * si, ci));
 }
 
 glm::dvec3
@@ -100,9 +196,12 @@ Satellite::Orbit::positionECI(double t, Globe& globe) const
 
   // ECI in meters
   const glm::dvec3 rECI_m = R * rPQW;
+  glm::dvec3 rEngine_m = EciToEngine(rECI_m);
 
   // 6) Scale meters -> your world units using your globe's equatorial radius
   const double R_world = globe.Geometry().Radii().x; // in your engine units
   const double metersToWorld = R_world / WGS84_A;
-  return rECI_m * metersToWorld; // ECI in world units
+  return rEngine_m * metersToWorld +
+         glm::dvec3(
+           globe.RenderTask()->transform.translation); // ECI in world units
 }

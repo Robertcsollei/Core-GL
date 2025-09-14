@@ -1,5 +1,5 @@
-#include "VertexBufferLayout.h"
-#include "Renderer.h"
+#include <renderer/Renderer.h>
+#include <renderer/VertexBufferLayout.h>
 
 unsigned int
 VertexBufferLayoutElement::GetSizeOfType(unsigned int type)

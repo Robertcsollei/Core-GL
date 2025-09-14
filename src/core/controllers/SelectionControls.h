@@ -1,8 +1,10 @@
 #pragma once
-#include "core/AppContext.h"
 #include <SDL.h>
+#include <core/AppContext.h>
 #include <core/SceneState.h>
 #include <optional>
+
+class Satellite;
 
 namespace layers {
 class SatelliteLayer;
@@ -14,8 +16,20 @@ class SelectionControls
 public:
   struct Selection
   {
-    const std::string uuid;
+    Satellite* satellite;
     glm::ivec2 screenPos;
+
+    Selection()
+      : satellite(nullptr)
+      , screenPos(-1, -1)
+    {
+    }
+
+    Selection(Satellite* sat, glm::ivec2 sPos)
+      : satellite(sat)
+      , screenPos(sPos)
+    {
+    }
   };
 
 public:
@@ -31,10 +45,12 @@ public:
   void UpdatePointerRay();
   void OnResize();
 
+  void ClearSelection();
+
 public:
-  const Selection* selection() const
+  const Selection* hovered() const
   {
-    return m_Selection.has_value() ? &m_Selection.value() : nullptr;
+    return m_Hovered.has_value() ? &m_Hovered.value() : nullptr;
   }
 
 private:
@@ -43,7 +59,8 @@ private:
 
   layers::SatelliteLayer* m_SatLayer;
   Globe& m_Globe;
-  std::optional<Selection> m_Selection;
+  std::optional<Selection> m_Hovered;
+  std::optional<Selection> m_Selected;
 
   AppContext& m_Ctx;
   SceneState& m_State;

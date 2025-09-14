@@ -1,4 +1,4 @@
-#include "MeshLibrary.h"
+#include <core/libraries/MeshLibrary.h>
 
 Mesh*
 MeshLibrary::Add(std::string key, std::unique_ptr<Mesh> mesh)

@@ -1,9 +1,10 @@
 #pragma once
-#include "Shader.h"
-#include "Texture.h"
 #include <glad/glad.h>
 #include <memory>
+#include <renderer/Shader.h>
+#include <renderer/Texture.h>
 #include <string>
+#include <variant>
 #include <vector>
 
 class Material
@@ -27,6 +28,20 @@ public:
     std::string uniform = "u_Texture";
   };
 
+  struct UniformBinding
+  {
+    enum class Type
+    {
+      Float,
+      Vec3,
+      Vec4,
+      Int
+    };
+    Type type;
+    void* ptr;        // raw pointer to external data
+    std::string name; // uniform name in shader
+  };
+
   std::shared_ptr<Shader> shader;
   std::vector<SamplerBinding> samplers;
   Material::State state{};
@@ -43,6 +58,7 @@ public:
 
   std::string name;
   const std::string uuid;
+  std::vector<UniformBinding> uniforms;
 
 public:
   void addTexture(int unit,

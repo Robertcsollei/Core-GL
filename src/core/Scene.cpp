@@ -1,4 +1,3 @@
-#include "Renderer.h"
 #include <core/Scene.h>
 #include <core/controllers/SelectionControls.h>
 #include <core/entities/objects/Satellite.h>
@@ -6,7 +5,7 @@
 #include <core/layers/SatelliteLayer.h>
 #include <imgui/imgui.h>
 #include <memory>
-#include <random>
+#include <renderer/Renderer.h>
 
 Scene::Scene(AppContext& ctx)
   : m_State()
@@ -34,12 +33,12 @@ Scene::Update(double dt)
   static bool once = false;
   m_SimTime += dt;
   for (auto& layer : m_Layers) {
-    layer->Update(m_SimTime);
+    layer->Update(m_SimTime, m_State);
   }
 
   m_HoverTimer += dt;
   if (m_HoverTimer >= 0.15) {
-    // m_SelectionCtl->HandleHoverState();
+    m_SelectionCtl->HandleHoverState();
     m_HoverTimer = 0.0;
   }
 }
@@ -61,21 +60,22 @@ Scene::RenderUI(AppContext& ctx)
   ImGuiIO& io = ImGui::GetIO();
   ImGui::Text("FPS: %.1f", io.Framerate);
   ImGui::Text("Frame Time: %.3f ms", 1000.0f / io.Framerate);
+
   ImGui::End();
 
-  if (auto sel = m_SelectionCtl->selection()) {
+  if (auto hovered = m_SelectionCtl->hovered()) {
     ImGui::SetNextWindowPos(
-      ImVec2((float)sel->screenPos.x, (float)sel->screenPos.y),
+      ImVec2((float)hovered->screenPos.x, (float)hovered->screenPos.y),
       ImGuiCond_Always,
       ImVec2(0.0f, 1.2f));
     ImGui::Begin(
-      ("SatelliteTooltip##" + sel->uuid).c_str(),
+      ("SatelliteTooltip##" + hovered->satellite->uuid()).c_str(),
       nullptr,
       ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize |
         ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings |
         ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav);
 
-    ImGui::TextUnformatted(sel->uuid.c_str());
+    ImGui::TextUnformatted(hovered->satellite->uuid().c_str());
     ImGui::End();
   }
 }
@@ -83,8 +83,8 @@ Scene::RenderUI(AppContext& ctx)
 void
 Scene::HandleEvent(const SDL_Event& e)
 {
-  m_CamCtl.HandleEvent(e, m_Ctx);
   m_SelectionCtl->HandleEvent(e);
+  m_CamCtl.HandleEvent(e, m_Ctx);
 }
 
 void
@@ -103,37 +103,6 @@ Scene::InitLayers()
 
   auto satelliteLayer = std::make_unique<layers::SatelliteLayer>(m_Ctx);
   m_SatLayer = satelliteLayer.get();
-
-  // Random number generators
-  std::mt19937 rng{ std::random_device{}() };
-  std::uniform_real_distribution<double> distInc(
-    0.0, glm::pi<double>()); // inclination [0, 180°]
-  std::uniform_real_distribution<double> distRaan(
-    0.0, glm::two_pi<double>()); // RAAN [0, 360°]
-  std::uniform_real_distribution<double> distArg(
-    0.0, glm::two_pi<double>()); // arg of perigee
-  std::uniform_real_distribution<double> distM0(
-    0.0, glm::two_pi<double>()); // mean anomaly at epoch
-  std::uniform_real_distribution<double> distAlt(
-    400000.0, 1200000.0); // altitude [400–1200 km]
-
-  for (int i = 0; i < 14000; i++) {
-    Satellite::Orbit orbit{};
-    orbit.semiMajorAxis = 6378137.0 + distAlt(rng); // Earth radius + altitude
-    orbit.eccentricity = 0.0;
-    orbit.inclination = distInc(rng);
-    orbit.raan = distRaan(rng);
-    orbit.argPerigee = distArg(rng);
-    orbit.meanAnomalyAtEpoch = distM0(rng);
-    orbit.epoch = 0.0;
-
-    auto sat = std::make_unique<Satellite>(m_Ctx,
-                                           "satellite_" + std::to_string(i),
-                                           orbit,
-                                           0.0,
-                                           m_GlobeLayer->globe());
-    satelliteLayer->Add(std::move(sat));
-  }
 
   AddLayer(std::move(satelliteLayer));
 }

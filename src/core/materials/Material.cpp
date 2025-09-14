@@ -1,4 +1,4 @@
-#include "Material.h"
+#include <core/materials/Material.h>
 
 void
 Material::addTexture(int unit, std::shared_ptr<Texture> t, std::string uniform)
@@ -24,6 +24,23 @@ Material::applyState() const
     glCullFace(state.cullFace);
   } else {
     glDisable(GL_CULL_FACE);
+  }
+
+  for (auto& u : uniforms) {
+    switch (u.type) {
+      case UniformBinding::Type::Float:
+        shader->SetUniform1f(u.name, *static_cast<float*>(u.ptr));
+        break;
+      case UniformBinding::Type::Vec3:
+        shader->SetUniform3f(u.name, *static_cast<glm::vec3*>(u.ptr));
+        break;
+      case UniformBinding::Type::Vec4:
+        shader->SetUniform4f(u.name, *static_cast<glm::vec4*>(u.ptr));
+        break;
+      case UniformBinding::Type::Int:
+        shader->SetUniform1i(u.name, *static_cast<int*>(u.ptr));
+        break;
+    }
   }
 }
 

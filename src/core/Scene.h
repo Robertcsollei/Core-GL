@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Renderer.h"
 #include <core/SceneState.h>
 #include <core/controllers/CameraControls.h>
 #include <core/layers/Layer.h>
 #include <memory>
+#include <renderer/Renderer.h>
 #include <vector>
 
 namespace layers {
@@ -29,7 +29,9 @@ public:
   void HandleEvent(const SDL_Event& e);
   void OnResize();
 
-  const SceneState& state() const { return m_State; }
+  SceneState& state() { return m_State; }
+  layers::SatelliteLayer* SatLayer() { return m_SatLayer; }
+  layers::GlobeLayer* GlobeLayer() { return m_GlobeLayer; }
 
 private:
   std::vector<LayerPtr> m_Layers;

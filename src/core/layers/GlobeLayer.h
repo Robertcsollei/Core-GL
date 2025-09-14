@@ -1,7 +1,7 @@
 #pragma once
-#include "core/entities/Renderable.h"
-#include "core/layers/Layer.h"
+#include <core/entities/Renderable.h>
 #include <core/entities/objects/Globe.h>
+#include <core/layers/Layer.h>
 #include <memory>
 
 namespace layers {
@@ -19,6 +19,7 @@ public:
   void Render(Renderer& renderer, const SceneState&) override
   {
     renderer.Submit(m_Globe.RenderTask());
+    renderer.Submit(m_Globe.AtmosphereTask());
   }
 
 public:

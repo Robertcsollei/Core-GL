@@ -1,7 +1,7 @@
 #pragma once
-#include "core/AppContext.h"
-#include "core/entities/camera/Camera.h"
 #include <SDL.h>
+#include <core/AppContext.h>
+#include <core/entities/camera/Camera.h>
 
 class CameraControls
 {

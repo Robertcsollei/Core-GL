@@ -12,4 +12,10 @@ CreatePong(const std::string& texturePath,
 
 std::unique_ptr<Material>
 CreatePoint(ShaderLibrary& shaders, TextureLibrary& textures);
+
+std::unique_ptr<Material>
+CreateColor(ShaderLibrary& shaders, TextureLibrary& textures);
+
+std::unique_ptr<Material>
+CreateAtmosphere(ShaderLibrary& shaders, TextureLibrary& textures);
 }

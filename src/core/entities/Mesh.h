@@ -1,9 +1,9 @@
 #pragma once
-#include "../IndexBuffer.h"
-#include "../VertexArray.h"
-#include "../VertexBuffer.h"
-#include "../VertexBufferLayout.h"
 #include <glm/glm.hpp>
+#include <renderer/IndexBuffer.h>
+#include <renderer/VertexArray.h>
+#include <renderer/VertexBuffer.h>
+#include <renderer/VertexBufferLayout.h>
 #include <vector>
 
 struct Mesh
@@ -37,7 +37,7 @@ struct Mesh
   struct PointVertex
   {
     glm::vec3 Position;
-    glm::vec4 Color;
+    uint32_t Color;
 
     PointVertex()
       : Position(0.f)
@@ -45,7 +45,7 @@ struct Mesh
     {
     }
 
-    PointVertex(const glm::vec3& position, const glm::vec4& color)
+    PointVertex(const glm::vec3& position, uint32_t color)
       : Position(position)
       , Color(color)
     {
@@ -53,15 +53,15 @@ struct Mesh
 
     static void AppendLayout(VertexBufferLayout* layout)
     {
-      layout->Push<float>(3); // Position
-      layout->Push<float>(4); // Color
+      layout->Push<float>(3);         // Position
+      layout->Push<unsigned char>(4); // Color
     }
   };
 
   VertexArray vao;
   VertexBuffer vbo;
   VertexBufferLayout layout;
-  VertexBuffer instanceVbos[2];
+  VertexBuffer instanceVbo;
   VertexBufferLayout instanceLayout;
   IndexBuffer ibo;
 
@@ -69,9 +69,10 @@ struct Mesh
   glm::vec3 aabbMax{ -FLT_MAX };
   glm::vec3 center{ 0.0f };
 
-  int currentInstanceVbo = 0;
-
   Mesh(const std::vector<Vertex>& vertices,
+       const std::vector<uint32_t>& indices);
+
+  Mesh(const std::vector<PointVertex>& vertices,
        const std::vector<uint32_t>& indices);
 
   Mesh(const PointVertex& pointVtx, const std::vector<uint32_t>& indices);

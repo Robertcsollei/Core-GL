@@ -1,6 +1,6 @@
-#include "Geodetic2D.h"
-#include "Geodetic3D.h"
 #include <cmath>
+#include <core/Geodetic2D.h>
+#include <core/Geodetic3D.h>
 #include <functional>
 
 Geodetic2D::Geodetic2D(double longitude, double latitude)

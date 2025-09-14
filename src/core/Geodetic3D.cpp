@@ -1,5 +1,5 @@
-#include "Geodetic3D.h"
-#include "Geodetic2D.h"
+#include <core/Geodetic2D.h>
+#include <core/Geodetic3D.h>
 #include <cstdint>
 #include <functional> // std::hash
 

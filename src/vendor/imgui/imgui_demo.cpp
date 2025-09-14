@@ -2290,13 +2290,13 @@ static void DemoWindowWidgetsSelectables()
         IMGUI_DEMO_MARKER("Widgets/Selectables/Basic");
         if (ImGui::TreeNode("Basic"))
         {
-            static bool selection[5] = { false, true, false, false };
-            ImGui::Selectable("1. I am selectable", &selection[0]);
-            ImGui::Selectable("2. I am selectable", &selection[1]);
-            ImGui::Selectable("3. I am selectable", &selection[2]);
-            if (ImGui::Selectable("4. I am double clickable", selection[3], ImGuiSelectableFlags_AllowDoubleClick))
+            static bool hovered[5] = { false, true, false, false };
+            ImGui::Selectable("1. I am selectable", &hovered[0]);
+            ImGui::Selectable("2. I am selectable", &hovered[1]);
+            ImGui::Selectable("3. I am selectable", &hovered[2]);
+            if (ImGui::Selectable("4. I am double clickable", hovered[3], ImGuiSelectableFlags_AllowDoubleClick))
                 if (ImGui::IsMouseDoubleClicked(0))
-                    selection[3] = !selection[3];
+                    hovered[3] = !hovered[3];
             ImGui::TreePop();
         }
 
@@ -2553,7 +2553,7 @@ struct ExampleDualListBox
                 // FIXME-MULTISELECT: Dual List Box: Add context menus
                 // FIXME-NAV: Using ImGuiWindowFlags_NavFlattened exhibit many issues.
                 ImVector<ImGuiID>& items = Items[side];
-                ImGuiSelectionBasicStorage& selection = Selections[side];
+                ImGuiSelectionBasicStorage& hovered = Selections[side];
 
                 ImGui::TableSetColumnIndex((side == 0) ? 0 : 2);
                 ImGui::Text("%s (%d)", (side == 0) ? "Available" : "Basket", items.Size);
@@ -2578,13 +2578,13 @@ struct ExampleDualListBox
                 if (child_visible)
                 {
                     ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_None;
-                    ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, selection.Size, items.Size);
+                    ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, hovered.Size, items.Size);
                     ApplySelectionRequests(ms_io, side);
 
                     for (int item_n = 0; item_n < items.Size; item_n++)
                     {
                         ImGuiID item_id = items[item_n];
-                        bool item_is_selected = selection.Contains(item_id);
+                        bool item_is_selected = hovered.Contains(item_id);
                         ImGui::SetNextItemSelectionUserData(item_n);
                         ImGui::Selectable(ExampleNames[item_id], item_is_selected, ImGuiSelectableFlags_AllowDoubleClick);
                         if (ImGui::IsItemFocused())
@@ -2668,16 +2668,16 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
         if (ImGui::TreeNode("Multi-Select (manual/simplified, without BeginMultiSelect)"))
         {
             HelpMarker("Hold CTRL and click to select multiple items.");
-            static bool selection[5] = { false, false, false, false, false };
+            static bool hovered[5] = { false, false, false, false, false };
             for (int n = 0; n < 5; n++)
             {
                 char buf[32];
                 sprintf(buf, "Object %d", n);
-                if (ImGui::Selectable(buf, selection[n]))
+                if (ImGui::Selectable(buf, hovered[n]))
                 {
                     if (!ImGui::GetIO().KeyCtrl) // Clear selection when CTRL is not held
-                        memset(selection, 0, sizeof(selection));
-                    selection[n] ^= 1; // Toggle current item
+                        memset(hovered, 0, sizeof(hovered));
+                    hovered[n] ^= 1; // Toggle current item
                 }
             }
             ImGui::TreePop();
@@ -2700,27 +2700,27 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
 
             // Use default selection.Adapter: Pass index to SetNextItemSelectionUserData(), store index in Selection
             const int ITEMS_COUNT = 50;
-            static ImGuiSelectionBasicStorage selection;
-            ImGui::Text("Selection: %d/%d", selection.Size, ITEMS_COUNT);
+            static ImGuiSelectionBasicStorage hovered;
+            ImGui::Text("Selection: %d/%d", hovered.Size, ITEMS_COUNT);
 
             // The BeginChild() has no purpose for selection logic, other that offering a scrolling region.
             if (ImGui::BeginChild("##Basket", ImVec2(-FLT_MIN, ImGui::GetFontSize() * 20), ImGuiChildFlags_FrameStyle | ImGuiChildFlags_ResizeY))
             {
                 ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_ClearOnEscape | ImGuiMultiSelectFlags_BoxSelect1d;
-                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, selection.Size, ITEMS_COUNT);
-                selection.ApplyRequests(ms_io);
+                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, hovered.Size, ITEMS_COUNT);
+                hovered.ApplyRequests(ms_io);
 
                 for (int n = 0; n < ITEMS_COUNT; n++)
                 {
                     char label[64];
                     sprintf(label, "Object %05d: %s", n, ExampleNames[n % IM_ARRAYSIZE(ExampleNames)]);
-                    bool item_is_selected = selection.Contains((ImGuiID)n);
+                    bool item_is_selected = hovered.Contains((ImGuiID)n);
                     ImGui::SetNextItemSelectionUserData(n);
                     ImGui::Selectable(label, item_is_selected);
                 }
 
                 ms_io = ImGui::EndMultiSelect();
-                selection.ApplyRequests(ms_io);
+                hovered.ApplyRequests(ms_io);
             }
             ImGui::EndChild();
             ImGui::TreePop();
@@ -2731,18 +2731,18 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
         if (ImGui::TreeNode("Multi-Select (with clipper)"))
         {
             // Use default selection.Adapter: Pass index to SetNextItemSelectionUserData(), store index in Selection
-            static ImGuiSelectionBasicStorage selection;
+            static ImGuiSelectionBasicStorage hovered;
 
             ImGui::Text("Added features:");
             ImGui::BulletText("Using ImGuiListClipper.");
 
             const int ITEMS_COUNT = 10000;
-            ImGui::Text("Selection: %d/%d", selection.Size, ITEMS_COUNT);
+            ImGui::Text("Selection: %d/%d", hovered.Size, ITEMS_COUNT);
             if (ImGui::BeginChild("##Basket", ImVec2(-FLT_MIN, ImGui::GetFontSize() * 20), ImGuiChildFlags_FrameStyle | ImGuiChildFlags_ResizeY))
             {
                 ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_ClearOnEscape | ImGuiMultiSelectFlags_BoxSelect1d;
-                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, selection.Size, ITEMS_COUNT);
-                selection.ApplyRequests(ms_io);
+                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, hovered.Size, ITEMS_COUNT);
+                hovered.ApplyRequests(ms_io);
 
                 ImGuiListClipper clipper;
                 clipper.Begin(ITEMS_COUNT);
@@ -2754,14 +2754,14 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                     {
                         char label[64];
                         sprintf(label, "Object %05d: %s", n, ExampleNames[n % IM_ARRAYSIZE(ExampleNames)]);
-                        bool item_is_selected = selection.Contains((ImGuiID)n);
+                        bool item_is_selected = hovered.Contains((ImGuiID)n);
                         ImGui::SetNextItemSelectionUserData(n);
                         ImGui::Selectable(label, item_is_selected);
                     }
                 }
 
                 ms_io = ImGui::EndMultiSelect();
-                selection.ApplyRequests(ms_io);
+                hovered.ApplyRequests(ms_io);
             }
             ImGui::EndChild();
             ImGui::TreePop();
@@ -2781,13 +2781,13 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
             // (you may decide to store selection data inside your item (aka intrusive storage) if you don't need multiple views over same items)
             // Use a custom selection.Adapter: store item identifier in Selection (instead of index)
             static ImVector<ImGuiID> items;
-            static ExampleSelectionWithDeletion selection;
-            selection.UserData = (void*)&items;
-            selection.AdapterIndexToStorageId = [](ImGuiSelectionBasicStorage* self, int idx) { ImVector<ImGuiID>* p_items = (ImVector<ImGuiID>*)self->UserData; return (*p_items)[idx]; }; // Index -> ID
+            static ExampleSelectionWithDeletion hovered;
+            hovered.UserData = (void*)&items;
+            hovered.AdapterIndexToStorageId = [](ImGuiSelectionBasicStorage* self, int idx) { ImVector<ImGuiID>* p_items = (ImVector<ImGuiID>*)self->UserData; return (*p_items)[idx]; }; // Index -> ID
 
             ImGui::Text("Added features:");
             ImGui::BulletText("Dynamic list with Delete key support.");
-            ImGui::Text("Selection size: %d/%d", selection.Size, items.Size);
+            ImGui::Text("Selection size: %d/%d", hovered.Size, items.Size);
 
             // Initialize default list with 50 items + button to add/remove items.
             static ImGuiID items_next_id = 0;
@@ -2796,7 +2796,7 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                     items.push_back(items_next_id++);
             if (ImGui::SmallButton("Add 20 items"))     { for (int n = 0; n < 20; n++) { items.push_back(items_next_id++); } }
             ImGui::SameLine();
-            if (ImGui::SmallButton("Remove 20 items"))  { for (int n = IM_MIN(20, items.Size); n > 0; n--) { selection.SetItemSelected(items.back(), false); items.pop_back(); } }
+            if (ImGui::SmallButton("Remove 20 items"))  { for (int n = IM_MIN(20, items.Size); n > 0; n--) { hovered.SetItemSelected(items.back(), false); items.pop_back(); } }
 
             // (1) Extra to support deletion: Submit scrolling range to avoid glitches on deletion
             const float items_height = ImGui::GetTextLineHeightWithSpacing();
@@ -2805,11 +2805,11 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
             if (ImGui::BeginChild("##Basket", ImVec2(-FLT_MIN, ImGui::GetFontSize() * 20), ImGuiChildFlags_FrameStyle | ImGuiChildFlags_ResizeY))
             {
                 ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_ClearOnEscape | ImGuiMultiSelectFlags_BoxSelect1d;
-                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, selection.Size, items.Size);
-                selection.ApplyRequests(ms_io);
+                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, hovered.Size, items.Size);
+                hovered.ApplyRequests(ms_io);
 
-                const bool want_delete = ImGui::Shortcut(ImGuiKey_Delete, ImGuiInputFlags_Repeat) && (selection.Size > 0);
-                const int item_curr_idx_to_focus = want_delete ? selection.ApplyDeletionPreLoop(ms_io, items.Size) : -1;
+                const bool want_delete = ImGui::Shortcut(ImGuiKey_Delete, ImGuiInputFlags_Repeat) && (hovered.Size > 0);
+                const int item_curr_idx_to_focus = want_delete ? hovered.ApplyDeletionPreLoop(ms_io, items.Size) : -1;
 
                 for (int n = 0; n < items.Size; n++)
                 {
@@ -2817,7 +2817,7 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                     char label[64];
                     sprintf(label, "Object %05u: %s", item_id, ExampleNames[item_id % IM_ARRAYSIZE(ExampleNames)]);
 
-                    bool item_is_selected = selection.Contains(item_id);
+                    bool item_is_selected = hovered.Contains(item_id);
                     ImGui::SetNextItemSelectionUserData(n);
                     ImGui::Selectable(label, item_is_selected);
                     if (item_curr_idx_to_focus == n)
@@ -2826,9 +2826,9 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
 
                 // Apply multi-select requests
                 ms_io = ImGui::EndMultiSelect();
-                selection.ApplyRequests(ms_io);
+                hovered.ApplyRequests(ms_io);
                 if (want_delete)
-                    selection.ApplyDeletionPostLoop(ms_io, items, item_curr_idx_to_focus);
+                    hovered.ApplyDeletionPostLoop(ms_io, items, item_curr_idx_to_focus);
             }
             ImGui::EndChild();
             ImGui::TreePop();
@@ -2854,10 +2854,10 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
         IMGUI_DEMO_MARKER("Widgets/Selection State/Multi-Select (in a table)");
         if (ImGui::TreeNode("Multi-Select (in a table)"))
         {
-            static ImGuiSelectionBasicStorage selection;
+            static ImGuiSelectionBasicStorage hovered;
 
             const int ITEMS_COUNT = 10000;
-            ImGui::Text("Selection: %d/%d", selection.Size, ITEMS_COUNT);
+            ImGui::Text("Selection: %d/%d", hovered.Size, ITEMS_COUNT);
             if (ImGui::BeginTable("##Basket", 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersOuter))
             {
                 ImGui::TableSetupColumn("Object");
@@ -2866,8 +2866,8 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                 ImGui::TableHeadersRow();
 
                 ImGuiMultiSelectFlags flags = ImGuiMultiSelectFlags_ClearOnEscape | ImGuiMultiSelectFlags_BoxSelect1d;
-                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, selection.Size, ITEMS_COUNT);
-                selection.ApplyRequests(ms_io);
+                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, hovered.Size, ITEMS_COUNT);
+                hovered.ApplyRequests(ms_io);
 
                 ImGuiListClipper clipper;
                 clipper.Begin(ITEMS_COUNT);
@@ -2881,7 +2881,7 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                         ImGui::TableNextColumn();
                         char label[64];
                         sprintf(label, "Object %05d: %s", n, ExampleNames[n % IM_ARRAYSIZE(ExampleNames)]);
-                        bool item_is_selected = selection.Contains((ImGuiID)n);
+                        bool item_is_selected = hovered.Contains((ImGuiID)n);
                         ImGui::SetNextItemSelectionUserData(n);
                         ImGui::Selectable(label, item_is_selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap);
                         ImGui::TableNextColumn();
@@ -2890,7 +2890,7 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                 }
 
                 ms_io = ImGui::EndMultiSelect();
-                selection.ApplyRequests(ms_io);
+                hovered.ApplyRequests(ms_io);
                 ImGui::EndTable();
             }
             ImGui::TreePop();
@@ -2954,25 +2954,25 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
             for (int selection_scope_n = 0; selection_scope_n < SCOPES_COUNT; selection_scope_n++)
             {
                 ImGui::PushID(selection_scope_n);
-                ImGuiSelectionBasicStorage* selection = &selections_data[selection_scope_n];
-                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, selection->Size, ITEMS_COUNT);
-                selection->ApplyRequests(ms_io);
+                ImGuiSelectionBasicStorage* hovered = &selections_data[selection_scope_n];
+                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, hovered->Size, ITEMS_COUNT);
+                hovered->ApplyRequests(ms_io);
 
                 ImGui::SeparatorText("Selection scope");
-                ImGui::Text("Selection size: %d/%d", selection->Size, ITEMS_COUNT);
+                ImGui::Text("Selection size: %d/%d", hovered->Size, ITEMS_COUNT);
 
                 for (int n = 0; n < ITEMS_COUNT; n++)
                 {
                     char label[64];
                     sprintf(label, "Object %05d: %s", n, ExampleNames[n % IM_ARRAYSIZE(ExampleNames)]);
-                    bool item_is_selected = selection->Contains((ImGuiID)n);
+                    bool item_is_selected = hovered->Contains((ImGuiID)n);
                     ImGui::SetNextItemSelectionUserData(n);
                     ImGui::Selectable(label, item_is_selected);
                 }
 
                 // Apply multi-select requests
                 ms_io = ImGui::EndMultiSelect();
-                selection->ApplyRequests(ms_io);
+                hovered->ApplyRequests(ms_io);
                 ImGui::PopID();
             }
             ImGui::TreePop();
@@ -3006,13 +3006,13 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
 
             struct ExampleTreeFuncs
             {
-                static void DrawNode(ExampleTreeNode* node, ImGuiSelectionBasicStorage* selection)
+                static void DrawNode(ExampleTreeNode* node, ImGuiSelectionBasicStorage* hovered)
                 {
                     ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
                     tree_node_flags |= ImGuiTreeNodeFlags_NavLeftJumpsToParent; // Enable pressing left to jump to parent
                     if (node->Childs.Size == 0)
                         tree_node_flags |= ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_Leaf;
-                    if (selection->Contains((ImGuiID)node->UID))
+                    if (hovered->Contains((ImGuiID)node->UID))
                         tree_node_flags |= ImGuiTreeNodeFlags_Selected;
 
                     // Using SetNextItemStorageID() to specify storage id, so we can easily peek into
@@ -3022,12 +3022,12 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                     if (ImGui::TreeNodeEx(node->Name, tree_node_flags))
                     {
                         for (ExampleTreeNode* child : node->Childs)
-                            DrawNode(child, selection);
+                            DrawNode(child, hovered);
                         ImGui::TreePop();
                     }
                     else if (ImGui::IsItemToggledOpen())
                     {
-                        TreeCloseAndUnselectChildNodes(node, selection);
+                        TreeCloseAndUnselectChildNodes(node, hovered);
                     }
                 }
 
@@ -3044,51 +3044,51 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                 // When closing a node: 1) close and unselect all child nodes, 2) select parent if any child was selected.
                 // FIXME: This is currently handled by user logic but I'm hoping to eventually provide tree node
                 // features to do this automatically, e.g. a ImGuiTreeNodeFlags_AutoCloseChildNodes etc.
-                static int TreeCloseAndUnselectChildNodes(ExampleTreeNode* node, ImGuiSelectionBasicStorage* selection, int depth = 0)
+                static int TreeCloseAndUnselectChildNodes(ExampleTreeNode* node, ImGuiSelectionBasicStorage* hovered, int depth = 0)
                 {
                     // Recursive close (the test for depth == 0 is because we call this on a node that was just closed!)
-                    int unselected_count = selection->Contains((ImGuiID)node->UID) ? 1 : 0;
+                    int unselected_count = hovered->Contains((ImGuiID)node->UID) ? 1 : 0;
                     if (depth == 0 || TreeNodeGetOpen(node))
                     {
                         for (ExampleTreeNode* child : node->Childs)
-                            unselected_count += TreeCloseAndUnselectChildNodes(child, selection, depth + 1);
+                            unselected_count += TreeCloseAndUnselectChildNodes(child, hovered, depth + 1);
                         TreeNodeSetOpen(node, false);
                     }
 
                     // Select root node if any of its child was selected, otherwise unselect
-                    selection->SetItemSelected((ImGuiID)node->UID, (depth == 0 && unselected_count > 0));
+                    hovered->SetItemSelected((ImGuiID)node->UID, (depth == 0 && unselected_count > 0));
                     return unselected_count;
                 }
 
                 // Apply multi-selection requests
-                static void ApplySelectionRequests(ImGuiMultiSelectIO* ms_io, ExampleTreeNode* tree, ImGuiSelectionBasicStorage* selection)
+                static void ApplySelectionRequests(ImGuiMultiSelectIO* ms_io, ExampleTreeNode* tree, ImGuiSelectionBasicStorage* hovered)
                 {
                     for (ImGuiSelectionRequest& req : ms_io->Requests)
                     {
                         if (req.Type == ImGuiSelectionRequestType_SetAll)
                         {
                             if (req.Selected)
-                                TreeSetAllInOpenNodes(tree, selection, req.Selected);
+                                TreeSetAllInOpenNodes(tree, hovered, req.Selected);
                             else
-                                selection->Clear();
+                                hovered->Clear();
                         }
                         else if (req.Type == ImGuiSelectionRequestType_SetRange)
                         {
                             ExampleTreeNode* first_node = (ExampleTreeNode*)(intptr_t)req.RangeFirstItem;
                             ExampleTreeNode* last_node = (ExampleTreeNode*)(intptr_t)req.RangeLastItem;
                             for (ExampleTreeNode* node = first_node; node != NULL; node = TreeGetNextNodeInVisibleOrder(node, last_node))
-                                selection->SetItemSelected((ImGuiID)node->UID, req.Selected);
+                                hovered->SetItemSelected((ImGuiID)node->UID, req.Selected);
                         }
                     }
                 }
 
-                static void TreeSetAllInOpenNodes(ExampleTreeNode* node, ImGuiSelectionBasicStorage* selection, bool selected)
+                static void TreeSetAllInOpenNodes(ExampleTreeNode* node, ImGuiSelectionBasicStorage* hovered, bool selected)
                 {
                     if (node->Parent != NULL) // Root node isn't visible nor selectable in our scheme
-                        selection->SetItemSelected((ImGuiID)node->UID, selected);
+                        hovered->SetItemSelected((ImGuiID)node->UID, selected);
                     if (node->Parent == NULL || TreeNodeGetOpen(node))
                         for (ExampleTreeNode* child : node->Childs)
-                            TreeSetAllInOpenNodes(child, selection, selected);
+                            TreeSetAllInOpenNodes(child, hovered, selected);
                 }
 
                 // Interpolate in *user-visible order* AND only *over opened nodes*.
@@ -3121,21 +3121,21 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
 
             }; // ExampleTreeFuncs
 
-            static ImGuiSelectionBasicStorage selection;
+            static ImGuiSelectionBasicStorage hovered;
             if (demo_data->DemoTree == NULL)
                 demo_data->DemoTree = ExampleTree_CreateDemoTree(); // Create tree once
-            ImGui::Text("Selection size: %d", selection.Size);
+            ImGui::Text("Selection size: %d", hovered.Size);
 
             if (ImGui::BeginChild("##Tree", ImVec2(-FLT_MIN, ImGui::GetFontSize() * 20), ImGuiChildFlags_FrameStyle | ImGuiChildFlags_ResizeY))
             {
                 ExampleTreeNode* tree = demo_data->DemoTree;
                 ImGuiMultiSelectFlags ms_flags = ImGuiMultiSelectFlags_ClearOnEscape | ImGuiMultiSelectFlags_BoxSelect2d;
-                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(ms_flags, selection.Size, -1);
-                ExampleTreeFuncs::ApplySelectionRequests(ms_io, tree, &selection);
+                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(ms_flags, hovered.Size, -1);
+                ExampleTreeFuncs::ApplySelectionRequests(ms_io, tree, &hovered);
                 for (ExampleTreeNode* node : tree->Childs)
-                    ExampleTreeFuncs::DrawNode(node, &selection);
+                    ExampleTreeFuncs::DrawNode(node, &hovered);
                 ms_io = ImGui::EndMultiSelect();
-                ExampleTreeFuncs::ApplySelectionRequests(ms_io, tree, &selection);
+                ExampleTreeFuncs::ApplySelectionRequests(ms_io, tree, &hovered);
             }
             ImGui::EndChild();
 
@@ -3202,10 +3202,10 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
             static ImVector<int> items;
             static int items_next_id = 0;
             if (items_next_id == 0) { for (int n = 0; n < 1000; n++) { items.push_back(items_next_id++); } }
-            static ExampleSelectionWithDeletion selection;
+            static ExampleSelectionWithDeletion hovered;
             static bool request_deletion_from_menu = false; // Queue deletion triggered from context menu
 
-            ImGui::Text("Selection size: %d/%d", selection.Size, items.Size);
+            ImGui::Text("Selection size: %d/%d", hovered.Size, items.Size);
 
             const float items_height = (widget_type == WidgetType_TreeNode) ? ImGui::GetTextLineHeight() : ImGui::GetTextLineHeightWithSpacing();
             ImGui::SetNextWindowContentSize(ImVec2(0.0f, items.Size * items_height));
@@ -3215,11 +3215,11 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                 if (widget_type == WidgetType_TreeNode)
                     ImGui::PushStyleVarY(ImGuiStyleVar_ItemSpacing, 0.0f);
 
-                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, selection.Size, items.Size);
-                selection.ApplyRequests(ms_io);
+                ImGuiMultiSelectIO* ms_io = ImGui::BeginMultiSelect(flags, hovered.Size, items.Size);
+                hovered.ApplyRequests(ms_io);
 
-                const bool want_delete = (ImGui::Shortcut(ImGuiKey_Delete, ImGuiInputFlags_Repeat) && (selection.Size > 0)) || request_deletion_from_menu;
-                const int item_curr_idx_to_focus = want_delete ? selection.ApplyDeletionPreLoop(ms_io, items.Size) : -1;
+                const bool want_delete = (ImGui::Shortcut(ImGuiKey_Delete, ImGuiInputFlags_Repeat) && (hovered.Size > 0)) || request_deletion_from_menu;
+                const int item_curr_idx_to_focus = want_delete ? hovered.ApplyDeletionPreLoop(ms_io, items.Size) : -1;
                 request_deletion_from_menu = false;
 
                 if (show_in_table)
@@ -3272,7 +3272,7 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                         }
 
                         // Submit item
-                        bool item_is_selected = selection.Contains((ImGuiID)n);
+                        bool item_is_selected = hovered.Contains((ImGuiID)n);
                         bool item_is_open = false;
                         ImGui::SetNextItemSelectionUserData(n);
                         if (widget_type == WidgetType_Selectable)
@@ -3304,7 +3304,7 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                                 if (!item_is_selected)
                                     payload_items.push_back(item_id);
                                 else
-                                    while (selection.GetNextSelectedItem(&it, &id))
+                                    while (hovered.GetNextSelectedItem(&it, &id))
                                         payload_items.push_back((int)id);
                                 ImGui::SetDragDropPayload("MULTISELECT_DEMO_ITEMS", payload_items.Data, (size_t)payload_items.size_in_bytes());
                             }
@@ -3327,8 +3327,8 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
                         // Right-click: context menu
                         if (ImGui::BeginPopupContextItem())
                         {
-                            ImGui::BeginDisabled(!use_deletion || selection.Size == 0);
-                            sprintf(label, "Delete %d item(s)###DeleteSelected", selection.Size);
+                            ImGui::BeginDisabled(!use_deletion || hovered.Size == 0);
+                            sprintf(label, "Delete %d item(s)###DeleteSelected", hovered.Size);
                             if (ImGui::Selectable(label))
                                 request_deletion_from_menu = true;
                             ImGui::EndDisabled();
@@ -3361,9 +3361,9 @@ static void DemoWindowWidgetsSelectionAndMultiSelect(ImGuiDemoWindowData* demo_d
 
                 // Apply multi-select requests
                 ms_io = ImGui::EndMultiSelect();
-                selection.ApplyRequests(ms_io);
+                hovered.ApplyRequests(ms_io);
                 if (want_delete)
-                    selection.ApplyDeletionPostLoop(ms_io, items, item_curr_idx_to_focus);
+                    hovered.ApplyDeletionPostLoop(ms_io, items, item_curr_idx_to_focus);
 
                 if (widget_type == WidgetType_TreeNode)
                     ImGui::PopStyleVar();
@@ -4569,12 +4569,12 @@ static void DemoWindowLayout()
 
         ImGui::PushItemWidth(80);
         ImGui::Text("Lists:");
-        static int selection[4] = { 0, 1, 2, 3 };
+        static int hovered[4] = { 0, 1, 2, 3 };
         for (int i = 0; i < 4; i++)
         {
             if (i > 0) ImGui::SameLine();
             ImGui::PushID(i);
-            ImGui::ListBox("", &selection[i], items, IM_ARRAYSIZE(items));
+            ImGui::ListBox("", &hovered[i], items, IM_ARRAYSIZE(items));
             ImGui::PopID();
             //ImGui::SetItemTooltip("ListBox %d hovered", i);
         }
@@ -7357,7 +7357,7 @@ static void DemoWindowTables()
 
         // Update item list if we changed the number of items
         static ImVector<MyItem> items;
-        static ImVector<int> selection;
+        static ImVector<int> hovered;
         static bool items_need_sort = false;
         if (items.Size != items_count)
         {
@@ -7432,7 +7432,7 @@ static void DemoWindowTables()
                     //if (!filter.PassFilter(item->Name))
                     //    continue;
 
-                    const bool item_is_selected = selection.contains(item->ID);
+                    const bool item_is_selected = hovered.contains(item->ID);
                     ImGui::PushID(item->ID);
                     ImGui::TableNextRow(ImGuiTableRowFlags_None, row_min_height);
 
@@ -7456,14 +7456,14 @@ static void DemoWindowTables()
                             if (ImGui::GetIO().KeyCtrl)
                             {
                                 if (item_is_selected)
-                                    selection.find_erase_unsorted(item->ID);
+                                    hovered.find_erase_unsorted(item->ID);
                                 else
-                                    selection.push_back(item->ID);
+                                    hovered.push_back(item->ID);
                             }
                             else
                             {
-                                selection.clear();
-                                selection.push_back(item->ID);
+                                hovered.clear();
+                                hovered.push_back(item->ID);
                             }
                         }
                     }

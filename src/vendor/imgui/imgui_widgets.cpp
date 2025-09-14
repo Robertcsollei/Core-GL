@@ -8313,9 +8313,9 @@ void ImGuiSelectionBasicStorage::SetItemSelected(ImGuiID id, bool selected)
 }
 
 // Optimized for batch edits (with same value of 'selected')
-static void ImGuiSelectionBasicStorage_BatchSetItemSelected(ImGuiSelectionBasicStorage* selection, ImGuiID id, bool selected, int size_before_amends, int selection_order)
+static void ImGuiSelectionBasicStorage_BatchSetItemSelected(ImGuiSelectionBasicStorage* hovered, ImGuiID id, bool selected, int size_before_amends, int selection_order)
 {
-    ImGuiStorage* storage = &selection->_Storage;
+    ImGuiStorage* storage = &hovered->_Storage;
     ImGuiStoragePair* it = ImLowerBound(storage->Data.Data, storage->Data.Data + size_before_amends, id);
     const bool is_contained = (it != storage->Data.Data + size_before_amends) && (it->key == id);
     if (selected == (is_contained && it->val_i != 0))
@@ -8324,13 +8324,13 @@ static void ImGuiSelectionBasicStorage_BatchSetItemSelected(ImGuiSelectionBasicS
         storage->Data.push_back(ImGuiStoragePair(id, selection_order)); // Push unsorted at end of vector, will be sorted in SelectionMultiAmendsFinish()
     else if (is_contained)
         it->val_i = selected ? selection_order : 0; // Modify in-place.
-    selection->Size += selected ? +1 : -1;
+    hovered->Size += selected ? +1 : -1;
 }
 
-static void ImGuiSelectionBasicStorage_BatchFinish(ImGuiSelectionBasicStorage* selection, bool selected, int size_before_amends)
+static void ImGuiSelectionBasicStorage_BatchFinish(ImGuiSelectionBasicStorage* hovered, bool selected, int size_before_amends)
 {
-    ImGuiStorage* storage = &selection->_Storage;
-    if (selected && selection->Size != size_before_amends)
+    ImGuiStorage* storage = &hovered->_Storage;
+    if (selected && hovered->Size != size_before_amends)
         storage->BuildSortByKey(); // When done selecting: sort everything
 }
 

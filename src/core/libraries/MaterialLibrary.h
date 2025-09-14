@@ -1,7 +1,7 @@
 #pragma once
-#include "core/libraries/ShaderLibrary.h"
-#include "core/libraries/TextureLibrary.h"
-#include "core/materials/Material.h"
+#include <core/libraries/ShaderLibrary.h>
+#include <core/libraries/TextureLibrary.h>
+#include <core/materials/Material.h>
 #include <memory>
 #include <string>
 #include <unordered_map>

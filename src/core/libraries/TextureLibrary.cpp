@@ -1,4 +1,4 @@
-#include "core/libraries/TextureLibrary.h"
+#include <core/libraries/TextureLibrary.h>
 
 std::shared_ptr<Texture>
 TextureLibrary::load2D(const std::string& path)

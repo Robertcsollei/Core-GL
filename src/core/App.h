@@ -18,13 +18,18 @@ public:
   Application(int width, int height);
   ~Application();
 
+  virtual void Init();
   int Run();
   const AppContext& Context() const { return m_Ctx; }
 
-private:
+protected:
   void HandleEvent(const SDL_Event& e);
 
-private:
+  virtual void Update(double dt){};
+  virtual void Render(){};
+  virtual void RenderUI(){};
+
+protected:
   std::unique_ptr<Renderer> m_Renderer;
   std::unique_ptr<Scene> m_Scene;
   std::unique_ptr<Window> m_Window;

@@ -1,4 +1,4 @@
-#include "core/libraries/MaterialLibrary.h"
+#include <core/libraries/MaterialLibrary.h>
 
 Material*
 MaterialLibrary::Add(std::unique_ptr<Material> material)

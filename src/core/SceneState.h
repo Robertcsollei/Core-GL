@@ -1,5 +1,7 @@
 #pragma once
-#include "core/entities/camera/Camera.h"
+#include <core/entities/camera/Camera.h>
+
+class Satellite;
 
 struct SceneState
 {
@@ -8,6 +10,9 @@ struct SceneState
   // OrbitTrailSystem trails;
   // PickingSystem picking;
   // ModelManager models;
+  double satelliteSpeedMultiplier =
+    60.0; // how many seconds per real-time second
+  Satellite* selectedSat = nullptr;
   Camera camera;
 
   SceneState()

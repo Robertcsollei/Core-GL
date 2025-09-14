@@ -1,7 +1,8 @@
 #pragma once
-#include "core/entities/Renderable.h"
-#include "core/geometry/Ellipsoid.h"
 #include <core/AppContext.h>
+#include <core/SceneState.h>
+#include <core/entities/Renderable.h>
+#include <core/geometry/Ellipsoid.h>
 
 #include <glm/glm.hpp>
 #include <memory>
@@ -23,4 +24,11 @@ CreateGlobe(const GlobeConfig& cfg, AppContext& ctx);
 
 std::unique_ptr<Renderable>
 CreateSatellite(const glm::vec3 pos, AppContext& ctx);
+
+std::unique_ptr<Renderable>
+CreateOrbit(const std::string name,
+            double dt,
+            const glm::vec3 pos,
+            SceneState& state,
+            AppContext& ctx);
 }

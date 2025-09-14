@@ -1,9 +1,10 @@
 #pragma once
-#include "IndexBuffer.h"
-#include "Shader.h"
-#include "VertexArray.h"
+
 #include <core/entities/Mesh.h>
 #include <glad/glad.h>
+#include <renderer/IndexBuffer.h>
+#include <renderer/Shader.h>
+#include <renderer/VertexArray.h>
 
 #define ASSERT(x)                                                              \
   if (!(x))                                                                    \
@@ -34,6 +35,7 @@ public:
   void EndFrame() const;
   void Submit(Renderable* r);
   void SubmitPoint(Renderable* r);
+  void SubmitLine(Renderable* r);
   void SubmitPointsInstanced(Mesh* mesh,
                              Shader* shader,
                              const std::vector<Mesh::PointVertex>& positions);

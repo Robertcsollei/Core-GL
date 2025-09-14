@@ -1,7 +1,7 @@
 #pragma once
-#include "Mesh.h"
-#include "Transform.h"
-#include "core/materials/Material.h"
+#include <core/entities/Mesh.h>
+#include <core/entities/Transform.h>
+#include <core/materials/Material.h>
 
 struct Renderable
 {
@@ -22,6 +22,15 @@ struct Renderable
     : mesh(renderable->mesh)
     , material(renderable->material)
     , transform(std::move(renderable->transform))
+  {
+    if (mesh)
+      transform.pivot = mesh->center;
+  }
+
+  Renderable(const Renderable& renderable)
+    : mesh(renderable.mesh)
+    , material(renderable.material)
+    , transform(renderable.transform)
   {
     if (mesh)
       transform.pivot = mesh->center;

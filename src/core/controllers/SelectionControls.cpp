@@ -7,6 +7,7 @@
 #include <imgui/imgui.h>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <core/entities/Mesh.h>
+#include <core/entities/objects/Satellite.h>
 #include <glm/gtx/vector_angle.hpp>
 
 #include <iostream>
@@ -49,19 +50,44 @@ SelectionControls::HandleEvent(const SDL_Event& e)
 
   const auto& io = ImGui::GetIO();
   if (io.WantCaptureMouse || io.WantCaptureKeyboard) {
-    m_Selection.reset();
+    m_Hovered.reset();
     return;
   }
 
   switch (e.type) {
 
     case SDL_MOUSEBUTTONDOWN:
-      m_Selection.reset();
+      break;
+
+    case SDL_MOUSEBUTTONUP:
+
+      if (m_Ctx.pointerLock)
+        return;
+
+      switch (e.button.button) {
+        case SDL_BUTTON_LEFT:
+          if (m_Hovered) {
+            if (m_Selected) {
+              m_Selected->satellite->state.active = false;
+            }
+            // TODO: maintain only one selection
+            m_Selected.emplace(m_Hovered->satellite, m_Hovered->screenPos);
+            m_Selected->satellite->state.active = true;
+            m_State.selectedSat = m_Hovered->satellite;
+          } else {
+            ClearSelection();
+          }
+
+          break;
+      }
+
       break;
 
     case SDL_MOUSEMOTION: {
-      if (m_Ctx.pointerLock)
+      if (m_Ctx.pointerLock) {
+        m_Hovered.reset();
         return;
+      }
 
       m_MousePos = glm::ivec2(e.motion.x, e.motion.y);
       UpdatePointerRay();
@@ -77,6 +103,9 @@ SelectionControls::HandleEvent(const SDL_Event& e)
 void
 SelectionControls::HandleHoverState()
 {
+  if (m_Ctx.pointerLock) {
+    return;
+  }
 
   glm::dvec3 camPos = glm::dvec3(m_State.camera.position());
 
@@ -86,9 +115,10 @@ SelectionControls::HandleHoverState()
     double cosAngle = glm::dot(camToSat, m_PointerRay);
 
     if (cosAngle < 1.0 - 1e-2 || !IsVisibleFromCamera(camPos, satPos)) {
-      sat->SetColor(Satellite::DefaultColor);
-      if (m_Selection.has_value() && m_Selection->uuid == sat->uuid()) {
-        m_Selection.reset();
+      sat->state.hovered = false;
+      if (m_Hovered.has_value() &&
+          m_Hovered->satellite->uuid() == sat->uuid()) {
+        m_Hovered.reset();
       }
       continue;
     }
@@ -108,12 +138,16 @@ SelectionControls::HandleHoverState()
     double radiusPx = pointSizePx * 0.5;
 
     if (dist2 <= radiusPx * radiusPx) {
-      sat->SetColor(Satellite::HoverColor);
-      m_Selection.emplace(sat->uuid(), satScreenPos);
+      if (m_Hovered)
+        m_Hovered->satellite->state.hovered = false;
+
+      m_Hovered.emplace(sat.get(), satScreenPos);
+      sat->state.hovered = true;
     } else {
-      sat->SetColor(Satellite::DefaultColor);
-      if (m_Selection.has_value() && m_Selection->uuid == sat->uuid()) {
-        m_Selection.reset();
+      sat->state.hovered = false;
+      if (m_Hovered.has_value() &&
+          m_Hovered->satellite->uuid() == sat->uuid()) {
+        m_Hovered.reset();
       }
     }
   }
@@ -132,6 +166,15 @@ void
 SelectionControls::OnResize()
 {
   UpdatePointerRay();
+}
+
+void
+SelectionControls::ClearSelection()
+{
+  if (m_Selected)
+    m_Selected->satellite->state.active = false;
+  m_Selected.reset();
+  m_State.selectedSat = nullptr;
 }
 
 bool

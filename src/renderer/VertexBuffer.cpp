@@ -1,5 +1,5 @@
-#include "VertexBuffer.h"
-#include "Renderer.h"
+#include <renderer/Renderer.h>
+#include <renderer/VertexBuffer.h>
 
 VertexBuffer::VertexBuffer()
   : VertexBuffer(nullptr, 0, GL_STATIC_DRAW)

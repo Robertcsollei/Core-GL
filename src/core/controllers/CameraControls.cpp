@@ -1,4 +1,4 @@
-#include "CameraControls.h"
+#include <core/controllers/CameraControls.h>
 
 #include <algorithm>
 #include <cmath>
@@ -20,14 +20,12 @@ CameraControls::HandleEvent(const SDL_Event& e, AppContext& ctx)
         m_Rotating = true;
         m_LastX = e.button.x;
         m_LastY = e.button.y;
-        ctx.pointerLock = true;
       } else if (e.button.button == SDL_BUTTON_MIDDLE ||
                  (e.button.button == SDL_BUTTON_RIGHT &&
                   (SDL_GetModState() & KMOD_SHIFT))) {
         m_Panning = true;
         m_LastX = e.button.x;
         m_LastY = e.button.y;
-        ctx.pointerLock = true;
       }
       break;
 
@@ -45,8 +43,10 @@ CameraControls::HandleEvent(const SDL_Event& e, AppContext& ctx)
       break;
 
     case SDL_MOUSEMOTION: {
-      if (!ctx.pointerLock)
+      if (!m_Rotating && !m_Panning)
         break;
+
+      ctx.pointerLock = true;
 
       int dx = e.motion.x - m_LastX;
       int dy = e.motion.y - m_LastY;

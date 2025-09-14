@@ -1,6 +1,6 @@
-#include "Shader.h"
-#include "Renderer.h"
 #include <iostream>
+#include <renderer/Renderer.h>
+#include <renderer/Shader.h>
 
 Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
 {

@@ -1,4 +1,4 @@
-#include "Ellipsoid.h"
+#include <core/geometry/Ellipsoid.h>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/compatibility.hpp>
 #include <glm/gtx/rotate_vector.hpp>

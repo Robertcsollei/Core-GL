@@ -1,12 +1,12 @@
 #include <core/App.h>
 
-#include <Renderer.h>
 #include <core/Scene.h>
 #include <core/Window.h>
 #include <core/controllers/CameraControls.h>
 #include <core/entities/camera/Camera.h>
 #include <core/entities/objects/Globe.h>
 #include <core/layers/GlobeLayer.h>
+#include <renderer/Renderer.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
@@ -18,14 +18,21 @@
 Application::Application(int width, int height)
   : m_Ctx(float(width), float(height))
 {
-  m_Window = std::make_unique<Window>(m_Ctx.title, width, height);
-  int fbW = width, fbH = height;
+}
+
+Application::~Application() = default;
+
+void
+Application::Init()
+{
+  int fbW = int(m_Ctx.width);
+  int fbH = int(m_Ctx.height);
+
+  m_Window = std::make_unique<Window>(m_Ctx.title, fbW, fbH);
   m_Window->DrawableSize(fbW, fbH);
   m_Renderer = std::make_unique<Renderer>();
   m_Scene = std::make_unique<Scene>(m_Ctx);
 }
-
-Application::~Application() = default;
 
 int
 Application::Run()
@@ -43,12 +50,15 @@ Application::Run()
     last = now;
 
     m_Scene->Update(dt);
+    Update(dt);
 
     m_Renderer->BeginFrame(m_Scene->state().camera);
     m_Scene->Render(*m_Renderer);
+    Render();
 
     m_Window->BeginImGuiFrame();
     m_Scene->RenderUI(m_Ctx);
+    RenderUI();
     m_Window->EndImGuiFrame();
 
     m_Renderer->EndFrame();

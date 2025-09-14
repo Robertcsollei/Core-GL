@@ -1,5 +1,6 @@
-#include "core/geometry/MeshFactory.h"
+#include <core/entities/objects/Satellite.h>
 #include <core/geometry/Ellipsoid.h>
+#include <core/geometry/MeshFactory.h>
 #include <glm/gtc/constants.hpp>
 
 static inline void
@@ -62,10 +63,27 @@ BuildEllipsoid(std::vector<Mesh::Vertex>& outVerts,
 static inline Mesh::PointVertex
 BuildPoint(std::vector<uint32_t>& outIdx,
            const glm::vec3& center,
-           const glm::vec4& color)
+           uint32_t color)
 {
   outIdx.push_back(0);
   return Mesh::PointVertex(center, color);
+}
+
+static std::vector<glm::vec3>
+CreateOrbitPath(Satellite& sat, int segments)
+{
+  std::vector<glm::vec3> points;
+  points.reserve(segments);
+
+  double period =
+    2.0 * glm::pi<double>() / sat.precomputed().n; // orbital period (s)
+  double dt = period / (segments - 1);
+
+  for (int i = 0; i < segments; ++i) {
+    glm::dvec3 pos = sat.GetPrecomputedPos(i * dt);
+    points.push_back(glm::vec3(pos));
+  }
+  return points;
 }
 
 std::unique_ptr<Mesh>
@@ -82,10 +100,59 @@ MeshFactory::CreateEllipsoid(int slices,
 }
 
 std::unique_ptr<Mesh>
-MeshFactory::CreatePoint(const glm::vec3& center, const glm::vec4& color)
+MeshFactory::CreatePoint(const glm::vec3& center, uint32_t color)
 {
   std::vector<uint32_t> indices;
 
   Mesh::PointVertex vtx = BuildPoint(indices, center, color);
   return std::make_unique<Mesh>(vtx, indices);
+}
+
+std::unique_ptr<Mesh>
+MeshFactory::CreateOrbitRibbon(Satellite& sat,
+                               double t,
+                               int segments,
+                               uint32_t color,
+                               const glm::vec3& camPos,
+                               float thickness)
+{
+  auto points = CreateOrbitPath(sat, segments);
+
+  std::vector<Mesh::PointVertex> vertices;
+  vertices.reserve(points.size());
+  for (size_t i = 0; i < points.size(); ++i) {
+    vertices.push_back({ points[i], color });
+  }
+
+  std::vector<uint32_t> indices;
+  for (size_t i = 0; i + 2 < vertices.size(); i += 2) {
+    indices.push_back(i);
+  }
+
+  /*vertices.reserve(points.size() * 2);
+
+  for (size_t i = 0; i < points.size(); ++i) {
+    glm::vec3 p = points[i];
+    glm::vec3 dir = (i + 1 < points.size()) ? glm::normalize(points[i + 1] - p)
+                                            : glm::normalize(p - points[i - 1]);
+    glm::vec3 view = glm::normalize(camPos - p);
+    glm::vec3 right = glm::normalize(glm::cross(dir, view));
+
+    vertices.push_back({ p + right * thickness, color });
+    vertices.push_back({ p - right * thickness, color });
+  }
+
+  std::vector<uint32_t> indices;
+  for (size_t i = 0; i + 2 < vertices.size(); i += 2) {
+    indices.push_back(i);
+    indices.push_back(i + 1);
+    indices.push_back(i + 2);
+
+    indices.push_back(i + 1);
+    indices.push_back(i + 3);
+    indices.push_back(i + 2);
+  }*/
+
+  auto orbitMesh = std::make_unique<Mesh>(vertices, indices);
+  return orbitMesh;
 }
