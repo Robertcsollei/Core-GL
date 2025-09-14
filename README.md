@@ -24,17 +24,24 @@ A high-performance 3D satellite tracking and visualization system built with mod
 
 ## Architecture
 ```
-┌─────────────────┬─────────────────┬─────────────────┐
-│   Renderer      │   Simulation    │   Application   │
-│   (OpenGL)      │   (Orbital)     │   (UI/Events)   │
-└─────────────────┴─────────────────┴─────────────────┘
-         │                │                │
-         └────────────────┼────────────────┘
-                         │
-                  ┌─────────────┐
-                  │   Shared    │
-                  │   Core      │
-                  └─────────────┘
+                    ┌─────────────────┐
+                    │     Projects    │
+                    │      (Apps)     │
+                    └─────────────────┘
+                             │
+         ┌───────────────────┼───────────────────┐
+         │                   │                   │
+┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐
+│    Renderer     │ │   Networking    │ │       UI        │
+│   (OpenGL)      │ │      (WIP)      │ │    (Future)     │
+└─────────────────┘ └─────────────────┘ └─────────────────┘
+         │                   │                   │
+         └───────────────────┼───────────────────┘
+                             │
+                    ┌─────────────────┐
+                    │      Core       │
+                    │   (Foundation)  │
+                    └─────────────────┘
 ```
 
 ## Quick Start
@@ -65,6 +72,7 @@ Built as a learning exercise to bridge 3D application development with low-level
 
 ---
 **License:** Apache-2.0 | **Status:** Active Development
+
 
 
 
