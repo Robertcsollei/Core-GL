@@ -1,95 +1,67 @@
-# TerraKit: A Lightweight GIS Toolkit with Modern OpenGL Renderer
-## Overview
-TerraKit is an experimental GIS toolkit and viewer with a globe-first focus, built on top of a modular C++/OpenGL renderer. The goal is to provide a minimal, clear, and hackable foundation for geospatial visualization—without the heavy overhead of a full GIS stack, while maintaining a renderer that can be reused in other projects.
+# TerraKit: Real-time Satellite Visualization Engine
 
-- Cross-platform: Desktop (Windows/Linux/macOS) via C++/OpenGL, Web via WebAssembly/WebGL2
-- Globe-first: Starts with a 3D Earth viewer and will evolve into a lightweight GIS editor
-- Modular architecture: Renderer is a self-contained library with minimal dependencies
-- Hackable: Designed to be extended, embedded, or repurposed in other projects
+A high-performance 3D satellite tracking and visualization system built with modern C++/OpenGL, demonstrating advanced graphics programming and geospatial mathematics.
 
-## Why TerraKit?
-- Learn modern graphics and geospatial rendering pipelines (LOD tiles, terrain shaders, atmospheric effects)
-- Provide a clean, documented reference that trades "engine magic" for explicit control
-- Create a GIS base layer that can grow into tools for analysis, paleo-channel detection, and environmental simulation
-- Serve as a learning project and reference for building GIS viewers from scratch
+## 🚀 Live Demo
+[**Watch Demo Video →**]([your-video-link](https://vimeo.com/1117971664?fl=pl&fe=sh))
+
+## Key Features
+- **Real-time satellite tracking** - 14,000+ space objects at 60 FPS
+- **Cross-platform renderer** - Native C++/OpenGL + Web via WebAssembly
+- **Modular architecture** - Independent renderer, simulation, and networking layers
+- **High-precision orbital mechanics** - SGP4 propagation with geodetic transformations
+- **Interactive 3D globe** - Custom camera controls and object selection
 
 ## Technical Highlights
-Core Renderer Features
-✅ Modern OpenGL (3.3+ core) with clean wrappers for VAO/VBO/IBO, shaders, textures, FBOs
-✅ Window + context via SDL2
-✅ Shader compilation/linking + uniform cache
-✅ Textures (2D) + stb_image loader
-✅ Framebuffers (basic)
-✅ Simple state caching + GL_KHR_debug
-✅ ImGui debug overlay (toggleable)
-✅ WASM/WebGL2 build target
-
-## GIS Features
-✅ Basic 3D globe (with tiled raster imagery)
-✅ Camera controls (orbit / pan / zoom)
-✅ Simple layer system (imagery + vector overlays)
-
-## Roadmap
-Renderer Development
-[] Materials & shader graph (hot-reload, includes)
-[] Batch renderer for sprites/lines/instancing
-[] PBR starter kit (IBL, BRDF LUT, HDR pipeline)
-[] Render passes: shadow map → gbuffer → lighting → post
-[] SRGB/linear workflow; gamma-correct UI
-[] Texture array/cubemap helpers
-[] Uniform/SSBO management; UBO binding layouts
-[] Asset pipeline and async loading
-[] Headless render mode for CI
-[] Optional ECS adapter layer
-[] Profiling: GPU timers + CPU scopes
-[] Web: asset fetch layer, compressed textures, virtual FS
-
-## GIS Development
-[] DEM-based terrain (elevation tiles, shading)
-[] Atmospheric rendering (space-to-ground transitions)
-[] Vector data overlays (GeoJSON, shapefiles via converter)
-[] Minimal edit tools (draw, measure, annotate)
-[] Paleochannel & hydrology plugins (future)
-[] Export/import to common GIS formats
-
-## Getting Started
-Prerequisites
-
-- C++20 compiler (MSVC, Clang, GCC)
-- CMake 3.20+
-- OpenGL 3.3+ runtime
-- Dependencies: SDL2, GLM, glad, stb_image, Dear ImGui
-
-## Installation
-You can use vcpkg for convenience:
-
+```cpp
+// Modern OpenGL pipeline
+✓ VAO/VBO/IBO abstractions with RAII
+✓ Shader compilation with uniform caching  
+✓ Instanced rendering for massive datasets
+✓ Cross-platform input handling (SDL2)
+✓ WebGL2 target via Emscripten
 ```
-vcpkg install sdl2 glm
-git clone https://github.com/yourname/TerraKit.git
+
+## Architecture
+```
+┌─────────────────┬─────────────────┬─────────────────┐
+│   Renderer      │   Simulation    │   Application   │
+│   (OpenGL)      │   (Orbital)     │   (UI/Events)   │
+└─────────────────┴─────────────────┴─────────────────┘
+         │                │                │
+         └────────────────┼────────────────┘
+                         │
+                  ┌─────────────┐
+                  │   Shared    │
+                  │   Core      │
+                  └─────────────┘
+```
+
+## Quick Start
+```bash
+git clone https://github.com/your-username/TerraKit.git
 cd TerraKit
-cmake -B build
+cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ./build/TerraKit
-Note: CMakePresets relies on VCPKG environment variable to be defined.
 ```
 
-## Philosophy
-TerraKit is not trying to replace full-blown GIS systems (QGIS, Cesium, ArcGIS). Instead, it's a small, explicit toolkit for experimenting with geospatial data, rendering pipelines, and cross-platform GIS apps. The underlying renderer is designed to be independent and embeddable in other applications (games, GIS tools, simulators).
+**Requirements:** C++20, OpenGL 3.3+, CMake 3.20+
 
-## Debugging & Safety
-GLCall(...) macro wraps GL calls and asserts on errors in debug builds.
+## Technologies
+**Core:** C++20, OpenGL, GLSL, GLM, SDL2  
+**Build:** CMake, Emscripten (for Web)  
+**Libraries:** Dear ImGui, stb_image
 
-## FAQ
-Why OpenGL and not Vulkan/WebGPU?
-For learning + portability (especially Web via WebGL2). The abstractions are future-proofed so a Vulkan/WebGPU backend could be added later.
+## Development Focus
+This project demonstrates:
+- Modern graphics programming patterns
+- Real-time performance optimization  
+- Cross-platform development
+- Geospatial coordinate system mathematics
+- Modular software architecture
 
-## Will the renderer work in another engine or app?
-Yes—by design. Treat it as a library; wire only the pieces you need.
+Built as a learning exercise to bridge 3D application development with low-level graphics programming.
 
-## Does it support compute?
-Not yet. Roadmap includes compute via GL 4.3+ (desktop) and a WebGPU path later.
-
-## What about GDAL support?
-Planned for future raster/vector I/O functionality.
-
-The renderer is developed as a core component of TerraKit but maintains its independence as a drop-in module for other projects.
+---
+**License:** Apache-2.0 | **Status:** Active Development
