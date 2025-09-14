@@ -2,8 +2,8 @@
 
 A high-performance 3D satellite tracking and visualization system built with modern C++/OpenGL, demonstrating advanced graphics programming and geospatial mathematics.
 
-## 🚀 Live Demo
-[**Watch Demo Video →**]([your-video-link](https://vimeo.com/1117971664?fl=pl&fe=sh))
+## 🚀 Demo Video
+<iframe title="vimeo-player" src="https://player.vimeo.com/video/1117971664?h=8118259a26" width="640" height="360" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"   allowfullscreen></iframe>
 
 ## Key Features
 - **Real-time satellite tracking** - 14,000+ space objects at 60 FPS
@@ -65,3 +65,4 @@ Built as a learning exercise to bridge 3D application development with low-level
 
 ---
 **License:** Apache-2.0 | **Status:** Active Development
+
