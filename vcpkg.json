@@ -1,0 +1,13 @@
+{
+  "name": "terrakit",
+  "version": "1.0.0",
+  "description": "Real-time satellite visualization engine with cross-platform rendering",
+  "homepage": "https://github.com/Robertcsollei/TerraKit",
+  "dependencies": [
+    "sdl2",
+    "glad",
+    "glm",
+    "cpr",
+    "stb"
+  ]
+}
