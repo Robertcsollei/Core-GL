@@ -55,7 +55,7 @@ Shader::SetUniform4f(std::string_view name,
 }
 
 void
-Shader::SetUniform4f(std::string_view name, glm::vec4 vec4)
+Shader::SetUniform4f(std::string_view name, const glm::vec4& vec4)
 {
 
   const int loc = GetUniformLocation(name);
@@ -73,12 +73,20 @@ Shader::SetUniform3f(std::string_view name, float v0, float v1, float v2)
 }
 
 void
-Shader::SetUniform3f(std::string_view name, glm::vec3 vec3)
+Shader::SetUniform3f(std::string_view name, const glm::vec3& vec3)
 {
 
   const int loc = GetUniformLocation(name);
   if (loc != -1)
     GLCall(glUniform3f(loc, vec3.x, vec3.y, vec3.z));
+}
+
+void
+Shader::SetUniform2f(std::string_view name, const glm::vec2& vec2)
+{
+  const int loc = GetUniformLocation(name);
+  if (loc != -1)
+    GLCall(glUniform2f(loc, vec2.x, vec2.y));
 }
 
 void

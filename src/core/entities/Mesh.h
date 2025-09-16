@@ -57,6 +57,33 @@ struct Mesh
       layout->Push<unsigned char>(4); // Color
     }
   };
+  struct LineVertex
+  {
+    glm::vec3 Position;
+    glm::vec3 NextPosition;
+    float Side;
+
+    LineVertex()
+      : Position(0.f)
+      , NextPosition(0.f)
+      , Side(0.f)
+    {
+    }
+
+    LineVertex(const glm::vec3& pos, const glm::vec3& nextPos, float slide)
+      : Position(pos)
+      , NextPosition(nextPos)
+      , Side(slide)
+    {
+    }
+
+    static void AppendLayout(terrakit::renderer::VertexBufferLayout* layout)
+    {
+      layout->Push<float>(3); // Position
+      layout->Push<float>(3); // NextPosition
+      layout->Push<float>(1); // Side
+    }
+  };
 
   VertexArray vao;
   VertexBuffer vbo;
@@ -76,6 +103,9 @@ struct Mesh
        const std::vector<uint32_t>& indices);
 
   Mesh(const PointVertex& pointVtx, const std::vector<uint32_t>& indices);
+
+  Mesh(const std::vector<LineVertex>& vertices,
+       const std::vector<uint32_t>& indices);
 
   void AddInstanceBuffer(const PointVertex* pointVtx,
                          size_t size,

@@ -42,8 +42,24 @@ ObjectFactory::CreateSatellite(const glm::vec3 pos, AppContext& ctx)
                             2); // location=2 in shader
   }
 
-  auto material =
-    ctx.materials.Add(MaterialFactory::CreatePoint(ctx.shaders, ctx.textures));
+  auto material = ctx.materials.Get("Point Material");
+  if (!material) {
+    material = ctx.materials.Add(
+      MaterialFactory::CreatePoint(ctx.shaders, ctx.textures));
+
+    material->uniforms.push_back({ Material::UniformBinding::Type::Float,
+                                   &ctx.satOptions.nearDistance,
+                                   "u_NearDist" });
+    material->uniforms.push_back({ Material::UniformBinding::Type::Float,
+                                   &ctx.satOptions.farDistance,
+                                   "u_FarDist" });
+    material->uniforms.push_back({ Material::UniformBinding::Type::Float,
+                                   &ctx.satOptions.minSize,
+                                   "u_MinSize" });
+    material->uniforms.push_back({ Material::UniformBinding::Type::Float,
+                                   &ctx.satOptions.maxSize,
+                                   "u_MaxSize" });
+  }
 
   auto renderable = std::make_unique<Renderable>();
   renderable->mesh = mesh;
@@ -56,8 +72,6 @@ ObjectFactory::CreateSatellite(const glm::vec3 pos, AppContext& ctx)
 
   return renderable;
 }
-
-static glm::vec3 color = glm::vec3(0.1f, 0.8f, 0.3f);
 
 std::unique_ptr<Renderable>
 ObjectFactory::CreateOrbit(const std::string name,
@@ -78,13 +92,20 @@ ObjectFactory::CreateOrbit(const std::string name,
                                                     0.02f));
   }
 
-  auto material = ctx.materials.Get("Color Material");
+  auto material = ctx.materials.Get("Line Material");
   if (!material) {
-    material = ctx.materials.Add(
-      MaterialFactory::CreateColor(ctx.shaders, ctx.textures));
+    material =
+      ctx.materials.Add(MaterialFactory::CreateLine(ctx.shaders, ctx.textures));
 
-    material->uniforms.push_back(
-      { Material::UniformBinding::Type::Vec3, &color, "u_Color" });
+    material->uniforms.push_back({ Material::UniformBinding::Type::Int,
+                                   &ctx.satOptions.selectColor,
+                                   "u_Color" });
+    material->uniforms.push_back({ Material::UniformBinding::Type::Float,
+                                   &ctx.satOptions.orbitThickness,
+                                   "u_LineWidth" });
+    material->uniforms.push_back({ Material::UniformBinding::Type::Vec2,
+                                   &ctx.screenSize,
+                                   "u_ScreenSize" });
   }
 
   auto renderable = std::make_unique<Renderable>();

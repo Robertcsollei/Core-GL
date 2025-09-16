@@ -25,11 +25,20 @@ Material::applyState() const
   } else {
     glDisable(GL_CULL_FACE);
   }
+  applyUniforms();
+}
+
+void
+Material::applyUniforms() const
+{
 
   for (auto& u : uniforms) {
     switch (u.type) {
       case UniformBinding::Type::Float:
         shader->SetUniform1f(u.name, *static_cast<float*>(u.ptr));
+        break;
+      case UniformBinding::Type::Vec2:
+        shader->SetUniform2f(u.name, *static_cast<glm::vec2*>(u.ptr));
         break;
       case UniformBinding::Type::Vec3:
         shader->SetUniform3f(u.name, *static_cast<glm::vec3*>(u.ptr));

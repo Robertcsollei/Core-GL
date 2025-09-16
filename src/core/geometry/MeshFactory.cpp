@@ -118,41 +118,23 @@ MeshFactory::CreateOrbitRibbon(Satellite& sat,
 {
   auto points = CreateOrbitPath(sat, segments);
 
-  std::vector<Mesh::PointVertex> vertices;
-  vertices.reserve(points.size());
-  for (size_t i = 0; i < points.size(); ++i) {
-    vertices.push_back({ points[i], color });
-  }
-
+  std::vector<Mesh::LineVertex> vertices;
   std::vector<uint32_t> indices;
-  for (size_t i = 0; i + 2 < vertices.size(); i += 2) {
-    indices.push_back(i);
+
+  for (size_t i = 0; i + 1 < points.size(); ++i) {
+    glm::vec3 current = points[i];
+    glm::vec3 next = points[i + 1];
+
+    vertices.push_back({ current, next, -1.0f }); // left
+    vertices.push_back({ current, next, 1.0f });  // right
+    vertices.push_back({ next, current, -1.0f }); // next left
+    vertices.push_back({ next, current, 1.0f });  // next right
+
+    // Two triangles per segment
+    uint32_t base = i * 4;
+    indices.insert(indices.end(),
+                   { base, base + 1, base + 2, base + 1, base + 3, base + 2 });
   }
 
-  /*vertices.reserve(points.size() * 2);
-
-  for (size_t i = 0; i < points.size(); ++i) {
-    glm::vec3 p = points[i];
-    glm::vec3 dir = (i + 1 < points.size()) ? glm::normalize(points[i + 1] - p)
-                                            : glm::normalize(p - points[i - 1]);
-    glm::vec3 view = glm::normalize(camPos - p);
-    glm::vec3 right = glm::normalize(glm::cross(dir, view));
-
-    vertices.push_back({ p + right * thickness, color });
-    vertices.push_back({ p - right * thickness, color });
-  }
-
-  std::vector<uint32_t> indices;
-  for (size_t i = 0; i + 2 < vertices.size(); i += 2) {
-    indices.push_back(i);
-    indices.push_back(i + 1);
-    indices.push_back(i + 2);
-
-    indices.push_back(i + 1);
-    indices.push_back(i + 3);
-    indices.push_back(i + 2);
-  }*/
-
-  auto orbitMesh = std::make_unique<Mesh>(vertices, indices);
-  return orbitMesh;
+  return std::make_unique<Mesh>(vertices, indices);
 }
