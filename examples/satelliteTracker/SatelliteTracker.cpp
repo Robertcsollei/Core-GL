@@ -1,8 +1,4 @@
-#include <core/Scene.h>
-#include <core/Window.h>
-#include <core/entities/objects/Satellite.h>
-#include <core/layers/GlobeLayer.h>
-#include <core/layers/SatelliteLayer.h>
+
 #include "SatelliteTracker.h"
 #include <fstream>
 #include <iostream>
