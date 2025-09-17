@@ -4,7 +4,7 @@
 A high-performance 3D satellite tracking and visualization system built with modern C++/OpenGL, demonstrating advanced graphics programming and geospatial mathematics.
 
 ## 🚀 Demo Video
-[![Watch Demo Video](https://github.com/Robertcsollei/TerraKit/blob/main/assets/images/thumbnail.png)](https://player.vimeo.com/video/1117971664?h=8118259a26)
+[![Watch Demo Video](https://github.com/Robertcsollei/TerraKit/blob/main/assets/images/thumbnail.png)](https://vimeo.com/1119403473?fl=pl&fe=sh)
 
 ## Key Features
 - **Real-time satellite tracking** - 14,000+ space objects at 60 FPS
@@ -73,6 +73,7 @@ Built as a learning exercise to bridge 3D application development with low-level
 
 ---
 **License:** Apache-2.0 | **Status:** Active Development
+
 
 
 
