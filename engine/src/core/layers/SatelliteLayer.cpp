@@ -30,15 +30,30 @@ layers::SatelliteLayer::Render(Renderer& renderer, const SceneState&)
   for (size_t i = 0; i < N; ++i) {
     auto& s = *m_Satellites[i];
     m_Instances[i].Position = s.renderPos();
-    m_Instances[i].Color = s.color();
+    switch (s.state.type()) {
+      case Satellite::State::Default:
+        m_Instances[i].Color = m_Ctx.satOptions.defaultColor;
+        break;
+      case Satellite::State::Active:
+        m_Instances[i].Color = m_Ctx.satOptions.selectColor;
+        break;
+      case Satellite::State::Hovered:
+        m_Instances[i].Color = m_Ctx.satOptions.hoverColor;
+        break;
+    }
   }
-  auto& sharedPointMesh = m_Satellites.front()->RenderTask()->mesh;
-  auto& pointShader = m_Satellites.front()->RenderTask()->material->shader;
-  renderer.SubmitPointsInstanced(
-    sharedPointMesh, pointShader.get(), m_Instances);
+  auto* renderTask = m_Satellites.front()->RenderTask();
+
+  if (m_DrityUniforms) {
+    renderTask->material->shader->Bind();
+    renderTask->material->applyUniforms();
+    m_DrityUniforms = false;
+  }
+
+  renderer.SubmitPointsInstanced(renderTask, m_Instances);
 
   if (m_SelectedOrbit.has_value()) {
-    renderer.SubmitLine(&m_SelectedOrbit->orbitPath);
+    renderer.Submit(&m_SelectedOrbit->orbitPath);
   }
 }
 

@@ -39,14 +39,14 @@ MaterialFactory::CreatePoint(ShaderLibrary& shaders, TextureLibrary& textures)
 }
 
 std::unique_ptr<Material>
-MaterialFactory::CreateColor(ShaderLibrary& shaders, TextureLibrary& textures)
+MaterialFactory::CreateLine(ShaderLibrary& shaders, TextureLibrary& textures)
 {
-  auto shader = shaders.get(ShaderNames::ColorShader);
+  auto shader = shaders.get(ShaderNames::LineShader);
 
   auto mat =
-    std::make_unique<Material>("Color Material", "Color Material", shader);
+    std::make_unique<Material>("Line Material", "Line Material", shader);
   mat->state.depthTest = true;
-  mat->state.depthWrite = true;
+  mat->state.depthWrite = false;
   mat->state.cull = false;
   return mat;
 }

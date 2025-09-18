@@ -15,7 +15,7 @@ std::unique_ptr<terrakit::renderer::Material>
 CreatePoint(ShaderLibrary& shaders, TextureLibrary& textures);
 
 std::unique_ptr<terrakit::renderer::Material>
-CreateColor(ShaderLibrary& shaders, TextureLibrary& textures);
+CreateLine(ShaderLibrary& shaders, TextureLibrary& textures);
 
 std::unique_ptr<terrakit::renderer::Material>
 CreateAtmosphere(ShaderLibrary& shaders, TextureLibrary& textures);

@@ -70,7 +70,7 @@ Window::InitGL()
   if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
     throw std::runtime_error("Failed to initialize GLAD");
   }
-  SetVSync(false);
+  SetVSync(true);
 
   int fbW, fbH;
   DrawableSize(fbW, fbH);
@@ -88,9 +88,32 @@ Window::InitImGui()
   // Optional: DPI/content scale
   float scale = ImGui_ImplSDL2_GetContentScaleForWindow(m_Window);
   ImGui::StyleColorsDark();
+
   ImGuiStyle& style = ImGui::GetStyle();
   style.ScaleAllSizes(scale);
   style.FontScaleDpi = scale;
+
+  ImVec4* colors = style.Colors;
+  colors[ImGuiCol_TitleBg] = ImVec4(0.15f, 0.15f, 0.15f, 1.00f);
+  colors[ImGuiCol_TitleBgActive] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+  colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+  colors[ImGuiCol_WindowBg] = ImVec4(0.10f, 0.10f, 0.10f, 1.00f);
+  colors[ImGuiCol_Header] = ImVec4(1.00f, 0.55f, 0.00f, 0.80f);
+  colors[ImGuiCol_HeaderHovered] = ImVec4(1.00f, 0.65f, 0.10f, 0.90f);
+  colors[ImGuiCol_HeaderActive] = ImVec4(1.00f, 0.55f, 0.00f, 1.00f);
+  colors[ImGuiCol_Button] = ImVec4(1.00f, 0.55f, 0.00f, 0.70f);
+  colors[ImGuiCol_ButtonHovered] = ImVec4(1.00f, 0.65f, 0.10f, 0.80f);
+  colors[ImGuiCol_ButtonActive] = ImVec4(1.00f, 0.55f, 0.00f, 1.00f);
+  colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+  colors[ImGuiCol_FrameBgHovered] = ImVec4(1.00f, 0.55f, 0.00f, 0.40f);
+  colors[ImGuiCol_FrameBgActive] = ImVec4(1.00f, 0.55f, 0.00f, 0.70f);
+  colors[ImGuiCol_CheckMark] = ImVec4(1.00f, 0.55f, 0.00f, 1.00f);
+  colors[ImGuiCol_SliderGrab] = ImVec4(1.00f, 0.55f, 0.00f, 1.00f);
+  colors[ImGuiCol_SliderGrabActive] = ImVec4(1.00f, 0.65f, 0.10f, 1.00f);
+  colors[ImGuiCol_Separator] = ImVec4(0.50f, 0.25f, 0.00f, 0.70f);
+  colors[ImGuiCol_ResizeGrip] = ImVec4(1.00f, 0.55f, 0.00f, 0.30f);
+  colors[ImGuiCol_ResizeGripHovered] = ImVec4(1.00f, 0.65f, 0.10f, 0.70f);
+  colors[ImGuiCol_ResizeGripActive] = ImVec4(1.00f, 0.55f, 0.00f, 1.00f);
 
   ImGui_ImplSDL2_InitForOpenGL(m_Window, m_GLContext);
   ImGui_ImplOpenGL3_Init("#version 130");

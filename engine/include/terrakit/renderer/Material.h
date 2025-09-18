@@ -34,9 +34,10 @@ public:
     enum class Type
     {
       Float,
+      Vec2,
       Vec3,
       Vec4,
-      Int
+      Int,
     };
     Type type;
     void* ptr;        // raw pointer to external data
@@ -66,6 +67,7 @@ public:
                   std::shared_ptr<Texture> t,
                   std::string uniform = "u_Texture");
   void applyState() const;
+  void applyUniforms() const;
   void bindTextures() const;
 };
 } // namespace terrakit::core

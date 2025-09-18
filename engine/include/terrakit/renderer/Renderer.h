@@ -41,13 +41,16 @@ public:
   void SubmitPoint(terrakit::core::Renderable* r);
   void SubmitLine(terrakit::core::Renderable* r);
   void SubmitPointsInstanced(
-    terrakit::core::Mesh* mesh,
-    Shader* shader,
+    terrakit::core::Renderable* r,
     const std::vector<terrakit::core::Mesh::PointVertex>& positions);
   void SetWireframeMode(bool enabled) { m_WireframeMode = enabled; };
+  void SetClearColor(const glm::vec4& color) { m_ClearColor = color; };
+
+  glm::vec4& clearColor() { return m_ClearColor; }
 
 private:
   GLuint m_CameraUBO = 0;
+  glm::vec4 m_ClearColor = { 0.1f, 0.1f, 0.3f, 1.f };
   bool m_WireframeMode = false;
 
 private:

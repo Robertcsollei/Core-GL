@@ -49,7 +49,8 @@ void
 Renderer::Clear() const
 {
   GLCall(glDepthMask(GL_TRUE));
-  GLCall(glClearColor(0.1f, 0.1f, 0.3f, 1.f));
+  GLCall(glClearColor(
+    m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, m_ClearColor.w));
   GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
@@ -133,6 +134,7 @@ Renderer::SubmitPoint(Renderable* r)
 void
 Renderer::SubmitLine(Renderable* r)
 {
+
   if (!r->mesh || !r->material || !r->material->shader)
     return;
   auto* shader = r->material->shader.get();
@@ -146,14 +148,15 @@ Renderer::SubmitLine(Renderable* r)
 }
 
 void
-Renderer::SubmitPointsInstanced(Mesh* mesh,
-                                Shader* shader,
+Renderer::SubmitPointsInstanced(Renderable* r,
                                 const std::vector<Mesh::PointVertex>& vertecies)
 {
+  auto* shader = r->material->shader.get();
   shader->Bind();
-  mesh->vao.Bind();
 
-  auto& vbo = mesh->instanceVbo;
+  r->mesh->vao.Bind();
+
+  auto& vbo = r->mesh->instanceVbo;
   const GLsizeiptr bytes = vertecies.size() * sizeof(Mesh::PointVertex);
 
   vbo.Bind();

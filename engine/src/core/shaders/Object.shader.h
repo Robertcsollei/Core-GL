@@ -54,7 +54,7 @@ void main() {
     float NdotL     = max(dot(N, L), 0.0);
     vec3 base       = vec3(1.0, 0.9, 0.8);
     vec4 textColor  = texture(u_Texture, v_TextCoord);
-    fragColor       = textColor * vec4(base * (0.1 + 0.9 * NdotL), 1.0);
+    fragColor       = textColor; //* vec4(base * (0.1 + 0.9 * NdotL), 1.0);
 }
 
 )";

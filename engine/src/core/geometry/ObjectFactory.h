@@ -16,7 +16,7 @@ struct GlobeConfig
   int stacks = 32;
   glm::vec3 center{ 0.f, 0.f, -800.f };
   // TODO: remove hardcoded asset path!!!
-  std::string texturePath = "assets/textures/earth.jpg";
+  std::string texturePath = "assets/textures/earth_high_res.jpg";
   glm::quat rotation{};
   Ellipsoid* ellipsoid;
 };

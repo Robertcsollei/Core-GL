@@ -53,6 +53,24 @@ Mesh::Mesh(const PointVertex& pointVtx, const std::vector<uint32_t>& indices)
   center = pointVtx.Position;
 }
 
+Mesh::Mesh(const std::vector<LineVertex>& vertices,
+           const std::vector<uint32_t>& indices)
+  : vao()
+  , vbo(vertices.data(), vertices.size() * sizeof(LineVertex))
+  , ibo(indices.data(), indices.size())
+  , layout()
+{
+  Mesh::LineVertex::AppendLayout(&layout);
+  vao.addVertexBuffer(vbo, layout);
+  vao.SetIndexBuffer(ibo);
+
+  for (const auto& v : vertices) {
+    aabbMin = glm::min(aabbMin, v.Position);
+    aabbMax = glm::max(aabbMax, v.Position);
+  }
+  center = 0.5f * (aabbMin + aabbMax);
+}
+
 void
 Mesh::AddInstanceBuffer(const PointVertex* pointVtx,
                         size_t size,

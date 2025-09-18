@@ -29,4 +29,5 @@ private:
 
 private:
   void FetchSatellitesData();
+  void ParseTLEBody(const std::string& body);
 };

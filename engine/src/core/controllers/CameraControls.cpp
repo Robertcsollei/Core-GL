@@ -78,8 +78,14 @@ CameraControls::HandleEvent(const SDL_Event& e, AppContext& ctx)
 
     case SDL_MOUSEWHEEL: {
 
-      float step = (e.wheel.y > 0) ? zoomStep : (1.0f / zoomStep);
-      float newDist = std::clamp(m_Camera.distance() * step, 0.1f, 100000.0f);
+      float delta =
+        (e.wheel.preciseY != 0.0f) ? e.wheel.preciseY : (float)e.wheel.y;
+
+      if (e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
+        delta = -delta;
+
+      float factor = (delta > 0.0f) ? zoomStep : (1.0f / zoomStep);
+      float newDist = std::clamp(m_Camera.distance() / factor, 0.1f, 100000.0f);
 
       m_Camera.SetOrbit(newDist, m_Camera.yawDeg(), m_Camera.pitchDeg());
       break;

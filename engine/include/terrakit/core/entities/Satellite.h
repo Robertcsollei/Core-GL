@@ -9,10 +9,26 @@ namespace terrakit::core {
 class Satellite
 {
 public:
-  struct ObjectState
+  struct State
   {
+    enum Type
+    {
+      Default = 0,
+      Active,
+      Hovered,
+
+    };
     bool hovered = false;
     bool active = false;
+
+    Type type() const
+    {
+      if (active)
+        return Active;
+      if (hovered)
+        return Hovered;
+      return Default;
+    }
   };
 
   struct Orbit
@@ -56,18 +72,13 @@ public:
 public:
   const glm::dvec3& position() const { return m_Position; }
   const glm::vec3& renderPos() const { return m_RenderPos; }
-  uint32_t color() const;
 
   double* epoch() { return &m_Epoch; }
   const std::string& uuid() const { return m_Uuid; }
 
   const PrecomputedOrbit& precomputed() { return m_PrecomputedOrbit; };
 
-  static constexpr uint32_t DefaultColor = 0xFFFFFFFF;
-  static constexpr uint32_t HoverColor = 0xFF0000FF;
-  static constexpr uint32_t SelectColor = 0x0000FF00;
-
-  ObjectState state;
+  State state;
 
 private:
   const std::string m_Uuid;

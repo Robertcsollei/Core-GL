@@ -56,15 +56,6 @@ Scene::Render(Renderer& renderer)
 void
 Scene::RenderUI(AppContext& ctx)
 {
-  ImGui::Begin("Test Popup");
-  ImGui::Text("Hello World...");
-
-  ImGuiIO& io = ImGui::GetIO();
-  ImGui::Text("FPS: %.1f", io.Framerate);
-  ImGui::Text("Frame Time: %.3f ms", 1000.0f / io.Framerate);
-
-  ImGui::End();
-
   if (auto hovered = m_SelectionCtl->hovered()) {
     ImGui::SetNextWindowPos(
       ImVec2((float)hovered->screenPos.x, (float)hovered->screenPos.y),

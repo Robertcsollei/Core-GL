@@ -25,10 +25,12 @@ public:
                     float v1,
                     float v2,
                     float v3);
-  void SetUniform4f(std::string_view name, glm::vec4 vec4);
+  void SetUniform4f(std::string_view name, const glm::vec4& vec4);
 
   void SetUniform3f(std::string_view name, float v0, float v1, float v2);
-  void SetUniform3f(std::string_view name, glm::vec3 vec3);
+  void SetUniform3f(std::string_view name, const glm::vec3& vec3);
+
+  void SetUniform2f(std::string_view name, const glm::vec2& vec2);
 
   void SetUniform1f(std::string_view name, float value);
   void SetUniform1i(std::string_view name, int value);

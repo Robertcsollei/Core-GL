@@ -68,19 +68,6 @@ Satellite::Satellite(AppContext& ctx,
   PrecomputeOrbit();
 }
 
-uint32_t
-Satellite::color() const
-{
-  if (!state.hovered && !state.active)
-    return Satellite::DefaultColor;
-
-  if (state.hovered)
-    return Satellite::HoverColor;
-
-  if (state.active)
-    return Satellite::SelectColor;
-}
-
 void
 Satellite::Update(double timeSinceEpoch, const SceneState& sceneState)
 {

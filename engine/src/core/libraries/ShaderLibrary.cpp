@@ -1,5 +1,5 @@
 #include "core/shaders/Atmosphere.shader.h"
-#include "core/shaders/Color.shader.h"
+#include "core/shaders/Line.shader.h"
 #include "core/shaders/Object.shader.h"
 #include "core/shaders/Point.shader.h"
 #include "core/shaders/ShaderNames.h"
@@ -21,7 +21,7 @@ ShaderLibrary::ShaderLibrary()
     ShaderNames::PointShader, Shaders::Point::vertex, Shaders::Point::fragment);
 
   registerSource(
-    ShaderNames::ColorShader, Shaders::Color::vertex, Shaders::Color::fragment);
+    ShaderNames::LineShader, Shaders::Line::vertex, Shaders::Line::fragment);
 
   registerSource(ShaderNames::AtmosphereShader,
                  Shaders::Atmosphere::vertex,

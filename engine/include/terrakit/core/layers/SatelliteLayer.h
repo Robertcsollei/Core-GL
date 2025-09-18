@@ -35,6 +35,8 @@ public:
   void Pause() { m_Paused = true; }
   void Resume() { m_Paused = false; }
 
+  void MarkUniformsDirty() { m_DrityUniforms = true; }
+
 public:
   const std::vector<std::unique_ptr<Satellite>>& satellites() const
   {
@@ -49,6 +51,7 @@ private:
   std::optional<SelectedOrbit> m_SelectedOrbit;
 
   bool m_Paused = false;
+  bool m_DrityUniforms = true;
 };
 } // namespace layers
 } // namespace terrakit::core
