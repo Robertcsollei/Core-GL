@@ -24,8 +24,8 @@ Engine
 ├── Renderer (OpenGL 3.3+)       # Modern graphics pipeline, WebGL compatible
 ├── Core                         # Runtime, Scene, core orchestrator
 ├── Network                      # HTTP client for data fetching
-├── Physics Module               # Coming soon: Real-time simulation systems
-├── Geometry Engine              # Coming soon: Ellipsoid math, mesh generation
+├── Physics Module               # Coming soon: Real-time simulation systems (Currently part of Core)
+├── Geometry Engine              # Coming soon: Ellipsoid math, mesh generation (Currently part of Core)
 └── Platform Abstraction         # Coming soon: Cross-platform windowing, input
 ```
 
@@ -68,6 +68,7 @@ This engine explores fundamental challenges in 3D GIS:
 
 ---
 **License:** Apache-2.0  | **Status:** Active Development
+
 
 
 
