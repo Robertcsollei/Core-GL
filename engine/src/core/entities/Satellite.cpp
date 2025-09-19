@@ -72,12 +72,11 @@ void
 Satellite::Update(double timeSinceEpoch, const SceneState& sceneState)
 {
   if (!state.active) {
-    m_Position = GetPrecomputedPos(
-      m_Epoch + timeSinceEpoch * sceneState.satelliteSpeedMultiplier);
+    m_Position = GetPrecomputedPos(m_Epoch + timeSinceEpoch,
+                                   sceneState.satelliteSpeedMultiplier);
   } else {
-    m_Position = m_Orbit.positionECI((m_Epoch + timeSinceEpoch) *
-                                       sceneState.satelliteSpeedMultiplier,
-                                     m_Globe);
+    m_Position = m_Orbit.positionECI(
+      (m_Epoch + timeSinceEpoch), m_Globe, sceneState.satelliteSpeedMultiplier);
   }
   m_RenderPos = glm::vec3(m_Position);
 
@@ -86,11 +85,11 @@ Satellite::Update(double timeSinceEpoch, const SceneState& sceneState)
 }
 
 glm::dvec3
-Satellite::GetPrecomputedPos(double t)
+Satellite::GetPrecomputedPos(double t, double multiplier)
 {
   // Use (t - epoch) to match the slow path
   double M = m_PrecomputedOrbit.M0 +
-             m_PrecomputedOrbit.n * (t - m_PrecomputedOrbit.epoch);
+             m_PrecomputedOrbit.n * multiplier * (t - m_PrecomputedOrbit.epoch);
   M = wrapTwoPi(M);
 
   // Kepler solver
@@ -138,7 +137,7 @@ Satellite::PrecomputeOrbit()
 }
 
 glm::dvec3
-Satellite::Orbit::positionECI(double t, Globe& globe) const
+Satellite::Orbit::positionECI(double t, Globe& globe, double multiplier) const
 {
   // Unpack elements (angles in radians, a in meters, times in seconds)
   const double a = semiMajorAxis;
@@ -148,7 +147,7 @@ Satellite::Orbit::positionECI(double t, Globe& globe) const
   const double argp = argPerigee;
 
   // 1) Mean motion & mean anomaly
-  const double n = std::sqrt(GM_EARTH / (a * a * a));
+  const double n = std::sqrt(GM_EARTH / (a * a * a)) * multiplier;
   double M = meanAnomalyAtEpoch + n * (t - epoch);
   M = wrapTwoPi(M);
 

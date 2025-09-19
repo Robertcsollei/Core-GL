@@ -134,10 +134,12 @@ SatelliteTracker::RenderUI()
 
   if (ImGui::CollapsingHeader("Simulation")) {
     ImGui::Text("Satellites: %zu", satelliteLayer->satellites().size());
-    ImGui::DragScalar("Speed Multiplier",
-                      ImGuiDataType_Double,
-                      &m_Scene->state().satelliteSpeedMultiplier,
-                      0.01);
+    static float multiplier =
+      static_cast<float>(m_Scene->state().satelliteSpeedMultiplier);
+    if (ImGui::SliderFloat("Speed Multiplier", &multiplier, 1.f, 1500.f)) {
+      m_Scene->state().satelliteSpeedMultiplier =
+        static_cast<double>(multiplier);
+    }
   }
 
   if (ImGui::CollapsingHeader("Visuals")) {
