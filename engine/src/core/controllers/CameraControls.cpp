@@ -81,8 +81,8 @@ CameraControls::HandleEvent(const SDL_Event& e, AppContext& ctx)
       float delta =
         (e.wheel.preciseY != 0.0f) ? e.wheel.preciseY : (float)e.wheel.y;
 
-      if (e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
-        delta = -delta;
+      /*if (e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
+        delta = -delta;*/
 
       float factor = (delta > 0.0f) ? zoomStep : (1.0f / zoomStep);
       float newDist = std::clamp(m_Camera.distance() / factor, 0.1f, 100000.0f);

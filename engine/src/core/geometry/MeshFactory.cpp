@@ -81,7 +81,7 @@ CreateOrbitPath(Satellite& sat, int segments)
   double dt = period / (segments - 1);
 
   for (int i = 0; i < segments; ++i) {
-    glm::dvec3 pos = sat.GetPrecomputedPos(i * dt);
+    glm::dvec3 pos = sat.GetPrecomputedPos(i * dt, 1.0);
     points.push_back(glm::vec3(pos));
   }
   return points;

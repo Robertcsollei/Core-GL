@@ -41,7 +41,7 @@ public:
     double meanAnomalyAtEpoch;
     double epoch;
 
-    glm::dvec3 positionECI(double t, Globe& globe) const;
+    glm::dvec3 positionECI(double t, Globe& globe, double multiplier) const;
   };
 
   struct PrecomputedOrbit
@@ -67,7 +67,7 @@ public:
   Renderable* RenderTask() { return &m_Renderable; }
 
   void PrecomputeOrbit();
-  glm::dvec3 GetPrecomputedPos(double t);
+  glm::dvec3 GetPrecomputedPos(double t, double multiplier);
 
 public:
   const glm::dvec3& position() const { return m_Position; }
