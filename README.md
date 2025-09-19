@@ -4,7 +4,7 @@
 A modular 3D rendering engine for geospatial visualization and analysis. Demonstrates real-time physics simulation, coordinate system transformations, and high-performance rendering of large datasets.
 
 ## 🚀 Demo Video
-[![Watch Demo Video](https://github.com/Robertcsollei/TerraKit/blob/main/assets/images/thumbnail.png)](https://player.vimeo.com/video/1117971664?h=8118259a26)
+[![Watch Demo Video](https://github.com/Robertcsollei/TerraKit/blob/main/assets/images/thumbnail.png)](https://vimeo.com/1119403473?fl=pl&fe=sh)
 
 ## Core Capabilities
 - **High-performance 3D rendering** - Instanced rendering for massive datasets (12k+ objects at 144+ FPS)
@@ -68,6 +68,8 @@ This engine explores fundamental challenges in 3D GIS:
 
 ---
 **License:** Apache-2.0  | **Status:** Active Development
+
+
 
 
 
