@@ -18,7 +18,7 @@ ObjectFactory::CreateGlobe(const GlobeConfig& cfg, AppContext& ctx)
                      cfg.slices, cfg.stacks, glm::vec3(0.f), *cfg.ellipsoid));
 
   auto material = ctx.materials.Add(
-    MaterialFactory::CreatePong(cfg.texturePath, ctx.shaders, ctx.textures));
+    MaterialFactory::CreatePong(ctx.texturesPath + cfg.textureName, ctx.shaders, ctx.textures));
 
   auto renderable = std::make_unique<Renderable>();
   renderable->mesh = mesh;

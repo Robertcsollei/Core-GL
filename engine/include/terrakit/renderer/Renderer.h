@@ -6,9 +6,20 @@
 #include <terrakit/renderer/Shader.h>
 #include <terrakit/renderer/VertexArray.h>
 
+#ifdef _WIN32
+  #define DEBUG_BREAK() __debugbreak()
+#elif defined(__APPLE__)
+  #define DEBUG_BREAK() __builtin_trap()
+#elif defined(__linux__)
+  #include <signal.h>
+  #define DEBUG_BREAK() raise(SIGTRAP)
+#else
+  #define DEBUG_BREAK() ((void)0)
+#endif
+
 #define ASSERT(x)                                                              \
   if (!(x))                                                                    \
-    __debugbreak();
+    DEBUG_BREAK();
 #define GLCall(x)                                                              \
   GLClearError();                                                              \
   x;                                                                           \

@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include <stdexcept>
 #include <terrakit/renderer/Renderer.h>
 #include <terrakit/renderer/Texture.h>
 
@@ -20,9 +21,10 @@ Texture::Texture(const std::string& path)
   m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BPP, 4);
 
   if (!m_LocalBuffer) {
-    std::cerr << "stbi_load failed: " << stbi_failure_reason() << "\n"
-              << "path: " << path << "\n"
-              << "cwd : " << std::filesystem::current_path() << std::endl;
+    std::cerr << "Failed to load texture: " << stbi_failure_reason() << "\n"
+              << "Path: " << path << "\n"
+              << "Working directory: " << std::filesystem::current_path() << std::endl;
+    throw std::runtime_error("Failed to load texture: " + path);
   }
 
   // Texture tiling can be set using glTexParameteri
