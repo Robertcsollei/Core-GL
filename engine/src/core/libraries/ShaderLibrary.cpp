@@ -12,24 +12,24 @@ namespace terrakit::core {
 
 ShaderLibrary::ShaderLibrary()
 {
-  registerSource(ShaderNames::Object3dShader,
+  RegisterSource(ShaderNames::Object3dShader,
                  Shaders::Object3d::vertex,
                  Shaders::Object3d::fragment,
                  { { "Camera", 0 } });
 
-  registerSource(
+  RegisterSource(
     ShaderNames::PointShader, Shaders::Point::vertex, Shaders::Point::fragment);
 
-  registerSource(
+  RegisterSource(
     ShaderNames::LineShader, Shaders::Line::vertex, Shaders::Line::fragment);
 
-  registerSource(ShaderNames::AtmosphereShader,
+  RegisterSource(ShaderNames::AtmosphereShader,
                  Shaders::Atmosphere::vertex,
                  Shaders::Atmosphere::fragment);
 }
 
 std::shared_ptr<Shader>
-ShaderLibrary::get(const std::string& name)
+ShaderLibrary::Get(const std::string& name)
 {
   auto it = m_Cache.find(name);
   if (it != m_Cache.end())
@@ -46,7 +46,7 @@ ShaderLibrary::get(const std::string& name)
 }
 
 void
-ShaderLibrary::registerSource(
+ShaderLibrary::RegisterSource(
   const std::string& name,
   const std::string& vs,
   const std::string& fs,

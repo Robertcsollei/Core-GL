@@ -8,14 +8,14 @@ public:
   VertexBuffer();
   VertexBuffer(const void* data, unsigned int size);
   VertexBuffer(const void* data, unsigned int size, unsigned int usage);
-  ~VertexBuffer() { destroy(); }
+  ~VertexBuffer() { Destroy(); }
 
-  VertexBuffer(VertexBuffer&& other) noexcept { moveFrom(other); }
+  VertexBuffer(VertexBuffer&& other) noexcept { MoveFrom(other); }
   VertexBuffer& operator=(VertexBuffer&& other) noexcept
   {
     if (this != &other) {
-      destroy();
-      moveFrom(other);
+      Destroy();
+      MoveFrom(other);
     }
     return *this;
   }
@@ -25,10 +25,10 @@ public:
   VertexBuffer& operator=(const VertexBuffer&) = delete;
 
 public:
-  GLuint GetRendererID() const { return m_RendererID; }
-  GLsizeiptr Capacity() const { return m_Capacity; }
-  GLsizeiptr Size() const { return m_Size; }
-  GLenum Usage() const { return m_Usage; }
+  GLuint rendererID() const { return m_RendererID; }
+  GLsizeiptr capacity() const { return m_Capacity; }
+  GLsizeiptr size() const { return m_Size; }
+  GLenum usage() const { return m_Usage; }
 
   void Bind() const;
   void Unbind() const;
@@ -43,12 +43,9 @@ private:
   GLenum m_Usage = GL_STATIC_DRAW;
 
 private:
-  void destroy();
-
-  void moveFrom(VertexBuffer& o);
-
+  void Destroy();
+  void MoveFrom(VertexBuffer& o);
   void Allocate(GLsizeiptr size);
-
-  void ensureCapacity(GLsizeiptr size);
+  void EnsureCapacity(GLsizeiptr size);
 };
 } // namespace terrakit::renderer

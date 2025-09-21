@@ -62,7 +62,7 @@ VertexBuffer::Orphan()
 }
 
 void
-VertexBuffer::destroy()
+VertexBuffer::Destroy()
 {
   if (m_RendererID) {
     GLCall(glDeleteBuffers(1, &m_RendererID));
@@ -72,7 +72,7 @@ VertexBuffer::destroy()
 }
 
 void
-VertexBuffer::moveFrom(VertexBuffer& o)
+VertexBuffer::MoveFrom(VertexBuffer& o)
 {
   m_RendererID = o.m_RendererID;
   o.m_RendererID = 0;
@@ -92,7 +92,7 @@ VertexBuffer::Allocate(GLsizeiptr size)
 }
 
 void
-VertexBuffer::ensureCapacity(GLsizeiptr size)
+VertexBuffer::EnsureCapacity(GLsizeiptr size)
 {
   if (size <= m_Capacity)
     return;

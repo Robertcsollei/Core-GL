@@ -52,8 +52,8 @@ public:
   explicit Material(const std::string& id,
                     const std::string& n,
                     std::shared_ptr<Shader> s)
-    : uuid(std::move(id))
-    , name(std::move(n))
+    : uuid(id)
+    , name(n)
     , shader(std::move(s))
   {
   }

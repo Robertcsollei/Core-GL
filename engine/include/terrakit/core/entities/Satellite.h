@@ -33,15 +33,16 @@ public:
 
   /**
    * @brief Keplerian orbital elements defining satellite orbit
-   * Units: angles in radians, distances in meters, time in seconds since Unix epoch
+   * Units: angles in radians, distances in meters, time in seconds since Unix
+   * epoch
    */
   struct Orbit
   {
     double semiMajorAxis = 6778137.0; // meters;
     double eccentricity;
     double inclination;
-    double raan;                    // Right Ascension of Ascending Node
-    double argPerigee;              // Argument of Perigee
+    double raan;       // Right Ascension of Ascending Node
+    double argPerigee; // Argument of Perigee
     double meanAnomalyAtEpoch;
     double epoch;
 
@@ -68,12 +69,11 @@ public:
   ~Satellite() = default;
 
   void Update(double timeSinceEpoch, const SceneState& sceneState);
-  Renderable* RenderTask() { return &m_Renderable; }
-
   void PrecomputeOrbit();
   glm::dvec3 GetPrecomputedPos(double t, double multiplier);
 
 public:
+  Renderable* renderTask() { return &m_Renderable; }
   const glm::dvec3& position() const { return m_Position; }
   const glm::vec3& renderPos() const { return m_RenderPos; }
 

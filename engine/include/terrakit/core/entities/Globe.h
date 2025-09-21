@@ -12,9 +12,9 @@ public:
   Globe(AppContext& ctx);
   ~Globe() = default;
 
-  const Ellipsoid& Geometry() const noexcept { return m_Ellipsoid; }
-  Renderable* RenderTask() { return &m_Renderable; }
-  Renderable* AtmosphereTask() { return &m_Atmosphere; }
+  const Ellipsoid& geometry() const noexcept { return m_Ellipsoid; }
+  Renderable* renderTask() { return &m_Renderable; }
+  Renderable* atmosphereTask() { return &m_Atmosphere; }
 
 private:
   Ellipsoid m_Ellipsoid;

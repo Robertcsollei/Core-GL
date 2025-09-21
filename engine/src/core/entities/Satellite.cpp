@@ -134,10 +134,10 @@ Satellite::GetPrecomputedPos(double t, double multiplier)
 
   glm::dvec3 r_eci = m_PrecomputedOrbit.R_pf2eci * r_pf;
   glm::dvec3 rEngine_m = EciToEngine(r_eci);
-  double R_world = m_Globe.Geometry().Radii().x;
+  double R_world = m_Globe.geometry().radii().x;
   double metersToWorld = R_world / WGS84_A;
   return rEngine_m * metersToWorld +
-         glm::dvec3(m_Globe.RenderTask()->transform.translation);
+         glm::dvec3(m_Globe.renderTask()->transform.translation);
 }
 
 void
@@ -223,10 +223,10 @@ Satellite::Orbit::positionECI(double t, Globe& globe, double multiplier) const
   glm::dvec3 rEngine_m = EciToEngine(rECI_m);
 
   // 6) Scale meters -> your world units using your globe's equatorial radius
-  const double R_world = globe.Geometry().Radii().x; // in your engine units
+  const double R_world = globe.geometry().radii().x; // in your engine units
   const double metersToWorld = R_world / WGS84_A;
   return rEngine_m * metersToWorld +
          glm::dvec3(
-           globe.RenderTask()->transform.translation); // ECI in world units
+           globe.renderTask()->transform.translation); // ECI in world units
 }
 } // namespace terrakit::core

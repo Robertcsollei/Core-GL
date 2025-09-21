@@ -12,7 +12,7 @@ public:
 
   void SetData(const void* data, unsigned int count);
 
-  unsigned int GetRendererID() const;
+  unsigned int rendererID() const;
   unsigned int GetCount() const;
 
   // Deleted copy constructor and assignment operator to prevent copying

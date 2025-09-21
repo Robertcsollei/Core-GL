@@ -12,9 +12,9 @@ public:
   ~ShaderLibrary() = default;
 
 public:
-  std::shared_ptr<terrakit::renderer::Shader> get(
+  std::shared_ptr<terrakit::renderer::Shader> Get(
     const std::string& name); // lazy-load/compile
-  void registerSource(const std::string& name,
+  void RegisterSource(const std::string& name,
                       const std::string& vs,
                       const std::string& fs,
                       std::vector<std::pair<std::string, unsigned>> ubos = {});

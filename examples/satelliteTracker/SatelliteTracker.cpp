@@ -94,7 +94,7 @@ void
 SatelliteTracker::Init()
 {
   Application::Init();
-  m_Scene->SatLayer()->Pause();
+  m_Scene->satLayer()->Pause();
   FetchSatellitesData();
 }
 
@@ -102,13 +102,13 @@ void
 SatelliteTracker::Update(double deltaTime)
 {
   OrbitWithName orbitWithName;
-  auto* satelliteLayer = m_Scene->SatLayer();
-  auto* globeLayer = m_Scene->GlobeLayer();
-  while (m_OrbitQueue.try_pop(orbitWithName)) {
+  auto* satelliteLayer = m_Scene->satLayer();
+  auto* globeLayer = m_Scene->globeLayer();
+  while (m_OrbitQueue.TryPop(orbitWithName)) {
     auto sat = std::make_unique<Satellite>(
       m_Ctx, orbitWithName.name, orbitWithName.orbit, 0.0, globeLayer->globe());
     satelliteLayer->Add(std::move(sat));
-    if (!m_FetchingData && m_OrbitQueue.isEmpty()) {
+    if (!m_FetchingData && m_OrbitQueue.empty()) {
       satelliteLayer->Resume();
     }
   }
@@ -133,7 +133,7 @@ SatelliteTracker::RenderUI()
     avgFps += f;
   avgFps /= 60.0f;
 
-  auto* satelliteLayer = m_Scene->SatLayer();
+  auto* satelliteLayer = m_Scene->satLayer();
 
   ImGui::Begin("Satellite Tracker");
 
@@ -266,7 +266,7 @@ SatelliteTracker::ParseTLEBody(const std::string& body)
 
       orbitWithName.orbit = std::move(orbit);
       orbitWithName.name = name;
-      m_OrbitQueue.push(std::move(orbitWithName));
+      m_OrbitQueue.Push(std::move(orbitWithName));
     }
 
     subLine = (subLine + 1) % 3;

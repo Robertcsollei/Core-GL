@@ -13,8 +13,8 @@ MaterialFactory::CreatePong(const std::string& texturePath,
                             ShaderLibrary& shaders,
                             TextureLibrary& textures)
 {
-  auto shader = shaders.get(ShaderNames::Object3dShader);
-  auto tex = textures.load2D(texturePath);
+  auto shader = shaders.Get(ShaderNames::Object3dShader);
+  auto tex = textures.Load2D(texturePath);
 
   auto mat =
     std::make_unique<Material>("Pong Material", "Pong Material", shader);
@@ -28,7 +28,7 @@ MaterialFactory::CreatePong(const std::string& texturePath,
 std::unique_ptr<Material>
 MaterialFactory::CreatePoint(ShaderLibrary& shaders, TextureLibrary& textures)
 {
-  auto shader = shaders.get(ShaderNames::PointShader);
+  auto shader = shaders.Get(ShaderNames::PointShader);
 
   auto mat =
     std::make_unique<Material>("Point Material", "Point Material", shader);
@@ -41,7 +41,7 @@ MaterialFactory::CreatePoint(ShaderLibrary& shaders, TextureLibrary& textures)
 std::unique_ptr<Material>
 MaterialFactory::CreateLine(ShaderLibrary& shaders, TextureLibrary& textures)
 {
-  auto shader = shaders.get(ShaderNames::LineShader);
+  auto shader = shaders.Get(ShaderNames::LineShader);
 
   auto mat =
     std::make_unique<Material>("Line Material", "Line Material", shader);
@@ -55,7 +55,7 @@ std::unique_ptr<Material>
 MaterialFactory::CreateAtmosphere(ShaderLibrary& shaders,
                                   TextureLibrary& textures)
 {
-  auto shader = shaders.get(ShaderNames::AtmosphereShader);
+  auto shader = shaders.Get(ShaderNames::AtmosphereShader);
 
   auto mat = std::make_unique<Material>(
     "Atmosphere Material", "Atmosphere Material", shader);

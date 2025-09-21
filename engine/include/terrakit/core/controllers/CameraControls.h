@@ -17,6 +17,7 @@ public:
   inline void Attach(Camera& camera) { m_Camera = camera; }
   void HandleEvent(const SDL_Event& event, AppContext& ctx);
 
+public:
   Camera& camera() { return m_Camera; }
 
   float rotateDegPerPixel = 0.25f;

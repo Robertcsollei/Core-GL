@@ -7,7 +7,7 @@ using namespace terrakit::renderer;
 
 namespace terrakit::core {
 std::shared_ptr<Texture>
-TextureLibrary::load2D(const std::string& path)
+TextureLibrary::Load2D(const std::string& path)
 {
   auto it = m_Cache.find(path);
   if (it != m_Cache.end())
