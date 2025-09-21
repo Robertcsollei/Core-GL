@@ -27,11 +27,8 @@ Application::~Application() = default;
 void
 Application::Init()
 {
-  int fbW = int(m_Ctx.width);
-  int fbH = int(m_Ctx.height);
 
-  m_Window = std::make_unique<Window>(m_Ctx.title, fbW, fbH);
-  m_Window->DrawableSize(fbW, fbH);
+  m_Window = std::make_unique<Window>(m_Ctx);
   m_Renderer = std::make_unique<Renderer>();
   m_Scene = std::make_unique<Scene>(m_Ctx);
 }

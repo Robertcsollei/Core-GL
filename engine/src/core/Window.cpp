@@ -18,9 +18,10 @@ sdlCheck(bool ok, const char* what)
 }
 }
 namespace terrakit::core {
-Window::Window(const std::string& title, int width, int height)
+Window::Window(const AppContext& ctx)
+  : m_Ctx(ctx)
 {
-  InitSDL(title, width, height);
+  InitSDL();
   InitGL();
   InitImGui();
 }
@@ -33,8 +34,11 @@ Window::~Window()
 }
 
 void
-Window::InitSDL(const std::string& title, int width, int height)
+Window::InitSDL()
 {
+  const int width = int(m_Ctx.width);
+  const int height = int(m_Ctx.height);
+
   sdlCheck(SDL_Init(SDL_INIT_VIDEO) == 0, "SDL_Init");
 
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -42,7 +46,7 @@ Window::InitSDL(const std::string& title, int width, int height)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-  m_Window = SDL_CreateWindow(title.c_str(),
+  m_Window = SDL_CreateWindow(m_Ctx.title.c_str(),
                               SDL_WINDOWPOS_CENTERED,
                               SDL_WINDOWPOS_CENTERED,
                               width,
@@ -56,10 +60,15 @@ Window::InitSDL(const std::string& title, int width, int height)
 
   SDL_SetWindowResizable(m_Window, SDL_TRUE);
 
-  SDL_Surface* icon = SDL_LoadBMP("res/images/favicon.ico");
+  std::string iconPath = m_Ctx.iconPath + "favicon.ico";
+  SDL_Surface* icon = SDL_LoadBMP(iconPath.c_str());
   if (icon) {
     SDL_SetWindowIcon(m_Window, icon);
     SDL_FreeSurface(icon);
+  } else {
+    std::cout
+      << "Warning: Could not load window icon from assets/images/favicon.ico"
+      << std::endl;
   }
 }
 

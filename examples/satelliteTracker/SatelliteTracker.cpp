@@ -179,7 +179,7 @@ SatelliteTracker::FetchSatellitesData()
   m_FetchingData = true;
 
 #ifdef TERRAKIT_MOCK
-  std::string m_TLEFilePath = "assets/mock/satelliteData.txt";
+  std::string m_TLEFilePath = m_Ctx.mockDataPath + "satelliteData.txt";
 
   std::ifstream file(m_TLEFilePath);
   if (!file.is_open()) {

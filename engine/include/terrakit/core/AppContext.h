@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <glm/glm.hpp>
 #include <terrakit/core/libraries/MaterialLibrary.h>
 #include <terrakit/core/libraries/MeshLibrary.h>
 #include <terrakit/core/libraries/ShaderLibrary.h>
@@ -30,6 +31,12 @@ struct AppContext
   glm::vec2 screenSize = { 0, 0 };
 
   bool pointerLock = false;
+
+  // Asset paths configuration
+  std::string assetsPath = "assets/";
+  std::string texturesPath = "assets/textures/";
+  std::string mockDataPath = "assets/mock/";
+  std::string iconPath = "assets/images/";
 
   SatOptions satOptions;
 

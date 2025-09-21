@@ -32,7 +32,6 @@ Scene::AddLayer(LayerPtr layer)
 void
 Scene::Update(double dt)
 {
-  static bool once = false;
   m_SimTime += dt;
   for (auto& layer : m_Layers) {
     layer->Update(m_SimTime, m_State);
