@@ -1,9 +1,9 @@
 
 #include "SatelliteTracker.h"
 #include <fstream>
-#include <iostream>
 #include <memory>
 #include <sstream>
+#include <terrakit/core/Logger.h>
 #include <terrakit/core/Scene.h>
 #include <terrakit/core/Window.h>
 #include <terrakit/core/entities/Satellite.h>
@@ -40,6 +40,16 @@ FromImVec4(ImVec4 v)
   return (A << 24) | (B << 16) | (G << 8) | R;
 }
 
+/**
+ * @brief Converts Two-Line Element (TLE) epoch format to Unix timestamp
+ *
+ * TLE format stores epoch as: YYDDD.DDDDDDDD where:
+ * - YY = 2-digit year (57-99 = 1957-1999, 00-56 = 2000-2056)
+ * - DDD.DDDDDDDD = day of year with fractional part
+ *
+ * @param l1 First line of TLE containing epoch data in positions 19-32
+ * @return Unix timestamp in seconds (double precision for subsecond accuracy)
+ */
 static inline double
 TleEpochToUnixSeconds(const std::string& l1)
 {
@@ -175,7 +185,7 @@ SatelliteTracker::RenderUI()
 void
 SatelliteTracker::FetchSatellitesData()
 {
-  std::cout << "Loading satellites...\n";
+  TK_INFO("Loading satellites...");
   m_FetchingData = true;
 
 #ifdef TERRAKIT_MOCK
@@ -183,8 +193,7 @@ SatelliteTracker::FetchSatellitesData()
 
   std::ifstream file(m_TLEFilePath);
   if (!file.is_open()) {
-    std::cerr << "[ERROR] Cannot open local TLE file: " << m_TLEFilePath
-              << "\n";
+    TK_ERROR(std::string("Cannot open local TLE file: ") + m_TLEFilePath);
     m_FetchingData = false;
     return;
   }
@@ -194,7 +203,7 @@ SatelliteTracker::FetchSatellitesData()
 
   ParseTLEBody(body);
   m_FetchingData = false;
-  std::cout << "Loaded from file\n";
+  TK_INFO("Satellites loaded from file");
 
   return;
 #endif // TERRAKIT_MOCK
@@ -207,10 +216,10 @@ SatelliteTracker::FetchSatellitesData()
     [this](const std::string& body) {
       ParseTLEBody(body);
       m_FetchingData = false;
-      std::cout << "Loaded from network\n";
+      TK_INFO("Satellites loaded from network");
     },
     [](const std::string& error) {
-      std::cerr << "[ERROR] " << error << std::endl;
+      TK_ERROR(std::string("Network error: ") + error);
     });
 }
 void

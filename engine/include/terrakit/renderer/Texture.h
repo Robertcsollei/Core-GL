@@ -16,8 +16,6 @@ public:
 
   inline unsigned int GetRendererID() const { return m_RendererID; }
 
-  static Texture* Create(const std::string& path);
-
 private:
   unsigned int m_RendererID;
   std::string m_FilePath;

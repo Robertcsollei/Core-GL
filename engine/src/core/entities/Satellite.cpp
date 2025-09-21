@@ -12,6 +12,11 @@ constexpr double GM_EARTH = 3.986004418e14;  // m^3/s^2
 constexpr double OMEGA_EARTH = 7.2921150e-5; // rad/s
 constexpr double WGS84_A = 6378137.0;        // m (equatorial radius)
 
+/**
+ * @brief Wraps an angle to the range [0, 2π]
+ * @param x Angle in radians
+ * @return Equivalent angle in [0, 2π] range
+ */
 inline double
 wrapTwoPi(double x)
 {
@@ -27,12 +32,22 @@ rotateZ(const glm::dvec3& v, double a)
   return { c * v.x - s * v.y, s * v.x + c * v.y, v.z };
 }
 
+/**
+ * @brief Creates a 3D rotation matrix around the Z-axis
+ * @param a Rotation angle in radians
+ * @return 3x3 rotation matrix
+ */
 static glm::dmat3
 rotZ(double a)
 {
   double s = std::sin(a), c = std::cos(a);
   return glm::dmat3(c, -s, 0, s, c, 0, 0, 0, 1);
 }
+/**
+ * @brief Creates a 3D rotation matrix around the X-axis
+ * @param a Rotation angle in radians
+ * @return 3x3 rotation matrix
+ */
 static glm::dmat3
 rotX(double a)
 {
@@ -84,6 +99,15 @@ Satellite::Update(double timeSinceEpoch, const SceneState& sceneState)
   m_Renderable.transform.scale = glm::vec3({ 1.0f, 1.0f, 1.0f });
 }
 
+/**
+ * @brief Computes satellite position using precomputed orbit parameters
+ *
+ * Uses Newton-Raphson method to solve Kepler's equation: M = E - e*sin(E)
+ * where M is mean anomaly, E is eccentric anomaly, e is eccentricity
+ *
+ * @param t Time in seconds since Unix epoch
+ * @return Position vector in world coordinates
+ */
 glm::dvec3
 Satellite::GetPrecomputedPos(double t, double multiplier)
 {
@@ -92,7 +116,7 @@ Satellite::GetPrecomputedPos(double t, double multiplier)
              m_PrecomputedOrbit.n * multiplier * (t - m_PrecomputedOrbit.epoch);
   M = wrapTwoPi(M);
 
-  // Kepler solver
+  // Kepler solver using Newton-Raphson method
   double E = M;
   for (int i = 0; i < 2; ++i) {
     double f = E - m_PrecomputedOrbit.e * std::sin(E) - M;
@@ -136,6 +160,19 @@ Satellite::PrecomputeOrbit()
     glm::dvec3(sO * si, -cO * si, ci));
 }
 
+/**
+ * @brief Computes satellite position in Earth-Centered Inertial (ECI) frame
+ *
+ * Implements classical orbital mechanics using Keplerian elements:
+ * 1. Computes mean motion using Kepler's third law: n = sqrt(μ/a³)
+ * 2. Solves Kepler's equation iteratively for eccentric anomaly
+ * 3. Converts to true anomaly using orbital geometry
+ * 4. Transforms from orbital plane to ECI coordinates
+ *
+ * @param t Time in seconds since Unix epoch
+ * @param globe Reference globe for coordinate transformation
+ * @return Position vector in ECI coordinates (world units)
+ */
 glm::dvec3
 Satellite::Orbit::positionECI(double t, Globe& globe, double multiplier) const
 {
@@ -146,12 +183,12 @@ Satellite::Orbit::positionECI(double t, Globe& globe, double multiplier) const
   const double raan_ = raan;
   const double argp = argPerigee;
 
-  // 1) Mean motion & mean anomaly
-  const double n = std::sqrt(GM_EARTH / (a * a * a)) * multiplier;
+  // 1) Mean motion & mean anomaly using Kepler's third law
+  const double n = std::sqrt(GM_EARTH / (a * a * a));
   double M = meanAnomalyAtEpoch + n * (t - epoch);
   M = wrapTwoPi(M);
 
-  // 2) Solve Kepler's equation: M = E - e*sin(E)
+  // 2) Solve Kepler's equation: M = E - e*sin(E) using Newton-Raphson
   double E = M;
   for (int k = 0; k < 15; ++k) {
     const double f = E - e * std::sin(E) - M;

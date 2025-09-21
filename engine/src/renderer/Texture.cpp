@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <iostream>
 #include <stdexcept>
+#include <terrakit/core/Logger.h>
 #include <terrakit/renderer/Renderer.h>
 #include <terrakit/renderer/Texture.h>
 
@@ -21,9 +22,10 @@ Texture::Texture(const std::string& path)
   m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BPP, 4);
 
   if (!m_LocalBuffer) {
-    std::cerr << "Failed to load texture: " << stbi_failure_reason() << "\n"
-              << "Path: " << path << "\n"
-              << "Working directory: " << std::filesystem::current_path() << std::endl;
+    std::string errorMsg = std::string("Failed to load texture: ") + std::string(stbi_failure_reason()) +
+                          std::string(" | Path: ") + path +
+                          std::string(" | Working directory: ") + std::filesystem::current_path().string();
+    TK_ERROR(errorMsg);
     throw std::runtime_error("Failed to load texture: " + path);
   }
 
@@ -71,10 +73,4 @@ void
 Texture::Unbind() const
 {
   GLCall(glBindTexture(GL_TEXTURE_2D, 0));
-}
-
-Texture*
-Texture::Create(const std::string& path)
-{
-  return nullptr;
 }

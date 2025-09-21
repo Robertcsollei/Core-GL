@@ -1,8 +1,8 @@
-#include <iostream>
 #include <terrakit/core/Mesh.h>
 #include <terrakit/core/Renderable.h>
 #include <terrakit/core/entities/Camera.h>
 #include <terrakit/renderer/Renderer.h>
+#include <terrakit/core/Logger.h>
 
 using namespace terrakit::core;
 using namespace terrakit::renderer;
@@ -18,15 +18,18 @@ void
 GLCheckError()
 {
   while (GLenum error = glGetError()) {
-    std::cout << "OpenGL Error: " << error << std::endl;
+    TK_ERROR(std::string("OpenGL Error: ") + std::to_string(error));
   }
 }
 bool
 GLLogCall(const char* function, const char* file, int line)
 {
   while (GLenum error = glGetError()) {
-    std::cout << "OpenGL Error: " << error << " ;At: " << function << " "
-              << file << ":" << line << std::endl;
+     TK_ERROR(
+  std::string("OpenGL Error: ") + std::to_string(error) +
+    " ;At: " + function + " " + file + ":" + std::to_string(line)
+     );
+   
     return false;
   }
 

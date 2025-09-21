@@ -10,7 +10,6 @@
 #include <terrakit/core/Mesh.h>
 #include <terrakit/core/entities/Satellite.h>
 
-#include <iostream>
 
 using namespace terrakit::core;
 

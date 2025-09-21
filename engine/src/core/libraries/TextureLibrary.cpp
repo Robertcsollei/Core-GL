@@ -1,4 +1,5 @@
 #include <terrakit/core/libraries/TextureLibrary.h>
+#include <terrakit/core/Logger.h>
 #include <iostream>
 #include <stdexcept>
 
@@ -17,7 +18,7 @@ TextureLibrary::load2D(const std::string& path)
     m_Cache[path] = tex;
     return tex;
   } catch (const std::runtime_error& e) {
-    std::cerr << "Warning: Failed to load texture '" << path << "': " << e.what() << std::endl;
+    TK_ERROR(std::string("Warning: Failed to load texture '") + path + std::string("': " ) + std::string(e.what()));
     return nullptr;
   }
 }
