@@ -31,13 +31,17 @@ public:
     }
   };
 
+  /**
+   * @brief Keplerian orbital elements defining satellite orbit
+   * Units: angles in radians, distances in meters, time in seconds since Unix epoch
+   */
   struct Orbit
   {
     double semiMajorAxis = 6778137.0; // meters;
     double eccentricity;
     double inclination;
-    double raan;
-    double argPerigee;
+    double raan;                    // Right Ascension of Ascending Node
+    double argPerigee;              // Argument of Perigee
     double meanAnomalyAtEpoch;
     double epoch;
 

@@ -5,7 +5,7 @@
 #include <glm/glm.hpp>
 #include <imgui/imgui.h>
 
-#include <iostream>
+
 namespace terrakit::core {
 void
 CameraControls::HandleEvent(const SDL_Event& e, AppContext& ctx)

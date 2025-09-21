@@ -1,6 +1,6 @@
-#include <iostream>
 #include <terrakit/renderer/Renderer.h>
 #include <terrakit/renderer/Shader.h>
+#include <terrakit/core/Logger.h>
 
 using namespace terrakit::renderer;
 
@@ -126,8 +126,7 @@ Shader::GetUniformLocation(std::string_view name) const
   GLCall(int location =
            glGetUniformLocation(m_RendererID, std::string{ name }.c_str()));
   if (location == -1) {
-    std::cerr << "Warning: uniform '" << name
-              << "' not found in shader program.\n";
+    TK_ERROR(std::string("Warning: uniform '") + std::string(name) + std::string("' not found in shader program.\n"));
   }
 
   // store even -1 to avoid repeated GL calls
@@ -150,7 +149,7 @@ Shader::CompileShader(unsigned int type, const std::string& source)
     GLCall(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &len));
     std::string log(len, '\0');
     GLCall(glGetShaderInfoLog(id, len, &len, log.data()));
-    std::cerr << "Failed to compile shader:\n" << log << '\n';
+    TK_ERROR(std::string("Failed to compile shader:\n") + log);
     GLCall(glDeleteShader(id));
     return 0;
   }

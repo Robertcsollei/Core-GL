@@ -1,6 +1,6 @@
 #include <terrakit/core/Window.h>
+#include <terrakit/core/Logger.h>
 
-#include <iostream>
 #include <stdexcept>
 
 #include <glad/glad.h>
@@ -65,10 +65,9 @@ Window::InitSDL()
   if (icon) {
     SDL_SetWindowIcon(m_Window, icon);
     SDL_FreeSurface(icon);
+    TK_DEBUG("Window icon loaded successfully");
   } else {
-    std::cout
-      << "Warning: Could not load window icon from assets/images/favicon.ico"
-      << std::endl;
+    TK_WARNING(std::string("Could not load window icon from: ") + iconPath);
   }
 }
 
@@ -77,6 +76,7 @@ Window::InitGL()
 {
   // Load GL functions via GLAD using SDL loader
   if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+    TK_ERROR("Failed to initialize GLAD");
     throw std::runtime_error("Failed to initialize GLAD");
   }
   SetVSync(true);
@@ -85,7 +85,7 @@ Window::InitGL()
   DrawableSize(fbW, fbH);
   glViewport(0, 0, fbW, fbH);
 
-  std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+  TK_INFO("OpenGL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
 }
 
 void
