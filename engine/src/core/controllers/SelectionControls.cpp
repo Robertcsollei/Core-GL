@@ -184,9 +184,9 @@ SelectionControls::IsVisibleFromCamera(const glm::dvec3& camPos,
 {
   glm::dvec3 d = satPos - camPos;
   glm::dvec3 f =
-    camPos - glm::dvec3(m_Globe.RenderTask()->transform.translation);
+    camPos - glm::dvec3(m_Globe.renderTask()->transform.translation);
 
-  double globeRadius = m_Globe.Geometry().Radii().x;
+  double globeRadius = m_Globe.geometry().radii().x;
   double a = glm::dot(d, d);
   double b = 2.0 * glm::dot(f, d);
   double c = glm::dot(f, f) - globeRadius * globeRadius;

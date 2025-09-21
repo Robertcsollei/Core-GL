@@ -11,7 +11,7 @@ Mesh::Mesh(const std::vector<Vertex>& vertices,
   , layout()
 {
   Mesh::Vertex::AppendLayout(&layout);
-  vao.addVertexBuffer(vbo, layout);
+  vao.AddVertexBuffer(vbo, layout);
   vao.SetIndexBuffer(ibo);
 
   for (const auto& v : vertices) {
@@ -29,7 +29,7 @@ Mesh::Mesh(const std::vector<PointVertex>& vertices,
   , layout()
 {
   Mesh::PointVertex::AppendLayout(&layout);
-  vao.addVertexBuffer(vbo, layout);
+  vao.AddVertexBuffer(vbo, layout);
   vao.SetIndexBuffer(ibo);
 
   for (const auto& v : vertices) {
@@ -46,7 +46,7 @@ Mesh::Mesh(const PointVertex& pointVtx, const std::vector<uint32_t>& indices)
   , layout()
 {
   Mesh::PointVertex::AppendLayout(&layout);
-  vao.addVertexBuffer(vbo, layout);
+  vao.AddVertexBuffer(vbo, layout);
   vao.SetIndexBuffer(ibo);
 
   aabbMin = aabbMax = pointVtx.Position;
@@ -61,7 +61,7 @@ Mesh::Mesh(const std::vector<LineVertex>& vertices,
   , layout()
 {
   Mesh::LineVertex::AppendLayout(&layout);
-  vao.addVertexBuffer(vbo, layout);
+  vao.AddVertexBuffer(vbo, layout);
   vao.SetIndexBuffer(ibo);
 
   for (const auto& v : vertices) {
@@ -81,7 +81,7 @@ Mesh::AddInstanceBuffer(const PointVertex* pointVtx,
   VertexBufferLayout instLayout;
   PointVertex::AppendLayout(&instLayout);
 
-  vao.addVertexBuffer(instanceVbo, instLayout);
+  vao.AddVertexBuffer(instanceVbo, instLayout);
 
   glVertexAttribDivisor(attribIndex, 1);
   glVertexAttribDivisor(attribIndex + 1, 1);

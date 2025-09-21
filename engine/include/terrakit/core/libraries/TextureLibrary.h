@@ -7,7 +7,7 @@ namespace terrakit::core {
 class TextureLibrary
 {
 public:
-  std::shared_ptr<terrakit::renderer::Texture> load2D(
+  std::shared_ptr<terrakit::renderer::Texture> Load2D(
     const std::string& path); // caches by path
 private:
   std::unordered_map<std::string, std::shared_ptr<terrakit::renderer::Texture>>

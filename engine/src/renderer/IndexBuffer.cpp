@@ -42,7 +42,7 @@ IndexBuffer::SetData(const void* data, unsigned int size)
 }
 
 unsigned int
-IndexBuffer::GetRendererID() const
+IndexBuffer::rendererID() const
 {
   return m_RendererID;
 }

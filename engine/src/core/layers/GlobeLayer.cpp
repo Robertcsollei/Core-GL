@@ -12,6 +12,6 @@ void
 layers::GlobeLayer::Render(terrakit::renderer::Renderer& renderer,
                            const SceneState&)
 {
-  renderer.Submit(m_Globe.RenderTask());
-  renderer.Submit(m_Globe.AtmosphereTask());
+  renderer.Submit(m_Globe.renderTask());
+  renderer.Submit(m_Globe.atmosphereTask());
 }

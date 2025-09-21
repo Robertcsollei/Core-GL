@@ -1,8 +1,8 @@
+#include <terrakit/core/Logger.h>
 #include <terrakit/core/Mesh.h>
 #include <terrakit/core/Renderable.h>
 #include <terrakit/core/entities/Camera.h>
 #include <terrakit/renderer/Renderer.h>
-#include <terrakit/core/Logger.h>
 
 using namespace terrakit::core;
 using namespace terrakit::renderer;
@@ -25,11 +25,9 @@ bool
 GLLogCall(const char* function, const char* file, int line)
 {
   while (GLenum error = glGetError()) {
-     TK_ERROR(
-  std::string("OpenGL Error: ") + std::to_string(error) +
-    " ;At: " + function + " " + file + ":" + std::to_string(line)
-     );
-   
+    TK_ERROR(std::string("OpenGL Error: ") + std::to_string(error) +
+             " ;At: " + function + " " + file + ":" + std::to_string(line));
+
     return false;
   }
 
@@ -147,7 +145,7 @@ Renderer::SubmitLine(Renderable* r)
 
   r->material->applyState();
   r->mesh->vao.Bind();
-  glDrawArrays(GL_LINE_STRIP, 0, r->mesh->vbo.Size());
+  glDrawArrays(GL_LINE_STRIP, 0, r->mesh->vbo.size());
 }
 
 void

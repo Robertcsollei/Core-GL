@@ -35,8 +35,8 @@ public:
   template<>
   void Push<unsigned char>(unsigned int count);
 
-  inline unsigned int GetStride() const { return m_Stride; }
-  inline const std::vector<VertexBufferLayoutElement>& GetElements() const
+  inline unsigned int stride() const { return m_Stride; }
+  inline const std::vector<VertexBufferLayoutElement>& elements() const
   {
     return m_Elements;
   }

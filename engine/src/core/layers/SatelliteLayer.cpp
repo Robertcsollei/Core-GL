@@ -42,7 +42,7 @@ layers::SatelliteLayer::Render(Renderer& renderer, const SceneState&)
         break;
     }
   }
-  auto* renderTask = m_Satellites.front()->RenderTask();
+  auto* renderTask = m_Satellites.front()->renderTask();
 
   if (m_DrityUniforms) {
     renderTask->material->shader->Bind();

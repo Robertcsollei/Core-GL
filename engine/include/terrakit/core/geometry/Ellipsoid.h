@@ -12,7 +12,6 @@ public:
   Ellipsoid(glm::dvec3 radii);
   ~Ellipsoid() = default;
 
-  const glm::dvec3& Radii() const noexcept { return m_Radii; }
   glm::dvec3 GeodeticSurfaceNormal(const glm::dvec3& p);
   glm::dvec3 GeodeticSurfaceNormal(const Geodetic3D& geodetic);
   glm::dvec3 ToVec3D(const Geodetic3D& geodetic);
@@ -26,6 +25,8 @@ public:
   Geodetic2D ToGeodetic2D(const glm::dvec3& p);
   Geodetic3D ToGeodetic3D(const glm::dvec3& p);
 
+public:
+  const glm::dvec3& radii() const noexcept { return m_Radii; }
   static const Ellipsoid wgs84;
   static const Ellipsoid unitSphere;
 

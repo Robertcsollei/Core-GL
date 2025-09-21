@@ -15,7 +15,7 @@ public:
   Mesh* Add(std::string key, std::unique_ptr<Mesh> mesh);
   Mesh* Get(std::string_view key) const noexcept;
 
-  void clear() { m_Cache.clear(); }
+  void Clear() { m_Cache.clear(); }
 
 private:
   std::unordered_map<std::string, std::unique_ptr<Mesh>> m_Cache;

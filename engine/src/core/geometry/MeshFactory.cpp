@@ -14,7 +14,7 @@ BuildEllipsoid(std::vector<Mesh::Vertex>& outVerts,
 {
   const int rows = stacks + 1;
   const int cols = slices + 1;
-  glm::dvec3 radii = ellipsoid.Radii();
+  glm::dvec3 radii = ellipsoid.radii();
   outVerts.reserve(outVerts.size() + rows * cols);
   outIdx.reserve(outIdx.size() + stacks * slices * 6);
 

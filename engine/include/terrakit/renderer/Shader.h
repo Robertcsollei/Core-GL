@@ -37,7 +37,7 @@ public:
 
   void SetUniformMat4f(std::string_view name, const glm::mat4& matrix);
 
-  unsigned int GetRendererID() const { return m_RendererID; }
+  unsigned int rendererID() const { return m_RendererID; }
 
 private:
   unsigned int m_RendererID = 0;

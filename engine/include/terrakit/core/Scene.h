@@ -33,8 +33,8 @@ public:
   void OnResize();
 
   SceneState& state() { return m_State; }
-  layers::SatelliteLayer* SatLayer() { return m_SatLayer; }
-  layers::GlobeLayer* GlobeLayer() { return m_GlobeLayer; }
+  layers::SatelliteLayer* satLayer() { return m_SatLayer; }
+  layers::GlobeLayer* globeLayer() { return m_GlobeLayer; }
 
 private:
   std::vector<LayerPtr> m_Layers;

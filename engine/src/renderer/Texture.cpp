@@ -16,15 +16,17 @@ Texture::Texture(const std::string& path)
   , m_LocalBuffer(nullptr)
   , m_Width(0)
   , m_Height(0)
-  , m_BPP(0)
+  , m_Bpp(0)
 {
   // stbi_set_flip_vertically_on_load(true);
-  m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_BPP, 4);
+  m_LocalBuffer = stbi_load(path.c_str(), &m_Width, &m_Height, &m_Bpp, 4);
 
   if (!m_LocalBuffer) {
-    std::string errorMsg = std::string("Failed to load texture: ") + std::string(stbi_failure_reason()) +
-                          std::string(" | Path: ") + path +
-                          std::string(" | Working directory: ") + std::filesystem::current_path().string();
+    std::string errorMsg = std::string("Failed to load texture: ") +
+                           std::string(stbi_failure_reason()) +
+                           std::string(" | Path: ") + path +
+                           std::string(" | Working directory: ") +
+                           std::filesystem::current_path().string();
     TK_ERROR(errorMsg);
     throw std::runtime_error("Failed to load texture: " + path);
   }

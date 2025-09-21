@@ -36,13 +36,13 @@ VertexArray::SetIndexBuffer(const IndexBuffer& ib)
 }
 
 void
-VertexArray::addVertexBuffer(const VertexBuffer& vb,
+VertexArray::AddVertexBuffer(const VertexBuffer& vb,
                              const VertexBufferLayout& layout)
 {
   Bind();
   vb.Bind();
 
-  const auto& elements = layout.GetElements();
+  const auto& elements = layout.elements();
   unsigned int offset = 0;
   for (unsigned int i = 0; i < elements.size(); i++) {
     const GLuint attrib = m_NextAttribIndex++;
@@ -54,7 +54,7 @@ VertexArray::addVertexBuffer(const VertexBuffer& vb,
                                  element.count,
                                  element.type,
                                  element.normalized,
-                                 layout.GetStride(),
+                                 layout.stride(),
                                  (const void*)offset));
 
     offset +=

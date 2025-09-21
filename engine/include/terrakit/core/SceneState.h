@@ -13,7 +13,7 @@ struct SceneState
   // PickingSystem picking;
   // ModelManager models;
   double satelliteSpeedMultiplier =
-    60.0; // how many seconds per real-time second
+    1.0; // how many seconds per real-time second
   Satellite* selectedSat = nullptr;
   Camera camera;
 

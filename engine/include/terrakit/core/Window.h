@@ -26,10 +26,11 @@ public:
   void BeginImGuiFrame();
   void EndImGuiFrame();
 
-  SDL_Window* Sdl() const { return m_Window; }
   void DrawableSize(int& fbW, int& fbH) const;
-
   void SetVSync(bool enabled);
+
+public:
+  SDL_Window* sdl() const { return m_Window; }
 
 private:
   void InitSDL();

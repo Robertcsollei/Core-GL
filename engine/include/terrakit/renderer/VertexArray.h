@@ -14,12 +14,12 @@ public:
   void Bind() const;
   void Unbind() const;
 
-  void addVertexBuffer(const VertexBuffer& vb,
+  void AddVertexBuffer(const VertexBuffer& vb,
                        const VertexBufferLayout& layout);
   void SetIndexBuffer(const IndexBuffer& ib);
 
-  const IndexBuffer* GetIndexBuffer() const { return m_IndexBuffer; }
-  unsigned int GetRendererID() const { return m_RendererID; }
+  const IndexBuffer* indexBuffer() const { return m_IndexBuffer; }
+  unsigned int rendererID() const { return m_RendererID; }
 
 private:
   unsigned int m_RendererID = 0;
