@@ -2,10 +2,14 @@
 
 # Find packages from vcpkg
 find_package(SDL2 CONFIG REQUIRED)
-find_package(glad CONFIG REQUIRED) 
+find_package(glad CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
-find_package(cpr CONFIG REQUIRED)
 find_package(Stb REQUIRED)
+
+# CPR is desktop-only (not WASM compatible)
+if(NOT TERRAKIT_BUILD_WASM)
+    find_package(cpr CONFIG REQUIRED)
+endif()
 
 # Collect engine sources
 file(GLOB_RECURSE ENGINE_SOURCES
@@ -54,15 +58,20 @@ target_sources(TerraKitEngine PRIVATE
 target_link_libraries(TerraKitEngine
     PUBLIC
         SDL2::SDL2
-        SDL2::SDL2main 
+        SDL2::SDL2main
         glad::glad
         glm::glm
-    PRIVATE
-        cpr::cpr
 )
+
+# Link CPR only for desktop builds
+if(NOT TERRAKIT_BUILD_WASM)
+    target_link_libraries(TerraKitEngine PRIVATE cpr::cpr)
+endif()
 
 # C++ standard
 set_property(TARGET TerraKitEngine PROPERTY CXX_STANDARD 20)
+set_property(TARGET TerraKitEngine PROPERTY CXX_STANDARD_REQUIRED ON)
+
 
 # IDE folder organization
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}"

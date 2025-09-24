@@ -41,9 +41,17 @@ Window::InitSDL()
 
   sdlCheck(SDL_Init(SDL_INIT_VIDEO) == 0, "SDL_Init");
 
+#ifdef __EMSCRIPTEN__
+  // WebGL/Emscripten uses OpenGL ES
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#else
+  // Desktop uses Core profile
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+#endif
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
   m_Window = SDL_CreateWindow(m_Ctx.title.c_str(),
@@ -125,7 +133,11 @@ Window::InitImGui()
   colors[ImGuiCol_ResizeGripActive] = ImVec4(1.00f, 0.55f, 0.00f, 1.00f);
 
   ImGui_ImplSDL2_InitForOpenGL(m_Window, m_GLContext);
+#ifdef __EMSCRIPTEN__
+  ImGui_ImplOpenGL3_Init("#version 300 es");
+#else
   ImGui_ImplOpenGL3_Init("#version 130");
+#endif
 }
 
 void

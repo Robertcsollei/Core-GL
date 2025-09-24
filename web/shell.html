@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TerraKit - Satellite Tracker</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #4CAF50;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .header p {
+            margin: 5px 0;
+            color: #888;
+            font-size: 1.1em;
+        }
+
+        #canvas {
+            display: block;
+            border: 2px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            background-color: #000;
+        }
+
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+            color: #4CAF50;
+        }
+
+        .loading-spinner {
+            border: 3px solid #333;
+            border-top: 3px solid #4CAF50;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding-top: 40px;
+            text-align: center;
+            color: #555;
+            font-size: 0.8em;
+        }
+
+        .footer a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>TerraKit</h1>
+        <p>Real-time Satellite Tracking &amp; Visualization</p>
+    </div>
+
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=1></canvas>
+
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading satellite data and initializing renderer...</p>
+    </div>
+
+    <div class="controls">
+        <p><strong>Controls:</strong> Mouse to rotate • Scroll to zoom • Arrow keys to pan</p>
+    </div>
+
+    <div class="footer">
+        <p>Built with <a href="https://github.com/Robertcsollei/TerraKit" target="_blank">TerraKit</a> •
+           Powered by WebAssembly &amp; WebGL</p>
+    </div>
+
+    <script type='text/javascript'>
+        var Module = {
+            preRun: [],
+            postRun: [],
+            print: (function() {
+                return function(text) {
+                    if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+                    console.log(text);
+                };
+            })(),
+            printErr: function(text) {
+                if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+                console.error(text);
+            },
+            canvas: (function() {
+                var canvas = document.getElementById('canvas');
+                canvas.addEventListener("webglcontextlost", function(e) {
+                    alert('WebGL context lost. You will need to reload the page.');
+                    e.preventDefault();
+                }, false);
+                return canvas;
+            })(),
+            setStatus: function(text) {
+                var loading = document.getElementById('loading');
+                if (!text) {
+                    loading.style.display = 'none';
+                } else {
+                    loading.querySelector('p').innerHTML = text;
+                    loading.style.display = 'block';
+                }
+            },
+            totalDependencies: 0,
+            monitorRunDependencies: function(left) {
+                this.totalDependencies = Math.max(this.totalDependencies, left);
+                Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+            }
+        };
+
+        Module.setStatus('Downloading...');
+
+        window.onerror = function() {
+            Module.setStatus('Exception thrown, see JavaScript console');
+            Module.setStatus = function(text) {
+                if (text) console.error('[post-exception status] ' + text);
+            };
+        };
+    </script>
+    {{{ SCRIPT }}}
+</body>
+</html>

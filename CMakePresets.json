@@ -1,8 +1,8 @@
-﻿{
+{
     "version": 3,
     "configurePresets": [
         {
-            "name": "windows-base",
+            "name": "windows-base", 
             "hidden": true,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
@@ -104,6 +104,47 @@
                     "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
                 }
             }
+        },
+        {
+            "name": "wasm-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+          "cacheVariables": {
+            "TERRAKIT_BUILD_WASM": "ON",
+            "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG}/scripts/buildsystems/vcpkg.cmake",
+            "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
+            "VCPKG_TARGET_TRIPLET": "wasm32-emscripten"
+          }
+        },
+        {
+            "name": "wasm-debug",
+            "displayName": "WebAssembly Debug",
+            "inherits": "wasm-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "wasm-release",
+            "displayName": "WebAssembly Release",
+            "inherits": "wasm-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release" 
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "wasm-debug",
+            "displayName": "WebAssembly Debug",
+            "configurePreset": "wasm-debug"
+        },
+        {
+            "name": "wasm-release",
+            "displayName": "WebAssembly Release",
+            "configurePreset": "wasm-release"
         }
     ]
 }

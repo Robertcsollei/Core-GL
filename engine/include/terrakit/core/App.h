@@ -23,6 +23,10 @@ public:
   int Run();
   const AppContext& Context() const { return m_Ctx; }
 
+#ifdef __EMSCRIPTEN__
+  void MainLoopIteration();
+#endif
+
 protected:
   void HandleEvent(const SDL_Event& e);
 

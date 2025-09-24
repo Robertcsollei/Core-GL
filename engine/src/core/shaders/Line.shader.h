@@ -1,11 +1,17 @@
 #pragma once
 
+#ifdef __EMSCRIPTEN__
+#define SHADER_VERSION "#version 300 es\nprecision mediump float;"
+#else
+#define SHADER_VERSION "#version 330 core"
+#endif
+
 namespace Shaders {
 
 namespace Line {
 
-static const char* vertex = R"(
-#version 330 core
+static const char* vertex =
+SHADER_VERSION R"(
 
 layout(std140) uniform Camera {
     mat4 u_View;
@@ -54,8 +60,8 @@ void main() {
 
 )";
 
-static const char* fragment = R"(
-#version 330 core
+static const char* fragment =
+SHADER_VERSION R"(
 
 in vec4 v_Color;
 out vec4 color;

@@ -43,7 +43,10 @@ Renderer::Renderer()
   GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_CameraUBO)); // binding = 0
   GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 
+#ifndef __EMSCRIPTEN__
+  // GL_PROGRAM_POINT_SIZE is not available in WebGL/OpenGL ES
   GLCall(glEnable(GL_PROGRAM_POINT_SIZE));
+#endif
 }
 
 void

@@ -3,6 +3,7 @@
 #include <string>
 #include <terrakit/renderer/Shader.h>
 #include <unordered_map>
+#include <vector>
 
 namespace terrakit::core {
 class ShaderLibrary
