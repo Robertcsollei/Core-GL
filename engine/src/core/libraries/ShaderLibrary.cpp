@@ -13,19 +13,21 @@ namespace terrakit::core {
 ShaderLibrary::ShaderLibrary()
 {
   RegisterSource(ShaderNames::Object3dShader,
-                 Shaders::Object3d::vertex,
-                 Shaders::Object3d::fragment,
+                 Shaders::Object3d::vertex.c_str(),
+                 Shaders::Object3d::fragment.c_str(),
                  { { "Camera", 0 } });
 
-  RegisterSource(
-    ShaderNames::PointShader, Shaders::Point::vertex, Shaders::Point::fragment);
+  RegisterSource(ShaderNames::PointShader,
+                 Shaders::Point::vertex.c_str(),
+                 Shaders::Point::fragment.c_str());
 
-  RegisterSource(
-    ShaderNames::LineShader, Shaders::Line::vertex, Shaders::Line::fragment);
+  RegisterSource(ShaderNames::LineShader,
+                 Shaders::Line::vertex.c_str(),
+                 Shaders::Line::fragment.c_str());
 
   RegisterSource(ShaderNames::AtmosphereShader,
-                 Shaders::Atmosphere::vertex,
-                 Shaders::Atmosphere::fragment);
+                 Shaders::Atmosphere::vertex.c_str(),
+                 Shaders::Atmosphere::fragment.c_str());
 }
 
 std::shared_ptr<Shader>

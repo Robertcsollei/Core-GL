@@ -1,4 +1,3 @@
-#pragma once
 #include <terrakit/core/layers/GlobeLayer.h>
 
 using namespace terrakit::core;

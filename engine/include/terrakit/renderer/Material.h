@@ -1,5 +1,5 @@
 #pragma once
-#include <glad/glad.h>
+#include <terrakit/renderer/OpenGL.h>
 #include <memory>
 #include <string>
 #include <terrakit/renderer/Shader.h>

@@ -32,6 +32,7 @@ Engine
 ## Quick Start
 **Requirements:** C++20, OpenGL 3.3+, CMake 3.20+, vcpkg
 
+### Desktop Build (Windows/Linux/macOS)
 ```bash
 git clone https://github.com/Robertcsollei/TerraKit.git
 cd TerraKit
@@ -39,12 +40,50 @@ cd TerraKit
 # Set VCPKG environment variable
 export VCPKG_ROOT=/path/to/vcpkg  # Windows: set VCPKG_ROOT=C:\vcpkg
 
-cmake -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
+# Configure and build using presets
+cmake --preset x64-release    # or x64-debug for debugging
+cmake --build --preset build-x64-release
 
 # Run example application
-./build/examples/satelliteTracker/SatelliteTracker
+./out/build/x64-release/examples/satelliteTracker/SatelliteTracker
 ```
+
+### WebAssembly Build
+```bash
+# Requires Emscripten SDK installed
+source /path/to/emsdk/emsdk_env.sh  # Windows: emsdk_env.bat
+
+cmake --preset wasm-release
+cmake --build --preset build-wasm-release
+
+# Serve the web build
+cd out/build/wasm-release
+python -m http.server 8000  # Navigate to localhost:8000
+```
+
+### OpenGL Version Configuration
+TerraKit supports multiple OpenGL versions for different target platforms:
+
+| OpenGL Version | Target Platform | Shader Version | Description |
+|----------------|-----------------|----------------|-------------|
+| **OpenGL 3.3 Core** | Desktop (Default) | `#version 330 core` | Maximum compatibility, older hardware |
+| **OpenGL 4.3 Core** | Modern Desktop | `#version 430 core` | Compute shaders, enhanced features |
+| **OpenGL 4.6 Core** | Latest Desktop | `#version 460 core` | Latest features, best performance |
+| **OpenGL ES 3.0** | WebAssembly/Mobile | `#version 300 es` | Web browsers via WebGL2 |
+| **OpenGL ES 3.2** | Modern Mobile | `#version 320 es` | Enhanced mobile capabilities |
+
+**Custom OpenGL Configuration:**
+```bash
+# Configure specific OpenGL version
+cmake --preset x64-debug -DOPENGL_VERSION=430 -DOPENGL_PROFILE=Core
+cmake --preset wasm-debug -DOPENGL_VERSION=320 -DOPENGL_PROFILE=ES
+
+# Available options:
+# OPENGL_VERSION: 330, 430, 460, 300, 320
+# OPENGL_PROFILE: Core, ES
+```
+
+**Note:** WebAssembly builds automatically default to OpenGL ES 3.0, while desktop builds default to OpenGL 3.3 Core for maximum compatibility.
 
 ## Core Technologies
 - **Languages**: C++20, GLSL

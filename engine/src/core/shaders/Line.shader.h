@@ -1,17 +1,13 @@
 #pragma once
 
-#ifdef __EMSCRIPTEN__
-#define SHADER_VERSION "#version 300 es\nprecision mediump float;"
-#else
-#define SHADER_VERSION "#version 330 core"
-#endif
+#include <terrakit/platform/OpenGLContext.h>
 
 namespace Shaders {
 
 namespace Line {
 
-static const char* vertex =
-SHADER_VERSION R"(
+static const std::string vertex =
+  std::string(terrakit::platform::OpenGLContext::GetShaderVersion()) + R"(
 
 layout(std140) uniform Camera {
     mat4 u_View;
@@ -60,8 +56,8 @@ void main() {
 
 )";
 
-static const char* fragment =
-SHADER_VERSION R"(
+static const std::string fragment =
+  std::string(terrakit::platform::OpenGLContext::GetShaderVersion()) + R"(
 
 in vec4 v_Color;
 out vec4 color;

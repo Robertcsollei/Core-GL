@@ -3,118 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TerraKit - Satellite Tracker</title>
+    <title>TerraKit</title>
     <style>
-        body {
+        * {
             margin: 0;
-            padding: 20px;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .header h1 {
-            margin: 0;
-            color: #4CAF50;
-            font-size: 2.5em;
-            font-weight: 300;
-        }
-
-        .header p {
-            margin: 5px 0;
-            color: #888;
-            font-size: 1.1em;
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
         }
 
         #canvas {
             display: block;
-            border: 2px solid #333;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-            background-color: #000;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            cursor: crosshair;
         }
 
-        .loading {
-            text-align: center;
-            margin-top: 20px;
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .toast.loading {
             color: #4CAF50;
         }
 
-        .loading-spinner {
-            border: 3px solid #333;
-            border-top: 3px solid #4CAF50;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 10px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .controls {
-            margin-top: 20px;
-            text-align: center;
-            color: #888;
-            font-size: 0.9em;
-        }
-
-        .footer {
-            margin-top: auto;
-            padding-top: 40px;
-            text-align: center;
-            color: #555;
-            font-size: 0.8em;
-        }
-
-        .footer a {
-            color: #4CAF50;
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
+        .toast.error {
+            color: #f44336;
+            background: rgba(244, 67, 54, 0.1);
+            border-color: rgba(244, 67, 54, 0.3);
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>TerraKit</h1>
-        <p>Real-time Satellite Tracking &amp; Visualization</p>
-    </div>
-
-    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=1></canvas>
-
-    <div class="loading" id="loading">
-        <div class="loading-spinner"></div>
-        <p>Loading satellite data and initializing renderer...</p>
-    </div>
-
-    <div class="controls">
-        <p><strong>Controls:</strong> Mouse to rotate • Scroll to zoom • Arrow keys to pan</p>
-    </div>
-
-    <div class="footer">
-        <p>Built with <a href="https://github.com/Robertcsollei/TerraKit" target="_blank">TerraKit</a> •
-           Powered by WebAssembly &amp; WebGL</p>
-    </div>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="1"></canvas>
+    <div id="toast" class="toast"></div>
 
     <script type='text/javascript'>
+        function showToast(message, type = 'loading') {
+            const toast = document.getElementById('toast');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toast.style.display = 'block';
+
+            if (type === 'error') {
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        function hideToast() {
+            document.getElementById('toast').style.display = 'none';
+        }
+
         var Module = {
             preRun: [],
-            postRun: [],
+            postRun: [function() {
+                hideToast();
+            }],
             print: (function() {
                 return function(text) {
                     if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
@@ -128,31 +94,29 @@
             canvas: (function() {
                 var canvas = document.getElementById('canvas');
                 canvas.addEventListener("webglcontextlost", function(e) {
-                    alert('WebGL context lost. You will need to reload the page.');
+                    showToast('WebGL context lost - reload required', 'error');
                     e.preventDefault();
                 }, false);
                 return canvas;
             })(),
             setStatus: function(text) {
-                var loading = document.getElementById('loading');
                 if (!text) {
-                    loading.style.display = 'none';
+                    hideToast();
                 } else {
-                    loading.querySelector('p').innerHTML = text;
-                    loading.style.display = 'block';
+                    showToast(text, 'loading');
                 }
             },
             totalDependencies: 0,
             monitorRunDependencies: function(left) {
                 this.totalDependencies = Math.max(this.totalDependencies, left);
-                Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+                Module.setStatus(left ? 'Loading... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : '');
             }
         };
 
-        Module.setStatus('Downloading...');
+        showToast('Initializing...');
 
-        window.onerror = function() {
-            Module.setStatus('Exception thrown, see JavaScript console');
+        window.onerror = function(msg) {
+            showToast('Error: ' + msg, 'error');
             Module.setStatus = function(text) {
                 if (text) console.error('[post-exception status] ' + text);
             };

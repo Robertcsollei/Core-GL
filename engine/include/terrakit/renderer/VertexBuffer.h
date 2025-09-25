@@ -1,5 +1,5 @@
 #pragma once
-#include <glad/glad.h>
+#include <terrakit/renderer/OpenGL.h>
 
 namespace terrakit::renderer {
 class VertexBuffer

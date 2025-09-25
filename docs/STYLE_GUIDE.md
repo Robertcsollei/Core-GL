@@ -171,28 +171,76 @@ int width() const { return m_Width; }
 int width() const { return m_Width; }
 ```
 
-## WASM Compatibility
+## Cross-Platform Architecture
 
-### Conditional Compilation
-Use preprocessor directives for platform-specific code:
+### Platform Abstraction
+TerraKit uses build-time file selection instead of runtime conditionals. Platform-specific implementations are organized in separate directories:
+
+```
+src/platform/
+├── desktop/           # Windows/Linux/macOS implementations
+│   ├── DesktopMainLoop.cpp
+│   ├── DesktopOpenGLLoader.cpp
+│   └── DesktopNetworkClient.cpp
+├── emscripten/        # WebAssembly implementations
+│   ├── EmscriptenMainLoop.cpp
+│   ├── EmscriptenOpenGLLoader.cpp
+│   └── EmscriptenNetworkClient.cpp
+└── common/           # Shared platform code
+    └── OpenGLContext.cpp
+```
+
+### OpenGL Configuration
+Use compile-time OpenGL configuration instead of runtime detection:
 ```cpp
+// Correct - compile-time configuration
+static const std::string vertex =
+  std::string(terrakit::platform::OpenGLContext::GetShaderVersion()) + R"(
+  layout(location=0) in vec3 a_Position;
+  // ... shader code
+)";
+
+// Incorrect - runtime conditionals (deprecated)
 #ifdef __EMSCRIPTEN__
-    // WASM-specific implementation
+    std::string shaderVersion = "#version 300 es\n";
+#else
+    std::string shaderVersion = "#version 330 core\n";
+#endif
+```
+
+### Platform-Specific Code
+Avoid `#ifdef __EMSCRIPTEN__` in favor of platform-specific files:
+```cpp
+// Correct - separate platform implementations
+// src/platform/desktop/DesktopLogger.cpp
+void Logger::EnableConsoleOutput() {
+    std::cout << message << std::endl;
+}
+
+// src/platform/emscripten/EmscriptenLogger.cpp
+void Logger::EnableConsoleOutput() {
+    emscripten_console_log(message.c_str());
+}
+
+// Incorrect - inline conditionals (avoid)
+#ifdef __EMSCRIPTEN__
     emscripten_console_log(message.c_str());
 #else
-    // Native implementation
     std::cout << message << std::endl;
 #endif
 ```
 
-### File I/O
-Avoid file operations in WASM builds:
-```cpp
-#ifndef __EMSCRIPTEN__
-void Logger::EnableFileLogging(const std::string& filename) {
-    // File logging only available on native platforms
-}
-#endif
+### CMake Platform Configuration
+Platform selection is handled by CMake build system:
+```cmake
+# CMake automatically selects platform files
+if(EMSCRIPTEN)
+    set(PLATFORM_DIR "emscripten")
+    set(PLATFORM_DEFINITIONS TERRAKIT_EMSCRIPTEN TERRAKIT_WEB)
+else()
+    set(PLATFORM_DIR "desktop")
+    set(PLATFORM_DEFINITIONS TERRAKIT_DESKTOP)
+endif()
 ```
 
 ## Code Organization

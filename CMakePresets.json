@@ -30,6 +30,11 @@
           "cacheVariables": {
             "CMAKE_BUILD_TYPE": "Debug",
             "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG}/scripts/buildsystems/vcpkg.cmake"
+          },
+          "vendor": {
+            "microsoft.com/VisualStudioSettings/CMake/1.0": {
+              "intelliSenseMode": "windows-msvc-x64"
+            }
           }
         },
         {
@@ -137,13 +142,23 @@
     ],
     "buildPresets": [
         {
-            "name": "wasm-debug",
-            "displayName": "WebAssembly Debug",
+            "name": "build-x64-debug",
+            "displayName": "Build x64 Debug",
+            "configurePreset": "x64-debug"
+        },
+        {
+            "name": "build-x64-release",
+            "displayName": "Build x64 Release",
+            "configurePreset": "x64-release"
+        },
+        {
+            "name": "build-wasm-debug",
+            "displayName": "Build WebAssembly Debug",
             "configurePreset": "wasm-debug"
         },
         {
-            "name": "wasm-release",
-            "displayName": "WebAssembly Release",
+            "name": "build-wasm-release",
+            "displayName": "Build WebAssembly Release",
             "configurePreset": "wasm-release"
         }
     ]

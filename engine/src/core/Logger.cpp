@@ -1,6 +1,6 @@
 #include <terrakit/core/Logger.h>
 
-#ifdef __EMSCRIPTEN__
+#ifdef TERRAKIT_EMSCRIPTEN
 #include <emscripten.h>
 #else
 #include <fstream>
@@ -35,7 +35,7 @@ void Logger::Error(const std::string& message) {
 void Logger::Log(LogLevel level, const std::string& message) {
     if (level < m_MinLevel) return;
 
-#ifdef __EMSCRIPTEN__
+#ifdef TERRAKIT_EMSCRIPTEN
     // WASM: Use Emscripten's console API via JavaScript
     std::string logLine = "[" + LevelToString(level) + "] " + message;
 
@@ -91,7 +91,7 @@ std::string Logger::LevelToString(LogLevel level) {
     }
 }
 
-#ifndef __EMSCRIPTEN__
+#ifndef TERRAKIT_EMSCRIPTEN
 void Logger::EnableFileLogging(const std::string& filename) {
     m_LogFile = std::make_unique<std::ofstream>(filename, std::ios::app);
     if (!m_LogFile->is_open()) {

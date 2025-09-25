@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 
-#ifndef __EMSCRIPTEN__
+#ifndef TERRAKIT_EMSCRIPTEN
 #include <memory>
 #include <fstream>
 #endif
@@ -29,7 +29,7 @@ public:
     void Warning(const std::string& message);
     void Error(const std::string& message);
 
-#ifndef __EMSCRIPTEN__
+#ifndef TERRAKIT_EMSCRIPTEN
     void EnableFileLogging(const std::string& filename);
     void DisableFileLogging();
 #endif
@@ -41,7 +41,7 @@ private:
 
     LogLevel m_MinLevel = LogLevel::INFO;
 
-#ifndef __EMSCRIPTEN__
+#ifndef TERRAKIT_EMSCRIPTEN
     std::unique_ptr<std::ofstream> m_LogFile;
 #endif
 };
