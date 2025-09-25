@@ -1,11 +1,13 @@
 #pragma once
 
+#include <terrakit/platform/OpenGLContext.h>
+
 namespace Shaders {
 
 namespace Point {
 
-static const char* vertex = R"(
-#version 330 core
+static const std::string vertex =
+  std::string(terrakit::platform::OpenGLContext::GetShaderVersion()) + R"(
 
 layout(std140) uniform Camera {
     mat4 u_View;
@@ -43,8 +45,8 @@ void main() {
 
 )";
 
-static const char* fragment = R"(
-#version 330 core
+static const std::string fragment =
+  std::string(terrakit::platform::OpenGLContext::GetShaderVersion()) + R"(
 
 in vec4 v_Color;
 

@@ -1,8 +1,8 @@
-﻿{
+{
     "version": 3,
     "configurePresets": [
         {
-            "name": "windows-base",
+            "name": "windows-base", 
             "hidden": true,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
@@ -30,6 +30,11 @@
           "cacheVariables": {
             "CMAKE_BUILD_TYPE": "Debug",
             "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG}/scripts/buildsystems/vcpkg.cmake"
+          },
+          "vendor": {
+            "microsoft.com/VisualStudioSettings/CMake/1.0": {
+              "intelliSenseMode": "windows-msvc-x64"
+            }
           }
         },
         {
@@ -104,6 +109,57 @@
                     "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
                 }
             }
+        },
+        {
+            "name": "wasm-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+          "cacheVariables": {
+            "TERRAKIT_BUILD_WASM": "ON",
+            "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG}/scripts/buildsystems/vcpkg.cmake",
+            "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake",
+            "VCPKG_TARGET_TRIPLET": "wasm32-emscripten"
+          }
+        },
+        {
+            "name": "wasm-debug",
+            "displayName": "WebAssembly Debug",
+            "inherits": "wasm-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "wasm-release",
+            "displayName": "WebAssembly Release",
+            "inherits": "wasm-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release" 
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "build-x64-debug",
+            "displayName": "Build x64 Debug",
+            "configurePreset": "x64-debug"
+        },
+        {
+            "name": "build-x64-release",
+            "displayName": "Build x64 Release",
+            "configurePreset": "x64-release"
+        },
+        {
+            "name": "build-wasm-debug",
+            "displayName": "Build WebAssembly Debug",
+            "configurePreset": "wasm-debug"
+        },
+        {
+            "name": "build-wasm-release",
+            "displayName": "Build WebAssembly Release",
+            "configurePreset": "wasm-release"
         }
     ]
 }

@@ -1,6 +1,6 @@
 #include <terrakit/core/Logger.h>
 
-#ifdef __EMSCRIPTEN__
+#ifdef TERRAKIT_EMSCRIPTEN
 #include <emscripten.h>
 #else
 #include <fstream>
@@ -35,16 +35,22 @@ void Logger::Error(const std::string& message) {
 void Logger::Log(LogLevel level, const std::string& message) {
     if (level < m_MinLevel) return;
 
-#ifdef __EMSCRIPTEN__
-    // WASM: Use Emscripten's console API
+#ifdef TERRAKIT_EMSCRIPTEN
+    // WASM: Use Emscripten's console API via JavaScript
     std::string logLine = "[" + LevelToString(level) + "] " + message;
 
     if (level >= LogLevel::ERROR) {
-        emscripten_console_error(logLine.c_str());
+        EM_ASM_({
+            console.error(UTF8ToString($0));
+        }, logLine.c_str());
     } else if (level >= LogLevel::WARNING) {
-        emscripten_console_warn(logLine.c_str());
+        EM_ASM_({
+            console.warn(UTF8ToString($0));
+        }, logLine.c_str());
     } else {
-        emscripten_console_log(logLine.c_str());
+        EM_ASM_({
+            console.log(UTF8ToString($0));
+        }, logLine.c_str());
     }
 #else
     // Native: Use timestamped logging with optional file output
@@ -85,7 +91,7 @@ std::string Logger::LevelToString(LogLevel level) {
     }
 }
 
-#ifndef __EMSCRIPTEN__
+#ifndef TERRAKIT_EMSCRIPTEN
 void Logger::EnableFileLogging(const std::string& filename) {
     m_LogFile = std::make_unique<std::ofstream>(filename, std::ios::app);
     if (!m_LogFile->is_open()) {

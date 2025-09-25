@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
+#include <terrakit/renderer/OpenGL.h>
 #include <terrakit/core/Mesh.h>
 #include <terrakit/renderer/IndexBuffer.h>
 #include <terrakit/renderer/Shader.h>

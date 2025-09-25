@@ -1,9 +1,11 @@
-#include <terrakit/core/Window.h>
 #include <terrakit/core/Logger.h>
+#include <terrakit/core/Window.h>
+#include <terrakit/platform/OpenGLLoader.h>
+#include <terrakit/platform/OpenGLContext.h>
 
 #include <stdexcept>
 
-#include <glad/glad.h>
+#include <terrakit/renderer/OpenGL.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_opengl3.h>
@@ -41,9 +43,10 @@ Window::InitSDL()
 
   sdlCheck(SDL_Init(SDL_INIT_VIDEO) == 0, "SDL_Init");
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  // Configure OpenGL context using compile-time settings
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, terrakit::platform::OpenGLContext::GetSDLProfileMask());
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, terrakit::platform::OpenGLContext::GetMajorVersion());
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, terrakit::platform::OpenGLContext::GetMinorVersion());
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
   m_Window = SDL_CreateWindow(m_Ctx.title.c_str(),
@@ -74,18 +77,19 @@ Window::InitSDL()
 void
 Window::InitGL()
 {
-  // Load GL functions via GLAD using SDL loader
-  if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-    TK_ERROR("Failed to initialize GLAD");
-    throw std::runtime_error("Failed to initialize GLAD");
+  auto loader = terrakit::platform::OpenGLLoader::Create();
+  if (!loader->LoadGL()) {
+    TK_ERROR("Failed to initialize OpenGL");
+    throw std::runtime_error("Failed to initialize OpenGL");
   }
+
   SetVSync(true);
 
   int fbW, fbH;
   DrawableSize(fbW, fbH);
   glViewport(0, 0, fbW, fbH);
 
-  TK_INFO("OpenGL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+  TK_INFO("OpenGL version: " + std::string(loader->GetVersionString()));
 }
 
 void
@@ -125,7 +129,7 @@ Window::InitImGui()
   colors[ImGuiCol_ResizeGripActive] = ImVec4(1.00f, 0.55f, 0.00f, 1.00f);
 
   ImGui_ImplSDL2_InitForOpenGL(m_Window, m_GLContext);
-  ImGui_ImplOpenGL3_Init("#version 130");
+  ImGui_ImplOpenGL3_Init(terrakit::platform::OpenGLContext::GetImGuiVersion());
 }
 
 void
@@ -194,6 +198,12 @@ Window::DrawableSize(int& fbW, int& fbH) const
 void
 Window::SetVSync(bool enabled)
 {
+#ifdef TERRAKIT_EMSCRIPTEN
+  // In Emscripten, SDL_GL_SetSwapInterval must be called after the main loop is established
+  // For now, this is a no-op - VSync is handled by browser's requestAnimationFrame
+  (void)enabled; // Suppress unused parameter warning
+#else
   SDL_GL_SetSwapInterval(enabled ? 1 : 0);
+#endif
 }
 } // namespace terrakit::core

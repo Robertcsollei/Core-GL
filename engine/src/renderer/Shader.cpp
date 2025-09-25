@@ -1,6 +1,6 @@
+#include <terrakit/core/Logger.h>
 #include <terrakit/renderer/Renderer.h>
 #include <terrakit/renderer/Shader.h>
-#include <terrakit/core/Logger.h>
 
 using namespace terrakit::renderer;
 
@@ -125,8 +125,12 @@ Shader::GetUniformLocation(std::string_view name) const
 
   GLCall(int location =
            glGetUniformLocation(m_RendererID, std::string{ name }.c_str()));
+  TK_INFO(std::string("location of ") + std::string(name) +
+          std::string(" loc:") + std::to_string(location));
   if (location == -1) {
-    TK_ERROR(std::string("Warning: uniform '") + std::string(name) + std::string("' not found in shader program.\n"));
+    TK_ERROR(std::string("Warning: uniform '") + std::string(name) +
+             std::string("' not found in shader program.\n"));
+    return location;
   }
 
   // store even -1 to avoid repeated GL calls
@@ -170,9 +174,10 @@ Shader::CreateShader(const std::string& vsSrc, const std::string& fsSrc)
   for (auto& uniformBlock : m_UniformBlockCache) {
     const std::string& name = uniformBlock.first;
     unsigned binding = uniformBlock.second;
-    GLuint blockIndex = glGetUniformBlockIndex(program, name.c_str());
+
+    GLCall(GLuint blockIndex = glGetUniformBlockIndex(program, name.c_str()));
     if (blockIndex != GL_INVALID_INDEX) {
-      glUniformBlockBinding(program, blockIndex, binding);
+      GLCall(glUniformBlockBinding(program, blockIndex, binding));
     }
   }
   GLCall(glValidateProgram(program));

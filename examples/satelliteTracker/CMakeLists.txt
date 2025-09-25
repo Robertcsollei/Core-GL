@@ -54,6 +54,12 @@ if(MSVC)
         /diagnostics:caret
     )
     target_link_options(SatelliteTracker PRIVATE
-        "$<$<CONFIG:Debug>:/DEBUG:FULL>"
+        "$<$<CONFIG:DEBUG>:/DEBUG:FULL>"
     )
+endif()
+
+# WebAssembly specific settings
+if(TERRAKIT_BUILD_WASM)
+    include(${CMAKE_SOURCE_DIR}/web/CMakeLists.txt)
+    configure_web_target(SatelliteTracker)
 endif()

@@ -23,7 +23,7 @@ public:
   template<typename T>
   void Push(unsigned int count)
   {
-    std::runtime_error();
+    throw std::runtime_error("invalid vertex buffer layout");
   }
 
   template<>

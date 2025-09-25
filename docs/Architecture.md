@@ -24,10 +24,20 @@ Transform TerraKit into a modular real-time GIS engine with clear separation of 
 - Material and texture management
 
 **Platform Abstraction**
-- Conditionally compiled based on target platform (`#ifdef __EMSCRIPTEN__`)
-- Network layer (native HTTP vs fetch API)
-- File I/O (native filesystem vs embedded assets)
-- Input handling (SDL events, touch, mouse)
+- Build-time file selection instead of runtime conditionals
+- Separate implementations: `src/platform/desktop/` vs `src/platform/emscripten/`
+- Network layer (CPR for desktop, Fetch API for WebAssembly)
+- File I/O abstraction (native filesystem vs virtual filesystem)
+- Input handling through SDL2 (cross-platform compatibility layer)
+
+## Current Implementation Status
+
+**OpenGL Configuration System**
+- Compile-time OpenGL version selection via CMake
+- Supports OpenGL 3.3/4.3/4.6 Core and OpenGL ES 3.0/3.2
+- `constexpr` shader version generation
+- VS2022 IntelliSense compatibility
+
 
 ## Architectural TODO
 

@@ -1,6 +1,6 @@
 #pragma once
-#include <string>
 #include <glm/glm.hpp>
+#include <string>
 #include <terrakit/core/libraries/MaterialLibrary.h>
 #include <terrakit/core/libraries/MeshLibrary.h>
 #include <terrakit/core/libraries/ShaderLibrary.h>
@@ -23,7 +23,7 @@ struct SatOptions
 
 struct AppContext
 {
-  const std::string& title = "TerraKit Lite";
+  const std::string title = "TerraKit Lite";
 
   // TODO: prevent accidental overriding. Quickfix for now.
   float width;

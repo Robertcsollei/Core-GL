@@ -1,11 +1,13 @@
 #pragma once
 
+#include <terrakit/platform/OpenGLContext.h>
+
 namespace Shaders {
 
 namespace Object3d {
 
-static const char* vertex = R"(
-#version 330 core
+static const std::string vertex =
+  std::string(terrakit::platform::OpenGLContext::GetShaderVersion()) + R"(
 layout(std140) uniform Camera {
     mat4 u_View;
     mat4 u_Proj;
@@ -34,8 +36,8 @@ void main() {
 
 )";
 
-static const char* fragment = R"(
-#version 330 core
+static const std::string fragment =
+  std::string(terrakit::platform::OpenGLContext::GetShaderVersion()) + R"(
 
 in vec3 v_WorldNormal;
 in vec3 v_EyeDir;

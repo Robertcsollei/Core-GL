@@ -43,7 +43,10 @@ Renderer::Renderer()
   GLCall(glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_CameraUBO)); // binding = 0
   GLCall(glBindBuffer(GL_UNIFORM_BUFFER, 0));
 
+#ifndef TERRAKIT_EMSCRIPTEN
+  // GL_PROGRAM_POINT_SIZE is not available in WebGL/OpenGL ES
   GLCall(glEnable(GL_PROGRAM_POINT_SIZE));
+#endif
 }
 
 void
@@ -105,7 +108,7 @@ Renderer::Submit(Renderable* r)
   static const glm::vec3 lightDirection(0.5f, 1.0f, 0.2f);
   const glm::mat4 model = r->transform.world();
   shader->SetUniformMat4f("u_Model", model); // View/Proj come from Camera UBO
-  shader->SetUniform3f("u_LightDir", lightDirection);
+ // shader->SetUniform3f("u_LightDir", lightDirection);
 
   // 3) Material state + textures
   r->material->applyState();
@@ -170,9 +173,9 @@ Renderer::SubmitPointsInstanced(Renderable* r,
 void
 Renderer::SetPolygoneMode() const
 {
-  if (m_WireframeMode) {
-    GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
-  } else {
-    GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
-  }
+  /* if (m_WireframeMode) {
+     GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_LINE));
+   } else {
+     GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
+   }*/
 }

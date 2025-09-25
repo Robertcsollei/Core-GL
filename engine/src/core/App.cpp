@@ -6,12 +6,13 @@
 #include <terrakit/core/entities/Globe.h>
 #include <terrakit/core/layers/GlobeLayer.h>
 #include <terrakit/renderer/Renderer.h>
+#include <terrakit/platform/MainLoop.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl2.h>
 
 #include <SDL.h>
-#include <glad/glad.h>
+#include <terrakit/renderer/OpenGL.h>
 
 using namespace terrakit::renderer;
 
@@ -36,14 +37,17 @@ Application::Init()
 int
 Application::Run()
 {
-  SDL_Event e;
+  auto mainLoop = terrakit::platform::MainLoop::Create();
   uint64_t last = SDL_GetPerformanceCounter();
 
-  while (m_Running) {
+  return mainLoop->Run([this, &last]() -> bool {
+    SDL_Event e;
+
     while (m_Window->PollEvent(e)) {
       ImGui_ImplSDL2_ProcessEvent(&e);
       HandleEvent(e);
     }
+
     uint64_t now = SDL_GetPerformanceCounter();
     double dt = double(now - last) / SDL_GetPerformanceFrequency();
     last = now;
@@ -62,8 +66,9 @@ Application::Run()
 
     m_Renderer->EndFrame();
     m_Window->Swap();
-  }
-  return 0;
+
+    return m_Running; // Continue loop while running
+  });
 }
 
 void
