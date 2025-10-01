@@ -12,13 +12,12 @@ class MaterialLibrary
 public:
   explicit MaterialLibrary() {}
 
-  terrakit::renderer::Material* Add(
-    std::unique_ptr<terrakit::renderer::Material> material);
-  terrakit::renderer::Material* Get(const std::string& uuid) const noexcept;
+  std::shared_ptr<terrakit::renderer::Material> Add(std::shared_ptr<terrakit::renderer::Material> material);
+  std::shared_ptr<terrakit::renderer::Material> Get(const std::string& uuid) const;
   void Remove(const std::string& uuid);
 
 private:
-  std::unordered_map<std::string, std::unique_ptr<terrakit::renderer::Material>>
+  std::unordered_map<std::string, std::shared_ptr<terrakit::renderer::Material>>
     m_Cache;
 };
 } // namespace terrakit::core

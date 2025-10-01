@@ -14,7 +14,7 @@ public:
 
   void OnAttach(SceneState&, AppContext&) override { m_Attached = true; }
 
-  void Render(terrakit::renderer::Renderer& renderer,
+  void Render(terrakit::core::config::RenderContext& renderCtx,
               const SceneState&) override;
 
 public:

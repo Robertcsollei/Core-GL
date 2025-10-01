@@ -50,16 +50,15 @@ Renderer::Renderer()
 }
 
 void
-Renderer::Clear() const
+Renderer::Clear(const glm::vec4& clearColor) const
 {
   GLCall(glDepthMask(GL_TRUE));
-  GLCall(glClearColor(
-    m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, m_ClearColor.w));
+  GLCall(glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w));
   GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
 void
-Renderer::BeginFrame(const Camera& cam)
+Renderer::BeginFrame(const Camera& cam, const glm::vec4& clearColor)
 {
   Camera::UBO u{};
   u.view = cam.view();
@@ -75,7 +74,7 @@ Renderer::BeginFrame(const Camera& cam)
   GLCall(glEnable(GL_BLEND));
   GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-  Clear();
+  Clear(clearColor);
 }
 
 void
@@ -95,24 +94,23 @@ Renderer::EndFrame() const
 }
 
 void
-Renderer::Submit(Renderable* r)
+Renderer::Submit(Renderable* r, const config::ShaderHandle& shader)
 {
-  if (!r->mesh || !r->material || !r->material->shader)
+  if (!r->mesh || !r->material || !shader)
     return;
 
   // 1) Program
-  auto* shader = r->material->shader.get();
   shader->Bind();
 
   // 2) Per-object uniforms
   static const glm::vec3 lightDirection(0.5f, 1.0f, 0.2f);
   const glm::mat4 model = r->transform.world();
   shader->SetUniformMat4f("u_Model", model); // View/Proj come from Camera UBO
- // shader->SetUniform3f("u_LightDir", lightDirection);
+  // shader->SetUniform3f("u_LightDir", lightDirection);
 
   // 3) Material state + textures
-  r->material->applyState();
-  r->material->bindTextures(); // no-op for your current shader
+  r->material->applyState(shader);
+  r->material->bindTextures(shader);
 
   // 4) Geometry
   r->mesh->vao.Bind();
@@ -121,41 +119,43 @@ Renderer::Submit(Renderable* r)
 }
 
 void
-Renderer::SubmitPoint(Renderable* r)
+Renderer::SubmitPoint(Renderable* r, const config::ShaderHandle& shader)
 {
-  if (!r->mesh || !r->material || !r->material->shader)
+  if (!r->mesh || !r->material || !shader)
     return;
-  auto* shader = r->material->shader.get();
+
   shader->Bind();
 
   shader->SetUniformMat4f("u_Model", r->transform.world());
 
-  r->material->applyState();
+  r->material->applyState(shader);
   r->mesh->vao.Bind();
   glDrawArrays(GL_POINTS, 0, 1);
 }
 
 void
-Renderer::SubmitLine(Renderable* r)
+Renderer::SubmitLine(Renderable* r, const config::ShaderHandle& shader)
 {
-
-  if (!r->mesh || !r->material || !r->material->shader)
+  if (!r->mesh || !r->material || !shader)
     return;
-  auto* shader = r->material->shader.get();
+
   shader->Bind();
 
   shader->SetUniformMat4f("u_Model", r->transform.world());
 
-  r->material->applyState();
+  r->material->applyState(shader);
   r->mesh->vao.Bind();
   glDrawArrays(GL_LINE_STRIP, 0, r->mesh->vbo.size());
 }
 
 void
 Renderer::SubmitPointsInstanced(Renderable* r,
+                                const config::ShaderHandle& shader,
                                 const std::vector<Mesh::PointVertex>& vertecies)
 {
-  auto* shader = r->material->shader.get();
+  if (!r->mesh || !r->material || !shader)
+    return;
+
   shader->Bind();
 
   r->mesh->vao.Bind();

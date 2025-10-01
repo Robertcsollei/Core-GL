@@ -7,7 +7,7 @@ using namespace terrakit::renderer;
 
 namespace terrakit::core {
 std::shared_ptr<Texture>
-TextureLibrary::Load2D(const std::string& path)
+TextureLibrary::Load(const std::string& path)
 {
   auto it = m_Cache.find(path);
   if (it != m_Cache.end())
@@ -21,6 +21,16 @@ TextureLibrary::Load2D(const std::string& path)
     TK_ERROR(std::string("Warning: Failed to load texture '") + path + std::string("': " ) + std::string(e.what()));
     return nullptr;
   }
+}
+
+std::shared_ptr<Texture>
+TextureLibrary::Get(const std::string& path)
+{
+  auto it = m_Cache.find(path);
+  if (it != m_Cache.end())
+    return it->second;
+
+  return nullptr; // Don't auto-load, just return cached
 }
 
 } // namespace terrakit::core

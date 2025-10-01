@@ -10,19 +10,18 @@ using namespace terrakit::renderer;
 
 namespace terrakit::core {
 std::unique_ptr<Renderable>
-ObjectFactory::CreateGlobe(const GlobeConfig& cfg, AppContext& ctx)
+ObjectFactory::CreateGlobe(const GlobeConfig& cfg, config::ResourceManager& resources)
 {
-  auto mesh =
-    ctx.meshes.Add("ellipsoid:globe",
-                   MeshFactory::CreateEllipsoid(
-                     cfg.slices, cfg.stacks, glm::vec3(0.f), *cfg.ellipsoid));
+  auto mesh = MeshFactory::CreateEllipsoid(
+    cfg.slices, cfg.stacks, glm::vec3(0.f), *cfg.ellipsoid);
+  auto meshHandle = resources.CreateMesh("ellipsoid:globe", mesh);
 
-  auto material = ctx.materials.Add(
-    MaterialFactory::CreatePong(ctx.texturesPath + cfg.textureName, ctx.shaders, ctx.textures));
+  auto material = MaterialFactory::CreateTextured3D(cfg.textureName, resources);
+  auto materialHandle = resources.CreateMaterial(material);
 
   auto renderable = std::make_unique<Renderable>();
-  renderable->mesh = mesh;
-  renderable->material = material;
+  renderable->mesh = meshHandle;
+  renderable->material = materialHandle;
   Transform t{};
   t.translation = cfg.center;
   t.scale = { 1, 1, 1 };
@@ -33,40 +32,29 @@ ObjectFactory::CreateGlobe(const GlobeConfig& cfg, AppContext& ctx)
 }
 
 std::unique_ptr<Renderable>
-ObjectFactory::CreateSatellite(const glm::vec3 pos, AppContext& ctx)
+ObjectFactory::CreateSatellite(const glm::vec3 pos, config::ResourceManager& resources)
 {
-  auto mesh = ctx.meshes.Get("point:satellite");
-  if (!mesh) {
-    mesh = ctx.meshes.Add("point:satellite",
-                          MeshFactory::CreatePoint(glm::vec3(0.f), 0xFFFFFFFF));
-
-    mesh->AddInstanceBuffer(nullptr,
+  auto meshHandle = resources.GetMesh("point:satellite");
+  if (!meshHandle.IsValid()) {
+    auto mesh = MeshFactory::CreatePoint(glm::vec3(0.f), 0xFFFFFFFF);
+    mesh.get()->AddInstanceBuffer(nullptr,
                             15000 * sizeof(Mesh::PointVertex),
                             2); // location=2 in shader
+    meshHandle = resources.CreateMesh("point:satellite", mesh);
   }
 
-  auto material = ctx.materials.Get("Point Material");
-  if (!material) {
-    material = ctx.materials.Add(
-      MaterialFactory::CreatePoint(ctx.shaders, ctx.textures));
+  auto materialHandle = resources.GetMaterial("point_material");
+  if (!materialHandle.IsValid()) {
+    auto material = MaterialFactory::CreatePoint(resources);
+    materialHandle = resources.CreateMaterial(material);
 
-    material->uniforms.push_back({ Material::UniformBinding::Type::Float,
-                                   &ctx.satOptions.nearDistance,
-                                   "u_NearDist" });
-    material->uniforms.push_back({ Material::UniformBinding::Type::Float,
-                                   &ctx.satOptions.farDistance,
-                                   "u_FarDist" });
-    material->uniforms.push_back({ Material::UniformBinding::Type::Float,
-                                   &ctx.satOptions.minSize,
-                                   "u_MinSize" });
-    material->uniforms.push_back({ Material::UniformBinding::Type::Float,
-                                   &ctx.satOptions.maxSize,
-                                   "u_MaxSize" });
+    // TODO: Uniform binding system needs redesign to decouple from AppContext
+    // material->uniforms.push_back({ ... });
   }
 
   auto renderable = std::make_unique<Renderable>();
-  renderable->mesh = mesh;
-  renderable->material = material;
+  renderable->mesh = meshHandle;
+  renderable->material = materialHandle;
   Transform t{};
   t.translation = pos;
   t.scale = { 1, 1, 1 };

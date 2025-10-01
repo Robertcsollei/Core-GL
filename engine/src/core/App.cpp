@@ -5,8 +5,8 @@
 #include <terrakit/core/entities/Camera.h>
 #include <terrakit/core/entities/Globe.h>
 #include <terrakit/core/layers/GlobeLayer.h>
-#include <terrakit/renderer/Renderer.h>
 #include <terrakit/platform/MainLoop.h>
+#include <terrakit/renderer/Renderer.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl2.h>
@@ -28,9 +28,8 @@ Application::~Application() = default;
 void
 Application::Init()
 {
-
   m_Window = std::make_unique<Window>(m_Ctx);
-  m_Renderer = std::make_unique<Renderer>();
+  m_RenderContext.SetupDefaultShaders();
   m_Scene = std::make_unique<Scene>(m_Ctx);
 }
 
@@ -55,8 +54,8 @@ Application::Run()
     m_Scene->Update(dt);
     Update(dt);
 
-    m_Renderer->BeginFrame(m_Scene->state().camera);
-    m_Scene->Render(*m_Renderer);
+    m_RenderContext.BeginFrame(m_Scene->state().camera);
+    m_Scene->Render(m_RenderContext);
     Render();
 
     m_Window->BeginImGuiFrame();
@@ -64,7 +63,7 @@ Application::Run()
     RenderUI();
     m_Window->EndImGuiFrame();
 
-    m_Renderer->EndFrame();
+    m_RenderContext.EndFrame();
     m_Window->Swap();
 
     return m_Running; // Continue loop while running

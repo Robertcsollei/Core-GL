@@ -2,6 +2,8 @@
 #include <SDL.h>
 #include <memory>
 #include <terrakit/core/AppContext.h>
+#include <terrakit/core/config/RenderContext.h>
+#include <terrakit/core/config/ResourceManager.h>
 
 namespace terrakit::renderer {
 class Renderer;
@@ -31,11 +33,12 @@ protected:
   virtual void RenderUI(){};
 
 protected:
-  std::unique_ptr<terrakit::renderer::Renderer> m_Renderer;
   std::unique_ptr<Scene> m_Scene;
   std::unique_ptr<Window> m_Window;
 
   AppContext m_Ctx;
+  terrakit::core::config::ResourceManager m_ResourceManager;
+  terrakit::core::config::RenderContext m_RenderContext;
 
   bool m_Running = true;
 };

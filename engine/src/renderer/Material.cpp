@@ -2,13 +2,13 @@
 
 namespace terrakit::renderer {
 void
-Material::addTexture(int unit, std::shared_ptr<Texture> t, std::string uniform)
+Material::addTexture(int unit, terrakit::core::config::TextureHandle t, std::string uniform) 
 {
   samplers.push_back({ unit, std::move(t), std::move(uniform) });
 }
 
 void
-Material::applyState() const
+Material::applyState(const terrakit::core::config::ShaderHandle& shader) const
 {
   state.depthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
   glDepthMask(state.depthWrite ? GL_TRUE : GL_FALSE);
@@ -26,12 +26,15 @@ Material::applyState() const
   } else {
     glDisable(GL_CULL_FACE);
   }
-  applyUniforms();
+
+  applyUniforms(shader);
 }
 
 void
-Material::applyUniforms() const
+Material::applyUniforms(const terrakit::core::config::ShaderHandle& shader) const
 {
+  if (!shader.IsValid())
+    return;
 
   for (auto& u : uniforms) {
     switch (u.type) {
@@ -55,12 +58,12 @@ Material::applyUniforms() const
 }
 
 void
-Material::bindTextures() const
+Material::bindTextures(const terrakit::core::config::ShaderHandle& shader) const
 {
-  if (!shader)
+  if (!shader.IsValid())
     return;
   for (const auto& s : samplers) {
-    if (!s.texture)
+    if (!s.texture.IsValid())
       continue;
     glActiveTexture(GL_TEXTURE0 + s.unit);
     s.texture->Bind();

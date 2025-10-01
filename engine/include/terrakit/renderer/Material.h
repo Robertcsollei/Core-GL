@@ -4,6 +4,7 @@
 #include <string>
 #include <terrakit/renderer/Shader.h>
 #include <terrakit/renderer/Texture.h>
+#include <terrakit/core/config/ResourceHandle.h>
 #include <variant>
 #include <vector>
 
@@ -25,7 +26,7 @@ public:
   struct SamplerBinding
   {
     int unit = 0;
-    std::shared_ptr<Texture> texture;
+    terrakit::core::config::TextureHandle texture;
     std::string uniform = "u_Texture";
   };
 
@@ -44,17 +45,17 @@ public:
     std::string name; // uniform name in shader
   };
 
-  std::shared_ptr<Shader> shader;
+  std::string shaderName;
   std::vector<SamplerBinding> samplers;
   Material::State state{};
 
 public:
   explicit Material(const std::string& id,
                     const std::string& n,
-                    std::shared_ptr<Shader> s)
+                    const std::string& shaderName)
     : uuid(id)
     , name(n)
-    , shader(std::move(s))
+    , shaderName(shaderName)
   {
   }
 
@@ -64,10 +65,10 @@ public:
 
 public:
   void addTexture(int unit,
-                  std::shared_ptr<Texture> t,
+                  terrakit::core::config::TextureHandle t,
                   std::string uniform = "u_Texture");
-  void applyState() const;
-  void applyUniforms() const;
-  void bindTextures() const;
+  void applyState(const terrakit::core::config::ShaderHandle& shader) const;
+  void applyUniforms(const terrakit::core::config::ShaderHandle& shader) const;
+  void bindTextures(const terrakit::core::config::ShaderHandle& shader) const;
 };
 } // namespace terrakit::core

@@ -1,19 +1,24 @@
 #include <terrakit/core/libraries/MeshLibrary.h>
 
 namespace terrakit::core {
-Mesh*
-MeshLibrary::Add(std::string key, std::unique_ptr<Mesh> mesh)
+std::shared_ptr<Mesh>
+MeshLibrary::Add(const std::string& key, std::shared_ptr<Mesh> mesh)
 {
-  auto raw = mesh.get();
-  m_Cache[std::move(key)] = std::move(mesh);
-  return raw;
+  if (!mesh)
+    return nullptr;
+
+  if (auto it = m_Cache.find(key); it != m_Cache.end())
+    return it->second;
+
+  auto [it, inserted] = m_Cache.emplace(key, mesh);
+  return inserted ? it->second : nullptr;
 }
 
-Mesh*
-MeshLibrary::Get(std::string_view key) const noexcept
+std::shared_ptr<Mesh>
+MeshLibrary::Get(const std::string& key) const
 {
-  if (auto it = m_Cache.find(std::string(key)); it != m_Cache.end()) {
-    return it->second.get();
+  if (auto it = m_Cache.find(key); it != m_Cache.end()) {
+    return it->second;
   }
   return nullptr;
 }

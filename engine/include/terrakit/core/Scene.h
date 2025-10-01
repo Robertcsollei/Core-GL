@@ -5,8 +5,11 @@
 #include <terrakit/core/SceneState.h>
 #include <terrakit/core/controllers/CameraControls.h>
 #include <terrakit/core/layers/Layer.h>
-#include <terrakit/renderer/Renderer.h>
 #include <vector>
+
+namespace terrakit::core::config {
+class RenderContext;
+}
 
 namespace terrakit::core {
 
@@ -26,7 +29,7 @@ public:
 
   void AddLayer(LayerPtr layer);
   void Update(double dt);
-  void Render(terrakit::renderer::Renderer& renderer);
+  void Render(config::RenderContext& renderCtx);
   void RenderUI(AppContext& ctx);
 
   void HandleEvent(const SDL_Event& e);

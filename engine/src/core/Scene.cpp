@@ -1,12 +1,12 @@
 #include <imgui/imgui.h>
 #include <memory>
 #include <terrakit/core/Scene.h>
+#include <terrakit/core/config/RenderContext.h>
 #include <terrakit/core/controllers/SelectionControls.h>
 #include <terrakit/core/entities/Satellite.h>
 #include <terrakit/core/layers/GlobeLayer.h>
 #include <terrakit/core/layers/SatelliteLayer.h>
-#include <terrakit/renderer/Renderer.h>
-using namespace terrakit::renderer;
+
 namespace terrakit::core {
 
 Scene::Scene(AppContext& ctx)
@@ -45,10 +45,10 @@ Scene::Update(double dt)
 }
 
 void
-Scene::Render(Renderer& renderer)
+Scene::Render(config::RenderContext& renderCtx)
 {
   for (auto& layer : m_Layers) {
-    layer->Render(renderer, m_State);
+    layer->Render(renderCtx, m_State);
   }
 }
 

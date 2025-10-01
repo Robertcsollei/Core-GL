@@ -28,7 +28,7 @@ public:
 
   void OnAttach(SceneState&, AppContext&) override;
   void Add(std::unique_ptr<Satellite> satellite);
-  void Render(terrakit::renderer::Renderer& renderer,
+  void Render(terrakit::core::config::RenderContext& renderCtx,
               const SceneState& state) override;
   void Update(double dt, SceneState& state) override;
 

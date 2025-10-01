@@ -12,12 +12,12 @@ public:
   ~MeshLibrary() = default;
 
 public:
-  Mesh* Add(std::string key, std::unique_ptr<Mesh> mesh);
-  Mesh* Get(std::string_view key) const noexcept;
+  std::shared_ptr<Mesh> Add(const std::string& key, std::shared_ptr<Mesh> mesh);
+  std::shared_ptr<Mesh> Get(const std::string& key) const;
 
   void Clear() { m_Cache.clear(); }
 
 private:
-  std::unordered_map<std::string, std::unique_ptr<Mesh>> m_Cache;
+  std::unordered_map<std::string, std::shared_ptr<Mesh>> m_Cache;
 };
 } // namespace terrakit::core

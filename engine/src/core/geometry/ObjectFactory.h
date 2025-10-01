@@ -1,8 +1,8 @@
 #pragma once
-#include <terrakit/core/AppContext.h>
 #include <terrakit/core/Renderable.h>
 #include <terrakit/core/SceneState.h>
 #include <terrakit/core/geometry/Ellipsoid.h>
+#include <terrakit/core/config/ResourceManager.h>
 
 #include <glm/glm.hpp>
 #include <memory>
@@ -22,16 +22,16 @@ struct GlobeConfig
 
 namespace ObjectFactory {
 std::unique_ptr<Renderable>
-CreateGlobe(const GlobeConfig& cfg, AppContext& ctx);
+CreateGlobe(const GlobeConfig& cfg, config::ResourceManager& resources);
 
 std::unique_ptr<Renderable>
-CreateSatellite(const glm::vec3 pos, AppContext& ctx);
+CreateSatellite(const glm::vec3 pos, config::ResourceManager& resources);
 
 std::unique_ptr<Renderable>
 CreateOrbit(const std::string name,
             double dt,
             const glm::vec3 pos,
             SceneState& state,
-            AppContext& ctx);
+            config::ResourceManager& resources);
 }
 } //  namespace terrakit::core

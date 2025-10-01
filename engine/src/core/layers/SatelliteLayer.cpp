@@ -1,7 +1,6 @@
 #include "core/geometry/ObjectFactory.h"
 #include <terrakit/core/layers/SatelliteLayer.h>
-
-using namespace terrakit::renderer;
+#include <terrakit/core/config/RenderContext.h>
 
 namespace terrakit::core {
 void
@@ -21,7 +20,7 @@ layers::SatelliteLayer::Add(std::unique_ptr<Satellite> satellite)
 };
 
 void
-layers::SatelliteLayer::Render(Renderer& renderer, const SceneState&)
+layers::SatelliteLayer::Render(config::RenderContext& renderCtx, const SceneState&)
 {
   if (m_Satellites.empty() || m_Paused)
     return;
@@ -45,15 +44,18 @@ layers::SatelliteLayer::Render(Renderer& renderer, const SceneState&)
   auto* renderTask = m_Satellites.front()->renderTask();
 
   if (m_DrityUniforms) {
-    renderTask->material->shader->Bind();
-    renderTask->material->applyUniforms();
+    auto shader = renderCtx.GetShader(renderTask->material->shaderName);
+    if (shader) {
+      shader->Bind();
+      renderTask->material->applyUniforms(shader);
+    }
     m_DrityUniforms = false;
   }
 
-  renderer.SubmitPointsInstanced(renderTask, m_Instances);
+  renderCtx.SubmitPointsInstanced(renderTask, m_Instances);
 
   if (m_SelectedOrbit.has_value()) {
-    renderer.Submit(&m_SelectedOrbit->orbitPath);
+    renderCtx.Submit(&m_SelectedOrbit->orbitPath);
   }
 }
 

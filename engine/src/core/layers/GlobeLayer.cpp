@@ -1,4 +1,5 @@
 #include <terrakit/core/layers/GlobeLayer.h>
+#include <terrakit/core/config/RenderContext.h>
 
 using namespace terrakit::core;
 
@@ -8,9 +9,9 @@ layers::GlobeLayer::GlobeLayer(AppContext& ctx)
 }
 
 void
-layers::GlobeLayer::Render(terrakit::renderer::Renderer& renderer,
+layers::GlobeLayer::Render(config::RenderContext& renderCtx,
                            const SceneState&)
 {
-  renderer.Submit(m_Globe.renderTask());
-  renderer.Submit(m_Globe.atmosphereTask());
+  renderCtx.Submit(m_Globe.renderTask());
+  renderCtx.Submit(m_Globe.atmosphereTask());
 }

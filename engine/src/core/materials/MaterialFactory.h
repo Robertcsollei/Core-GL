@@ -2,22 +2,22 @@
 #include <terrakit/renderer/Material.h>
 
 namespace terrakit::core {
-class ShaderLibrary;
-class TextureLibrary;
+namespace config {
+class ResourceManager;
+}
 
 namespace MaterialFactory {
-std::unique_ptr<terrakit::renderer::Material>
-CreatePong(const std::string& texturePath,
-           ShaderLibrary& shaders,
-           TextureLibrary& textures);
+std::shared_ptr<terrakit::renderer::Material>
+CreateTextured3D(const std::string& texturePath,
+                 config::ResourceManager& resources);
 
-std::unique_ptr<terrakit::renderer::Material>
-CreatePoint(ShaderLibrary& shaders, TextureLibrary& textures);
+std::shared_ptr<terrakit::renderer::Material>
+CreatePoint(config::ResourceManager& resources);
 
-std::unique_ptr<terrakit::renderer::Material>
-CreateLine(ShaderLibrary& shaders, TextureLibrary& textures);
+std::shared_ptr<terrakit::renderer::Material>
+CreateLine(config::ResourceManager& resources);
 
-std::unique_ptr<terrakit::renderer::Material>
-CreateAtmosphere(ShaderLibrary& shaders, TextureLibrary& textures);
+std::shared_ptr<terrakit::renderer::Material>
+CreateAtmosphere(config::ResourceManager& resources);
 } // namespace MaterialFactory
 } // namespace terrakit::core

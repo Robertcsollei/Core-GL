@@ -2,63 +2,51 @@
 #include "core/shaders/ShaderNames.h"
 
 #include <memory>
-#include <terrakit/core/libraries/ShaderLibrary.h>
-#include <terrakit/core/libraries/TextureLibrary.h>
+#include <terrakit/core/config/ResourceManager.h>
 
 using namespace terrakit::renderer;
 using namespace terrakit::core;
+using namespace terrakit::core::config;
 
-std::unique_ptr<Material>
-MaterialFactory::CreatePong(const std::string& texturePath,
-                            ShaderLibrary& shaders,
-                            TextureLibrary& textures)
+std::shared_ptr<Material>
+MaterialFactory::CreateTextured3D(const std::string& texturePath, ResourceManager& resources)
 {
-  auto shader = shaders.Get(ShaderNames::Object3dShader);
-  auto tex = textures.Load2D(texturePath);
+  auto tex = resources.LoadTexture(texturePath);
 
-  auto mat =
-    std::make_unique<Material>("Pong Material", "Pong Material", shader);
-  mat->addTexture(1, tex);
+  auto mat = std::make_shared<Material>("textured_3d_material", "Textured 3D Object", ShaderNames::Object3dShader);
+  if (tex) {
+    mat->addTexture(1, tex);
+  }
   mat->state.depthTest = true;
   mat->state.depthWrite = true;
   mat->state.cull = false;
   return mat;
 }
 
-std::unique_ptr<Material>
-MaterialFactory::CreatePoint(ShaderLibrary& shaders, TextureLibrary& textures)
+std::shared_ptr<Material>
+MaterialFactory::CreatePoint(ResourceManager& resources)
 {
-  auto shader = shaders.Get(ShaderNames::PointShader);
-
-  auto mat =
-    std::make_unique<Material>("Point Material", "Point Material", shader);
+  auto mat = std::make_shared<Material>("point_material", "Point Rendering", ShaderNames::PointShader);
   mat->state.depthTest = true;
   mat->state.depthWrite = true;
   mat->state.cull = false;
   return mat;
 }
 
-std::unique_ptr<Material>
-MaterialFactory::CreateLine(ShaderLibrary& shaders, TextureLibrary& textures)
+std::shared_ptr<Material>
+MaterialFactory::CreateLine(ResourceManager& resources)
 {
-  auto shader = shaders.Get(ShaderNames::LineShader);
-
-  auto mat =
-    std::make_unique<Material>("Line Material", "Line Material", shader);
+  auto mat = std::make_shared<Material>("line_material", "Line Rendering", ShaderNames::LineShader);
   mat->state.depthTest = true;
   mat->state.depthWrite = false;
   mat->state.cull = false;
   return mat;
 }
 
-std::unique_ptr<Material>
-MaterialFactory::CreateAtmosphere(ShaderLibrary& shaders,
-                                  TextureLibrary& textures)
+std::shared_ptr<Material>
+MaterialFactory::CreateAtmosphere(ResourceManager& resources)
 {
-  auto shader = shaders.Get(ShaderNames::AtmosphereShader);
-
-  auto mat = std::make_unique<Material>(
-    "Atmosphere Material", "Atmosphere Material", shader);
+  auto mat = std::make_shared<Material>("atmosphere_material", "Atmospheric Effect", ShaderNames::AtmosphereShader);
   mat->state.depthTest = true;
   mat->state.depthWrite = false;
   mat->state.cull = false;

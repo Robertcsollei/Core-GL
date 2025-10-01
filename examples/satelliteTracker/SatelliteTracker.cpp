@@ -153,7 +153,7 @@ SatelliteTracker::RenderUI()
   }
 
   if (ImGui::CollapsingHeader("Visuals")) {
-    ImGui::ColorEdit4("Background", &m_Renderer->clearColor().x);
+    ImGui::ColorEdit4("Background", &m_RenderContext.clearColor().x);
 
     if (ImGui::SliderFloat("Near", &m_Ctx.satOptions.nearDistance, 0.f, 1000.f))
       satelliteLayer->MarkUniformsDirty();
