@@ -125,11 +125,7 @@ Shader::GetUniformLocation(std::string_view name) const
 
   GLCall(int location =
            glGetUniformLocation(m_RendererID, std::string{ name }.c_str()));
-  TK_INFO(std::string("location of ") + std::string(name) +
-          std::string(" loc:") + std::to_string(location));
   if (location == -1) {
-    TK_ERROR(std::string("Warning: uniform '") + std::string(name) +
-             std::string("' not found in shader program.\n"));
     return location;
   }
 

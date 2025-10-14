@@ -132,6 +132,8 @@ public:
   /**
    * @brief Generate appropriate shader version string (compile-time)
    * @return Shader version header (e.g., "#version 330 core\n")
+   *
+   * Note: Using highp precision for ES to prevent Z-fighting on mobile
    */
   static constexpr const char* GetShaderVersion()
   {
@@ -142,12 +144,12 @@ public:
 #elif defined(TERRAKIT_OPENGL_VERSION_460)
     return "#version 460 core\n";
 #elif defined(TERRAKIT_OPENGL_VERSION_300)
-    return "#version 300 es\nprecision mediump float;\n";
+    return "#version 300 es\nprecision highp float;\n";
 #elif defined(TERRAKIT_OPENGL_VERSION_320)
-    return "#version 320 es\nprecision mediump float;\n";
+    return "#version 320 es\nprecision highp float;\n";
 #else
 #ifdef TERRAKIT_OPENGL_PROFILE_ES
-    return "#version 300 es\nprecision mediump float;\n";
+    return "#version 300 es\nprecision highp float;\n";
 #else
     return "#version 330 core\n";
 #endif

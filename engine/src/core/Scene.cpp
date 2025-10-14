@@ -102,8 +102,10 @@ Scene::InitLayers()
 void
 Scene::UpdateCameraDefault()
 {
+  // Tighter near/far planes for better depth precision on mobile
+  // Globe is ~1100 units away, so near=10, far=5000 is plenty
   m_State.camera.SetPerspective(
-    45.f, m_Ctx.width / m_Ctx.height, 0.1f, 10000.f);
+    45.f, m_Ctx.width / m_Ctx.height, 10.f, 5000.f);
   m_State.camera.SetLookAt({ 0, 0, 300 }, { 0, 0, -800 }, { 0, 1, 0 });
 }
 }

@@ -25,6 +25,24 @@ public:
   float panScale = 1.0f;
 
 private:
+  // Touch gesture handlers
+  void HandleSingleFingerDown(const SDL_Event& e, AppContext& ctx);
+  void HandleSingleFingerUp(const SDL_Event& e, AppContext& ctx);
+  void HandleSingleFingerMotion(const SDL_Event& e, AppContext& ctx);
+  void HandlePinchGesture(const SDL_Event& e, AppContext& ctx);
+
+  // Mouse handlers
+  void HandleMouseButtonDown(const SDL_Event& e, AppContext& ctx);
+  void HandleMouseButtonUp(const SDL_Event& e, AppContext& ctx);
+  void HandleMouseMotion(const SDL_Event& e, AppContext& ctx);
+  void HandleMouseWheel(const SDL_Event& e, AppContext& ctx);
+
+  // Camera operations
+  void RotateCamera(int dx, int dy);
+  void PanCamera(int dx, int dy);
+  void ZoomCamera(float factor);
+
+private:
   Camera& m_Camera;
   AppContext& m_Ctx;
 
