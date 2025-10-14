@@ -96,6 +96,65 @@ SelectionControls::HandleEvent(const SDL_Event& e)
       break;
     }
 
+    // Touch events for mobile
+    case SDL_FINGERDOWN: {
+      if (m_Ctx.pointerLock)
+        return;
+
+      // Update touch position for hover detection
+      m_MousePos = glm::ivec2(
+        static_cast<int>(e.tfinger.x * m_Ctx.width),
+        static_cast<int>(e.tfinger.y * m_Ctx.height)
+      );
+      UpdatePointerRay();
+      break;
+    }
+
+    case SDL_FINGERUP: {
+      if (m_Ctx.pointerLock)
+        return;
+
+      // Update touch position at release
+      m_MousePos = glm::ivec2(
+        static_cast<int>(e.tfinger.x * m_Ctx.width),
+        static_cast<int>(e.tfinger.y * m_Ctx.height)
+      );
+      UpdatePointerRay();
+
+      // Force immediate hover check at touch position
+      HandleHoverState();
+
+      // Select the hovered satellite (same as mouse click)
+      if (m_Hovered) {
+        if (m_Selected) {
+          m_Selected->satellite->state.active = false;
+        }
+        m_Selected.emplace(m_Hovered->satellite, m_Hovered->screenPos);
+        m_Selected->satellite->state.active = true;
+        m_State.selectedSat = m_Hovered->satellite;
+      } else {
+        ClearSelection();
+      }
+
+      break;
+    }
+
+    case SDL_FINGERMOTION: {
+      if (m_Ctx.pointerLock) {
+        m_Hovered.reset();
+        return;
+      }
+
+      // Update touch position during drag
+      m_MousePos = glm::ivec2(
+        static_cast<int>(e.tfinger.x * m_Ctx.width),
+        static_cast<int>(e.tfinger.y * m_Ctx.height)
+      );
+      UpdatePointerRay();
+
+      break;
+    }
+
     default:
       break;
   }
